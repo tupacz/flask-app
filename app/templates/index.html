@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordenar y Enviar Lista</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI Emoji', sans-serif;
+        }
+        #sortable-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #sortable-list li {
+            font-size: small;
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            cursor: grab;
+        }
+
+        #sortable-list li b{
+            font-size: medium
+        }
+
+        #sortable-list li:hover {
+            background-color: #e0e0e0;
+        }
+
+        #form-container {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ordená la lista y completá tu nombre</h1>
+    
+    <div id="form-container">
+        <label for="user-name">Nombre:</label>
+        <input type="text" id="user-name" name="user-name" placeholder="Escribí tu nombre" required>
+    </div>
+
+    <ul id="sortable-list">
+        <li data-value="Cien años de soledad"><b>"Cien años de soledad"</b> – Gabriel García Márquez 🇨🇴<br>
+            🏆 Premio Nobel 1982<br>
+            🌟 La obra cumbre del realismo mágico que consolidó a García Márquez como una figura central de la literatura mundial.</li>
+        <li data-value="Del amor y otros demonios"><b>"Del amor y otros demonios"</b> – Gabriel García Márquez 🇨🇴<br>
+            🏆 Nobel 1982<br>
+            💔 Una novela que explora las profundidades del amor y la superstición en la época colonial, reflejando la maestría narrativa del autor.</li>
+        <li data-value="El cuaderno dorado"><b>"El cuaderno dorado"</b> – Doris Lessing 🇬🇧<br>
+            🏆 Premio Nobel 2007<br>
+            ✍️ Una innovadora novela que aborda la fragmentación de la identidad femenina y las complejidades políticas y personales de su tiempo.</li>
+        <li data-value="Las uvas de la ira"><b>"Las uvas de la ira"</b> – John Steinbeck 🇺🇸<br>
+            🏆 Premio Nobel 1962<br>
+            🌾 Una poderosa narración sobre la Gran Depresión y la lucha por la dignidad humana, que contribuyó significativamente al reconocimiento de Steinbeck</li>
+        <li data-value="Actos humanos"><b>"Actos humanos"</b> – Han Kang 🇰🇷<br>
+            🏆 Premio Nobel 2024<br>
+            🕊️ Una conmovedora exploración de la masacre de Gwangju en 1980, que refleja la capacidad de Han Kang para confrontar traumas históricos y la fragilidad de la vida humana.
+        </li>
+        <li data-value="Klara y el sol"><b>"Klara y el sol"</b> – Kazuo Ishiguro 🇬🇧<br>
+            🏆 Premio Nobel 2017<br>
+            🤖 Una novela conmovedora y filosófica que explora la relación entre inteligencia artificial, humanidad y emociones a través de los ojos de un robot.</li>
+        <li data-value="Ensayo sobre la ceguera"><b>"Ensayo sobre la ceguera"</b> – José Saramago 🇵🇹<br>
+            🏆 Premio Nobel 1998<br>
+            👁️ Una parábola desgarradora sobre la humanidad, ambientada en un mundo donde una epidemia de ceguera blanca transforma la sociedad.
+        </li>
+        <li data-value="El extranjero"><b>"El extranjero"</b> – Albert Camus 🇫🇷<br>
+            🏆 Premio Nobel 1957<br>
+            🌅 Una obra emblemática del existencialismo que explora la indiferencia y el absurdo a través de la vida de Meursault.
+        </li>
+        <li data-value="La colmena"><b>"La colmena"</b> – Camilo José Cela 🇪🇸<br>
+            🏆 Premio Nobel 1989<br>
+            🍯 Una novela coral que retrata la vida cotidiana en la posguerra española, destacándose por su estilo innovador y realismo crudo.
+        </li>
+    </ul>
+    <br>
+    <button id="send-button">Enviar Orden</button>
+
+    <script>
+        const sortable = new Sortable(document.getElementById('sortable-list'), {
+            animation: 150,
+        });
+
+        document.getElementById('send-button').addEventListener('click', async () => {
+            const userName = document.getElementById('user-name').value;
+
+            if (!userName.trim()) {
+                alert('Por favor, ingresá tu nombre.');
+                return;
+            }
+
+            const listItems = document.querySelectorAll('#sortable-list li');
+            const orderedList = Array.from(listItems).map(item => item.dataset.value);
+
+            const dataToSend = {
+                name: userName,
+                orderedList: orderedList
+            };
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dataToSend)
+                });
+
+                const result = await response.json();
+                alert(result.message);
+            } catch (error) {
+                console.error('Error al enviar:', error);
+                alert('Hubo un error al enviar los datos.');
+            }
+        });
+    </script>
+</body>
+</html>
