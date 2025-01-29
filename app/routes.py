@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify
 from datetime import datetime
+
+from app import Book
 try:
     from app import voting_condorcet
 except ImportError:
@@ -11,6 +13,8 @@ main = Blueprint('main', __name__)
 # Ruta para la página principal
 @main.route('/')
 def index():
+    books = [ Book("Cien años de soledad", "Gabriel García Márquez", "La obra cumbre del realismo mágico que consolidó a García Márquez como una figura central de la literatura mundial.")
+    ]
     return render_template('index.html')
 
 @main.route('/submit', methods=['POST'])

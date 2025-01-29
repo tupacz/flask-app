@@ -24,6 +24,20 @@ def condorcet_winner(ballots):
     half = num_ballots / 2.0
     # Contador de victorias de cada candidato en enfrentamientos directos
     wins_count = [0] * num_candidates
+
+    # Generar el "fixture" o tabla de enfrentamientos
+    print("\nTabla de enfrentamientos:")
+    header = [";"] + candidates
+    print(";".join(header))
+    for i in range(num_candidates):
+        row = [candidates[i]]
+        for j in range(num_candidates):
+            if i == j:
+                row.append("-")  # Sin enfrentamiento consigo mismo
+            else:
+                row.append(str(preference_counts[i][j]))
+        print(";".join(row))
+
     respuesta = ""
     # Contar las victorias de cada candidato en enfrentamientos directos
     for i in range(num_candidates):
@@ -34,16 +48,13 @@ def condorcet_winner(ballots):
             if votes_i_over_j > votes_j_over_i:
                 wins_count[i] += 1
                 respuesta += f"{candidates[i]} le gana a {candidates[j]}\n"
-                print(f"{candidates[i]} le gana a {candidates[j]}")
             elif votes_j_over_i > votes_i_over_j:
                 wins_count[j] += 1
                 respuesta += f"{candidates[j]} le gana a {candidates[i]}\n"
-                print(f"{candidates[j]} le gana a {candidates[i]}")
 
     # Imprimir el número de contiendas ganadas por cada candidato
     for i, c in enumerate(candidates):
         respuesta += f"El candidato {c} ganó {wins_count[i]} contiendas.\n"
-        print(f"El candidato {c} ganó {wins_count[i]} contiendas.")
 
     # Determinar si hay un ganador de Condorcet
     for i in range(num_candidates):
