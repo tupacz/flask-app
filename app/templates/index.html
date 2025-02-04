@@ -22,7 +22,7 @@
         {% endfor %}
     </ul>
     <br>
-    <button id="send-button">Enviar boleta</button>
+    <button id="send-button">Enviar boleta 🗳️</button>
 
     <script>
         const sortable = new Sortable(document.getElementById('sortable-list'), {
@@ -46,7 +46,7 @@
             };
 
             try {
-                const response = await fetch('http://127.0.0.1:5000/submit', {
+                const response = await fetch('/submit', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

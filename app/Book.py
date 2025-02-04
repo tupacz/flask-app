@@ -11,9 +11,10 @@ class Book:
         return f"<b>{self.title}</b> - {self.author}<br>{self.description}"
     
 class BooksDAO:
-    def __init__(self):
+    def __init__(self, ruta_archivo: str):
         self.books = [ Book("Cien años de soledad", "Gabriel García Márquez", "La obra cumbre del realismo mágico que consolidó a García Márquez como una figura central de la literatura mundial.")
         ]
+        self._ruta_archivo = ruta_archivo
 
     def get_books(self):
         return self.books
@@ -28,14 +29,14 @@ class BooksDAO:
     
     def save_books(self, books: list[Book]):
         books_data = [{'title': book.title, 'author': book.author, 'description': book.description} for book in books]
-        with open('app/data/books.json', 'w', encoding='utf-8') as file:
+        with open(self._ruta_archivo, 'w', encoding='utf-8') as file:
             json.dump(books_data, file, ensure_ascii=False, indent=4)
         self.books = books
         return self.books
     
     def load_books(self):
         try:
-            with open('app/data/books.json', 'r', encoding='utf-8') as file:
+            with open(self._ruta_archivo, 'r', encoding='utf-8') as file:
                 books_data = json.load(file)
                 return [Book(book['title'], book['author'], book['description']) for book in books_data]
         except FileNotFoundError:

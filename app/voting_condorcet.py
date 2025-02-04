@@ -122,8 +122,8 @@ def fixture_maker(candidates, num_candidates, preference_counts):
         output.append(";".join(row))
     return "\n".join(output)
 
-def get_condorcet_winner():
-    with open('app/data/data.txt', 'r', encoding='utf-8') as file:
+def get_condorcet_winner(ruta_archivo: str):
+    with open(ruta_archivo, 'r', encoding='utf-8') as file:
         data = []
         for line in file:
             if line.strip():

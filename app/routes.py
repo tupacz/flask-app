@@ -1,3 +1,4 @@
+import os
 from flask import Blueprint, render_template, request, jsonify
 from datetime import datetime
 
@@ -16,22 +17,31 @@ main = Blueprint('main', __name__)
 books = [ Book.Book("Cien años de soledad", "Gabriel García Márquez", "La obra cumbre del realismo mágico que consolidó a García Márquez como una figura central de la literatura mundial.")
     ]
 
+
+# Construir una ruta absoluta al archivo
+base_dir = os.path.dirname(os.path.abspath(__file__))  # Obtiene la carpeta actual
+file_path_data = os.path.join(base_dir, 'data', 'data.txt')
+file_path_books = os.path.join(base_dir, 'data', 'books.json')
+
 # Ruta para la página principal
 @main.route('/')
 def index():
-    books_dao = Book.BooksDAO()
+    books_dao = Book.BooksDAO(file_path_books)
     return render_template('index.html', books=books_dao.load_books())
 
 @main.route('/books-manager')
 def books_manager():
-    books_dao = Book.BooksDAO()
+    books_dao = Book.BooksDAO(file_path_books)
     return render_template('books-manager.html', books=books_dao.load_books())
 
 @main.route('/winner')
 def winner():
-    winner = get_condorcet_winner()
+    winner = get_condorcet_winner(file_path_data)
     return render_template('winner.html', winner=winner)
-    
+
+@main.route('/votes')
+def votes():
+    return render_template('votes.html')
 
 @main.route('/submit', methods=['POST'])
 def submit():
@@ -50,40 +60,12 @@ def submit():
 
     if name != 'kek':
         try:
-            with open('app/data/data.txt', 'a', encoding='utf-8') as file:
+            with open(file_path_data, 'a', encoding='utf-8') as file:
                 file.write(f"Nombre: {name}; Lista: {ordered_list}; fecha: {fechahora}\n")
         except Exception as e:
             return (jsonify({'message': f'Error al guardar los datos: {str(e)}'}), 500)
         
     return jsonify({'message': 'Datos guardados correctamente'}), 200
-
-    # Armo un array de arrays llamados Lista de data.txt
-    #Obtengo un array de arrays del archivo data.txt
-""" with open('app/data/data.txt', 'r') as file:
-        data = []
-        for line in file:
-            if line.strip():
-                name, ordered_list, fechahora = line.strip().split('; ')
-                #Obtengo dentro de ordered list los valores que están entre ''
-                ordered_list = ordered_list.split(': ')[1]
-                ordered_list = ordered_list[1:-1].split("', '")
-                # Dentro de cada item en ordered_list, elimino las comillas simples y dobles
-                for i in range(len(ordered_list)):
-                    ordered_list[i] = ordered_list[i].replace("'", "")
-                    ordered_list[i] = ordered_list[i].replace('"', "")
-                data.append(ordered_list)
-    
-    # Obtengo el ganador Condorcet
-    winner = voting_condorcet.condorcet_winner(data)
-
-    # Escribo el ganador en un archivo. Debe borrar el contenido y escribir
-    with open('app/data/winner.txt', 'w') as file:
-        file.write(f"{winner}")
-
-    with open('app/data/winnerHistorico.txt', 'a') as file:
-        file.write(f"{fechahora}\n{winner}\n\n")
-
-    return jsonify({'message': 'Datos guardados correctamente', 'winner': winner}), 200 """
 
 @main.route('/submit-book', methods=['POST'])
 def submit_books():
