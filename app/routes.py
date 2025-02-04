@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify
 from datetime import datetime
+import os
+
 try:
     from app import voting_condorcet
 except ImportError:
@@ -28,16 +30,29 @@ def submit():
     ordered_list = data['orderedList']
     fechahora = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+    # Construir una ruta absoluta al archivo
+    base_dir = os.path.dirname(os.path.abspath(__file__))  # Obtiene la carpeta actual
+    file_path_data = os.path.join(base_dir, 'data', 'data.txt')
+    file_path_winner = os.path.join(base_dir, 'data', 'winner.txt')
+    file_path_winnerHistorico = os.path.join(base_dir, 'data', 'winnerHistorico.txt')
+
     if name != 'kek':
         try:
-            with open('app/data/data.txt', 'a') as file:
+            # Crear carpeta si no existe
+            os.makedirs(os.path.dirname(file_path_data), exist_ok=True)
+            os.makedirs(os.path.dirname(file_path_winner), exist_ok=True)
+            os.makedirs(os.path.dirname(file_path_winnerHistorico), exist_ok=True)
+            print(base_dir)
+            print(file_path_data)
+            with open(file_path_data, 'a') as file:
                 file.write(f"Nombre: {name}; Lista: {ordered_list}; fecha: {fechahora}\n")
+
         except Exception as e:
             return (jsonify({'message': f'Error al guardar los datos: {str(e)}'}), 500)
 
     # Armo un array de arrays llamados Lista de data.txt
     #Obtengo un array de arrays del archivo data.txt
-    with open('app/data/data.txt', 'r') as file:
+    with open(file_path_data, 'r') as file:
         data = []
         for line in file:
             if line.strip():
@@ -50,15 +65,16 @@ def submit():
                     ordered_list[i] = ordered_list[i].replace("'", "")
                     ordered_list[i] = ordered_list[i].replace('"', "")
                 data.append(ordered_list)
-    
+
     # Obtengo el ganador Condorcet
     winner = voting_condorcet.condorcet_winner(data)
 
     # Escribo el ganador en un archivo. Debe borrar el contenido y escribir
-    with open('app/data/winner.txt', 'w') as file:
+    with open(file_path_winner, 'w') as file:
         file.write(f"{winner}")
 
-    with open('app/data/winnerHistorico.txt', 'a') as file:
+    with open(file_path_winnerHistorico, 'a') as file:
         file.write(f"{fechahora}\n{winner}\n\n")
 
+    return jsonify({'message': 'Datos guardados correctamente'}), 200
     return jsonify({'message': 'Datos guardados correctamente', 'winner': winner}), 200

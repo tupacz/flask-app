@@ -8,6 +8,8 @@
     <style>
         body {
             font-family: 'Segoe UI Emoji', sans-serif;
+            padding-left: 1em;
+            padding-right: 2em;
         }
         #sortable-list {
             list-style: none;
@@ -39,7 +41,7 @@
 </head>
 <body>
     <h1>Ordená la lista y completá tu nombre</h1>
-    
+
     <div id="form-container">
         <label for="user-name">Nombre:</label>
         <input type="text" id="user-name" name="user-name" placeholder="Escribí tu nombre" required>
@@ -79,7 +81,7 @@
         </li>
     </ul>
     <br>
-    <button id="send-button">Enviar Orden</button>
+    <button id="send-button">Enviar boleta 🗳️</button>
 
     <script>
         const sortable = new Sortable(document.getElementById('sortable-list'), {
@@ -103,7 +105,7 @@
             };
 
             try {
-                const response = await fetch('http://127.0.0.1:5000/submit', {
+                const response = await fetch('/submit', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

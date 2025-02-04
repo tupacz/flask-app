@@ -1,98 +1,432 @@
-fecha: 2024-12-19 20:35:15
-El cuaderno dorado le gana a El extranjero
+fecha: 2024-12-20 05:28:37
+None
+
+fecha: 2024-12-20 05:40:33
+El cuaderno dorado le gana a Cien años de soledad
+Actos humanos le gana a Cien años de soledad
+Del amor y otros demonios le gana a Cien años de soledad
+Las uvas de la ira le gana a Cien años de soledad
+La colmena le gana a Cien años de soledad
+Klara y el sol le gana a Cien años de soledad
+El extranjero le gana a Cien años de soledad
+Ensayo sobre la ceguera le gana a Cien años de soledad
+El cuaderno dorado le gana a Actos humanos
+El cuaderno dorado le gana a Del amor y otros demonios
 El cuaderno dorado le gana a Las uvas de la ira
-Cien a�os de soledad le gana a El cuaderno dorado
+El cuaderno dorado le gana a La colmena
+El cuaderno dorado le gana a Klara y el sol
+El cuaderno dorado le gana a El extranjero
+El cuaderno dorado le gana a Ensayo sobre la ceguera
+Actos humanos le gana a Del amor y otros demonios
+Actos humanos le gana a Las uvas de la ira
+Actos humanos le gana a La colmena
+Actos humanos le gana a Klara y el sol
+Actos humanos le gana a El extranjero
+Actos humanos le gana a Ensayo sobre la ceguera
+Las uvas de la ira le gana a Del amor y otros demonios
+La colmena le gana a Del amor y otros demonios
+Klara y el sol le gana a Del amor y otros demonios
+Del amor y otros demonios le gana a El extranjero
+Ensayo sobre la ceguera le gana a Del amor y otros demonios
+Las uvas de la ira le gana a La colmena
+Las uvas de la ira le gana a Klara y el sol
+Las uvas de la ira le gana a El extranjero
+Ensayo sobre la ceguera le gana a Las uvas de la ira
+Klara y el sol le gana a La colmena
+La colmena le gana a El extranjero
+Ensayo sobre la ceguera le gana a La colmena
+Klara y el sol le gana a El extranjero
+Klara y el sol le gana a Ensayo sobre la ceguera
+Ensayo sobre la ceguera le gana a El extranjero
+El candidato Cien años de soledad ganó 0 contiendas.
+El candidato El cuaderno dorado ganó 8 contiendas.
+El candidato Actos humanos ganó 7 contiendas.
+El candidato Del amor y otros demonios ganó 2 contiendas.
+El candidato Las uvas de la ira ganó 5 contiendas.
+El candidato La colmena ganó 3 contiendas.
+El candidato Klara y el sol ganó 5 contiendas.
+El candidato El extranjero ganó 1 contiendas.
+El candidato Ensayo sobre la ceguera ganó 5 contiendas.
+El ganador de Condorcet es: El cuaderno dorado
+
+
+fecha: 2024-12-20 11:13:20
+El cuaderno dorado le gana a Cien años de soledad
+Actos humanos le gana a Cien años de soledad
+Del amor y otros demonios le gana a Cien años de soledad
+Las uvas de la ira le gana a Cien años de soledad
+La colmena le gana a Cien años de soledad
+Klara y el sol le gana a Cien años de soledad
+El extranjero le gana a Cien años de soledad
+Ensayo sobre la ceguera le gana a Cien años de soledad
+El cuaderno dorado le gana a Actos humanos
+El cuaderno dorado le gana a Del amor y otros demonios
+El cuaderno dorado le gana a Las uvas de la ira
+El cuaderno dorado le gana a La colmena
+El cuaderno dorado le gana a Klara y el sol
+El cuaderno dorado le gana a El extranjero
+Ensayo sobre la ceguera le gana a El cuaderno dorado
+Actos humanos le gana a Del amor y otros demonios
+Actos humanos le gana a Las uvas de la ira
+Actos humanos le gana a La colmena
+Actos humanos le gana a Klara y el sol
+Actos humanos le gana a El extranjero
+Ensayo sobre la ceguera le gana a Actos humanos
+Las uvas de la ira le gana a Del amor y otros demonios
+La colmena le gana a Del amor y otros demonios
+Klara y el sol le gana a Del amor y otros demonios
+Ensayo sobre la ceguera le gana a Del amor y otros demonios
+Las uvas de la ira le gana a La colmena
+Las uvas de la ira le gana a El extranjero
+Ensayo sobre la ceguera le gana a Las uvas de la ira
+Klara y el sol le gana a La colmena
+La colmena le gana a El extranjero
+Ensayo sobre la ceguera le gana a La colmena
+Klara y el sol le gana a El extranjero
+Klara y el sol le gana a Ensayo sobre la ceguera
+Ensayo sobre la ceguera le gana a El extranjero
+El candidato Cien años de soledad ganó 0 contiendas.
+El candidato El cuaderno dorado ganó 7 contiendas.
+El candidato Actos humanos ganó 6 contiendas.
+El candidato Del amor y otros demonios ganó 1 contiendas.
+El candidato Las uvas de la ira ganó 4 contiendas.
+El candidato La colmena ganó 3 contiendas.
+El candidato Klara y el sol ganó 5 contiendas.
+El candidato El extranjero ganó 1 contiendas.
+El candidato Ensayo sobre la ceguera ganó 7 contiendas.
+El ganador de Condorcet es: None
+
+
+fecha: 2024-12-20 11:49:05
+El cuaderno dorado le gana a Cien años de soledad
+Actos humanos le gana a Cien años de soledad
+Del amor y otros demonios le gana a Cien años de soledad
+Las uvas de la ira le gana a Cien años de soledad
+La colmena le gana a Cien años de soledad
+Klara y el sol le gana a Cien años de soledad
+El extranjero le gana a Cien años de soledad
+Ensayo sobre la ceguera le gana a Cien años de soledad
+El cuaderno dorado le gana a Actos humanos
+El cuaderno dorado le gana a Del amor y otros demonios
+El cuaderno dorado le gana a Las uvas de la ira
+El cuaderno dorado le gana a La colmena
+El cuaderno dorado le gana a Klara y el sol
+El cuaderno dorado le gana a El extranjero
+Ensayo sobre la ceguera le gana a El cuaderno dorado
+Actos humanos le gana a Del amor y otros demonios
+Actos humanos le gana a Las uvas de la ira
+Actos humanos le gana a La colmena
+Actos humanos le gana a Klara y el sol
+Actos humanos le gana a El extranjero
+Ensayo sobre la ceguera le gana a Actos humanos
+Las uvas de la ira le gana a Del amor y otros demonios
+La colmena le gana a Del amor y otros demonios
+Klara y el sol le gana a Del amor y otros demonios
+El extranjero le gana a Del amor y otros demonios
+Ensayo sobre la ceguera le gana a Del amor y otros demonios
+Las uvas de la ira le gana a La colmena
+Klara y el sol le gana a Las uvas de la ira
+Las uvas de la ira le gana a El extranjero
+Ensayo sobre la ceguera le gana a Las uvas de la ira
+Klara y el sol le gana a La colmena
+La colmena le gana a El extranjero
+Ensayo sobre la ceguera le gana a La colmena
+Klara y el sol le gana a El extranjero
+Klara y el sol le gana a Ensayo sobre la ceguera
+Ensayo sobre la ceguera le gana a El extranjero
+El candidato Cien años de soledad ganó 0 contiendas.
+El candidato El cuaderno dorado ganó 7 contiendas.
+El candidato Actos humanos ganó 6 contiendas.
+El candidato Del amor y otros demonios ganó 1 contiendas.
+El candidato Las uvas de la ira ganó 4 contiendas.
+El candidato La colmena ganó 3 contiendas.
+El candidato Klara y el sol ganó 6 contiendas.
+El candidato El extranjero ganó 2 contiendas.
+El candidato Ensayo sobre la ceguera ganó 7 contiendas.
+El ganador de Condorcet es: None
+
+
+fecha: 2024-12-20 11:49:10
+El cuaderno dorado le gana a Cien años de soledad
+Actos humanos le gana a Cien años de soledad
+Del amor y otros demonios le gana a Cien años de soledad
+Las uvas de la ira le gana a Cien años de soledad
+La colmena le gana a Cien años de soledad
+Klara y el sol le gana a Cien años de soledad
+El extranjero le gana a Cien años de soledad
+Ensayo sobre la ceguera le gana a Cien años de soledad
+El cuaderno dorado le gana a Actos humanos
+El cuaderno dorado le gana a Del amor y otros demonios
+El cuaderno dorado le gana a Las uvas de la ira
+El cuaderno dorado le gana a La colmena
+El cuaderno dorado le gana a Klara y el sol
+El cuaderno dorado le gana a El extranjero
+Actos humanos le gana a Del amor y otros demonios
+Actos humanos le gana a Las uvas de la ira
+Actos humanos le gana a La colmena
+Actos humanos le gana a El extranjero
+Ensayo sobre la ceguera le gana a Actos humanos
+Las uvas de la ira le gana a Del amor y otros demonios
+La colmena le gana a Del amor y otros demonios
+Klara y el sol le gana a Del amor y otros demonios
+El extranjero le gana a Del amor y otros demonios
+Ensayo sobre la ceguera le gana a Del amor y otros demonios
+Las uvas de la ira le gana a La colmena
+Klara y el sol le gana a Las uvas de la ira
+Las uvas de la ira le gana a El extranjero
+Ensayo sobre la ceguera le gana a Las uvas de la ira
+Klara y el sol le gana a La colmena
+La colmena le gana a El extranjero
+Ensayo sobre la ceguera le gana a La colmena
+Klara y el sol le gana a El extranjero
+Ensayo sobre la ceguera le gana a El extranjero
+El candidato Cien años de soledad ganó 0 contiendas.
+El candidato El cuaderno dorado ganó 7 contiendas.
+El candidato Actos humanos ganó 5 contiendas.
+El candidato Del amor y otros demonios ganó 1 contiendas.
+El candidato Las uvas de la ira ganó 4 contiendas.
+El candidato La colmena ganó 3 contiendas.
+El candidato Klara y el sol ganó 5 contiendas.
+El candidato El extranjero ganó 2 contiendas.
+El candidato Ensayo sobre la ceguera ganó 6 contiendas.
+El ganador de Condorcet es: None
+
+
+fecha: 2024-12-20 11:49:05
+El cuaderno dorado le gana a Cien años de soledad
+Actos humanos le gana a Cien años de soledad
+Del amor y otros demonios le gana a Cien años de soledad
+Las uvas de la ira le gana a Cien años de soledad
+La colmena le gana a Cien años de soledad
+Klara y el sol le gana a Cien años de soledad
+El extranjero le gana a Cien años de soledad
+Ensayo sobre la ceguera le gana a Cien años de soledad
+El cuaderno dorado le gana a Actos humanos
+El cuaderno dorado le gana a Del amor y otros demonios
+El cuaderno dorado le gana a Las uvas de la ira
+El cuaderno dorado le gana a La colmena
+El cuaderno dorado le gana a Klara y el sol
+El cuaderno dorado le gana a El extranjero
+Ensayo sobre la ceguera le gana a El cuaderno dorado
+Actos humanos le gana a Del amor y otros demonios
+Actos humanos le gana a Las uvas de la ira
+Actos humanos le gana a La colmena
+Actos humanos le gana a Klara y el sol
+Actos humanos le gana a El extranjero
+Ensayo sobre la ceguera le gana a Actos humanos
+Las uvas de la ira le gana a Del amor y otros demonios
+La colmena le gana a Del amor y otros demonios
+Klara y el sol le gana a Del amor y otros demonios
+El extranjero le gana a Del amor y otros demonios
+Ensayo sobre la ceguera le gana a Del amor y otros demonios
+Las uvas de la ira le gana a La colmena
+Klara y el sol le gana a Las uvas de la ira
+Las uvas de la ira le gana a El extranjero
+Ensayo sobre la ceguera le gana a Las uvas de la ira
+Klara y el sol le gana a La colmena
+La colmena le gana a El extranjero
+Ensayo sobre la ceguera le gana a La colmena
+Klara y el sol le gana a El extranjero
+Klara y el sol le gana a Ensayo sobre la ceguera
+Ensayo sobre la ceguera le gana a El extranjero
+El candidato Cien años de soledad ganó 0 contiendas.
+El candidato El cuaderno dorado ganó 7 contiendas.
+El candidato Actos humanos ganó 6 contiendas.
+El candidato Del amor y otros demonios ganó 1 contiendas.
+El candidato Las uvas de la ira ganó 4 contiendas.
+El candidato La colmena ganó 3 contiendas.
+El candidato Klara y el sol ganó 6 contiendas.
+El candidato El extranjero ganó 2 contiendas.
+El candidato Ensayo sobre la ceguera ganó 7 contiendas.
+El ganador de Condorcet es: None
+
+
+fecha: 2024-12-20 13:08:22
+El cuaderno dorado le gana a Cien años de soledad
+Actos humanos le gana a Cien años de soledad
+Del amor y otros demonios le gana a Cien años de soledad
+Las uvas de la ira le gana a Cien años de soledad
+La colmena le gana a Cien años de soledad
+Klara y el sol le gana a Cien años de soledad
+El extranjero le gana a Cien años de soledad
+Ensayo sobre la ceguera le gana a Cien años de soledad
 El cuaderno dorado le gana a Actos humanos
 El cuaderno dorado le gana a Del amor y otros demonios
 El cuaderno dorado le gana a La colmena
-El cuaderno dorado le gana a Ensayo sobre la ceguera
 El cuaderno dorado le gana a Klara y el sol
-El extranjero le gana a Las uvas de la ira
-Cien a�os de soledad le gana a El extranjero
-El extranjero le gana a Actos humanos
-El extranjero le gana a Del amor y otros demonios
-El extranjero le gana a La colmena
-El extranjero le gana a Ensayo sobre la ceguera
-El extranjero le gana a Klara y el sol
-Cien a�os de soledad le gana a Las uvas de la ira
-Actos humanos le gana a Las uvas de la ira
-Las uvas de la ira le gana a Del amor y otros demonios
-Las uvas de la ira le gana a La colmena
-Las uvas de la ira le gana a Ensayo sobre la ceguera
-Klara y el sol le gana a Las uvas de la ira
-Cien a�os de soledad le gana a Actos humanos
-Cien a�os de soledad le gana a Del amor y otros demonios
-Cien a�os de soledad le gana a La colmena
-Cien a�os de soledad le gana a Ensayo sobre la ceguera
-Cien a�os de soledad le gana a Klara y el sol
-Actos humanos le gana a Del amor y otros demonios
-Actos humanos le gana a La colmena
-Actos humanos le gana a Ensayo sobre la ceguera
-Actos humanos le gana a Klara y el sol
-Del amor y otros demonios le gana a La colmena
-Del amor y otros demonios le gana a Ensayo sobre la ceguera
-Klara y el sol le gana a Del amor y otros demonios
-La colmena le gana a Ensayo sobre la ceguera
-Klara y el sol le gana a La colmena
-Klara y el sol le gana a Ensayo sobre la ceguera
-El candidato El cuaderno dorado gan� 7 contiendas.
-El candidato El extranjero gan� 6 contiendas.
-El candidato Las uvas de la ira gan� 3 contiendas.
-El candidato Cien a�os de soledad gan� 8 contiendas.
-El candidato Actos humanos gan� 5 contiendas.
-El candidato Del amor y otros demonios gan� 2 contiendas.
-El candidato La colmena gan� 1 contiendas.
-El candidato Ensayo sobre la ceguera gan� 0 contiendas.
-El candidato Klara y el sol gan� 4 contiendas.
-El ganador de Condorcet es: Cien a�os de soledad
-
-
-fecha: 2024-12-19 20:35:15
 El cuaderno dorado le gana a El extranjero
-El cuaderno dorado le gana a Las uvas de la ira
-Cien a�os de soledad le gana a El cuaderno dorado
+Ensayo sobre la ceguera le gana a El cuaderno dorado
+Actos humanos le gana a Del amor y otros demonios
+Actos humanos le gana a Las uvas de la ira
+Actos humanos le gana a La colmena
+Actos humanos le gana a Klara y el sol
+Actos humanos le gana a El extranjero
+Ensayo sobre la ceguera le gana a Actos humanos
+Las uvas de la ira le gana a Del amor y otros demonios
+Del amor y otros demonios le gana a La colmena
+Klara y el sol le gana a Del amor y otros demonios
+Ensayo sobre la ceguera le gana a Del amor y otros demonios
+Las uvas de la ira le gana a La colmena
+Las uvas de la ira le gana a Klara y el sol
+Las uvas de la ira le gana a El extranjero
+Ensayo sobre la ceguera le gana a Las uvas de la ira
+La colmena le gana a El extranjero
+Ensayo sobre la ceguera le gana a La colmena
+Klara y el sol le gana a El extranjero
+Ensayo sobre la ceguera le gana a El extranjero
+El candidato Cien años de soledad ganó 0 contiendas.
+El candidato El cuaderno dorado ganó 6 contiendas.
+El candidato Actos humanos ganó 6 contiendas.
+El candidato Del amor y otros demonios ganó 2 contiendas.
+El candidato Las uvas de la ira ganó 5 contiendas.
+El candidato La colmena ganó 2 contiendas.
+El candidato Klara y el sol ganó 3 contiendas.
+El candidato El extranjero ganó 1 contiendas.
+El candidato Ensayo sobre la ceguera ganó 7 contiendas.
+El ganador de Condorcet es: None
+
+
+fecha: 2024-12-20 13:08:22
+El cuaderno dorado le gana a Cien años de soledad
+Actos humanos le gana a Cien años de soledad
+Del amor y otros demonios le gana a Cien años de soledad
+Las uvas de la ira le gana a Cien años de soledad
+La colmena le gana a Cien años de soledad
+Klara y el sol le gana a Cien años de soledad
+El extranjero le gana a Cien años de soledad
+Ensayo sobre la ceguera le gana a Cien años de soledad
 El cuaderno dorado le gana a Actos humanos
 El cuaderno dorado le gana a Del amor y otros demonios
+El cuaderno dorado le gana a Las uvas de la ira
 El cuaderno dorado le gana a La colmena
-El cuaderno dorado le gana a Ensayo sobre la ceguera
 El cuaderno dorado le gana a Klara y el sol
-El extranjero le gana a Las uvas de la ira
-Cien a�os de soledad le gana a El extranjero
-El extranjero le gana a Actos humanos
-El extranjero le gana a Del amor y otros demonios
-El extranjero le gana a La colmena
-El extranjero le gana a Ensayo sobre la ceguera
-El extranjero le gana a Klara y el sol
-Cien a�os de soledad le gana a Las uvas de la ira
-Actos humanos le gana a Las uvas de la ira
-Las uvas de la ira le gana a Del amor y otros demonios
-Las uvas de la ira le gana a La colmena
-Las uvas de la ira le gana a Ensayo sobre la ceguera
-Klara y el sol le gana a Las uvas de la ira
-Cien a�os de soledad le gana a Actos humanos
-Cien a�os de soledad le gana a Del amor y otros demonios
-Cien a�os de soledad le gana a La colmena
-Cien a�os de soledad le gana a Ensayo sobre la ceguera
-Cien a�os de soledad le gana a Klara y el sol
+El cuaderno dorado le gana a El extranjero
+Ensayo sobre la ceguera le gana a El cuaderno dorado
 Actos humanos le gana a Del amor y otros demonios
+Actos humanos le gana a Las uvas de la ira
 Actos humanos le gana a La colmena
-Actos humanos le gana a Ensayo sobre la ceguera
 Actos humanos le gana a Klara y el sol
-Del amor y otros demonios le gana a La colmena
-Del amor y otros demonios le gana a Ensayo sobre la ceguera
+Actos humanos le gana a El extranjero
+Ensayo sobre la ceguera le gana a Actos humanos
+Las uvas de la ira le gana a Del amor y otros demonios
+La colmena le gana a Del amor y otros demonios
 Klara y el sol le gana a Del amor y otros demonios
-La colmena le gana a Ensayo sobre la ceguera
+El extranjero le gana a Del amor y otros demonios
+Ensayo sobre la ceguera le gana a Del amor y otros demonios
+Las uvas de la ira le gana a La colmena
+Las uvas de la ira le gana a Klara y el sol
+Las uvas de la ira le gana a El extranjero
+Ensayo sobre la ceguera le gana a Las uvas de la ira
 Klara y el sol le gana a La colmena
+La colmena le gana a El extranjero
+Ensayo sobre la ceguera le gana a La colmena
+Klara y el sol le gana a El extranjero
 Klara y el sol le gana a Ensayo sobre la ceguera
-El candidato El cuaderno dorado gan� 7 contiendas.
-El candidato El extranjero gan� 6 contiendas.
-El candidato Las uvas de la ira gan� 3 contiendas.
-El candidato Cien a�os de soledad gan� 8 contiendas.
-El candidato Actos humanos gan� 5 contiendas.
-El candidato Del amor y otros demonios gan� 2 contiendas.
-El candidato La colmena gan� 1 contiendas.
-El candidato Ensayo sobre la ceguera gan� 0 contiendas.
-El candidato Klara y el sol gan� 4 contiendas.
-El ganador de Condorcet es: Cien a�os de soledad
+Ensayo sobre la ceguera le gana a El extranjero
+El candidato Cien años de soledad ganó 0 contiendas.
+El candidato El cuaderno dorado ganó 7 contiendas.
+El candidato Actos humanos ganó 6 contiendas.
+El candidato Del amor y otros demonios ganó 1 contiendas.
+El candidato Las uvas de la ira ganó 5 contiendas.
+El candidato La colmena ganó 3 contiendas.
+El candidato Klara y el sol ganó 5 contiendas.
+El candidato El extranjero ganó 2 contiendas.
+El candidato Ensayo sobre la ceguera ganó 7 contiendas.
+El ganador de Condorcet es: None
+
+
+fecha: 2024-12-20 21:21:33
+El cuaderno dorado le gana a Cien años de soledad
+Actos humanos le gana a Cien años de soledad
+Del amor y otros demonios le gana a Cien años de soledad
+Las uvas de la ira le gana a Cien años de soledad
+La colmena le gana a Cien años de soledad
+Klara y el sol le gana a Cien años de soledad
+El extranjero le gana a Cien años de soledad
+Ensayo sobre la ceguera le gana a Cien años de soledad
+El cuaderno dorado le gana a Actos humanos
+El cuaderno dorado le gana a Del amor y otros demonios
+El cuaderno dorado le gana a Las uvas de la ira
+El cuaderno dorado le gana a La colmena
+El cuaderno dorado le gana a Klara y el sol
+El cuaderno dorado le gana a El extranjero
+Ensayo sobre la ceguera le gana a El cuaderno dorado
+Actos humanos le gana a Del amor y otros demonios
+Actos humanos le gana a Las uvas de la ira
+Actos humanos le gana a La colmena
+Actos humanos le gana a El extranjero
+Ensayo sobre la ceguera le gana a Actos humanos
+Las uvas de la ira le gana a Del amor y otros demonios
+La colmena le gana a Del amor y otros demonios
+Klara y el sol le gana a Del amor y otros demonios
+El extranjero le gana a Del amor y otros demonios
+Ensayo sobre la ceguera le gana a Del amor y otros demonios
+Las uvas de la ira le gana a La colmena
+Las uvas de la ira le gana a El extranjero
+Ensayo sobre la ceguera le gana a Las uvas de la ira
+Klara y el sol le gana a La colmena
+La colmena le gana a El extranjero
+Ensayo sobre la ceguera le gana a La colmena
+Klara y el sol le gana a El extranjero
+Ensayo sobre la ceguera le gana a El extranjero
+El candidato Cien años de soledad ganó 0 contiendas.
+El candidato El cuaderno dorado ganó 7 contiendas.
+El candidato Actos humanos ganó 5 contiendas.
+El candidato Del amor y otros demonios ganó 1 contiendas.
+El candidato Las uvas de la ira ganó 4 contiendas.
+El candidato La colmena ganó 3 contiendas.
+El candidato Klara y el sol ganó 4 contiendas.
+El candidato El extranjero ganó 2 contiendas.
+El candidato Ensayo sobre la ceguera ganó 7 contiendas.
+El ganador de Condorcet es: None
+
+
+fecha: 2024-12-20 21:21:38
+El cuaderno dorado le gana a Cien años de soledad
+Actos humanos le gana a Cien años de soledad
+Del amor y otros demonios le gana a Cien años de soledad
+Las uvas de la ira le gana a Cien años de soledad
+La colmena le gana a Cien años de soledad
+Klara y el sol le gana a Cien años de soledad
+El extranjero le gana a Cien años de soledad
+Ensayo sobre la ceguera le gana a Cien años de soledad
+El cuaderno dorado le gana a Actos humanos
+El cuaderno dorado le gana a Del amor y otros demonios
+El cuaderno dorado le gana a Las uvas de la ira
+El cuaderno dorado le gana a La colmena
+El cuaderno dorado le gana a Klara y el sol
+El cuaderno dorado le gana a El extranjero
+Ensayo sobre la ceguera le gana a El cuaderno dorado
+Actos humanos le gana a Del amor y otros demonios
+Actos humanos le gana a Las uvas de la ira
+Actos humanos le gana a La colmena
+Klara y el sol le gana a Actos humanos
+Actos humanos le gana a El extranjero
+Ensayo sobre la ceguera le gana a Actos humanos
+Las uvas de la ira le gana a Del amor y otros demonios
+La colmena le gana a Del amor y otros demonios
+Klara y el sol le gana a Del amor y otros demonios
+El extranjero le gana a Del amor y otros demonios
+Ensayo sobre la ceguera le gana a Del amor y otros demonios
+Las uvas de la ira le gana a La colmena
+Klara y el sol le gana a Las uvas de la ira
+Las uvas de la ira le gana a El extranjero
+Ensayo sobre la ceguera le gana a Las uvas de la ira
+Klara y el sol le gana a La colmena
+La colmena le gana a El extranjero
+Ensayo sobre la ceguera le gana a La colmena
+Klara y el sol le gana a El extranjero
+Ensayo sobre la ceguera le gana a Klara y el sol
+Ensayo sobre la ceguera le gana a El extranjero
+El candidato Cien años de soledad ganó 0 contiendas.
+El candidato El cuaderno dorado ganó 7 contiendas.
+El candidato Actos humanos ganó 5 contiendas.
+El candidato Del amor y otros demonios ganó 1 contiendas.
+El candidato Las uvas de la ira ganó 4 contiendas.
+El candidato La colmena ganó 3 contiendas.
+El candidato Klara y el sol ganó 6 contiendas.
+El candidato El extranjero ganó 2 contiendas.
+El candidato Ensayo sobre la ceguera ganó 8 contiendas.
+El ganador de Condorcet es: Ensayo sobre la ceguera
 
 

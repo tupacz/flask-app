@@ -57,7 +57,8 @@ def condorcet_winner(ballots):
             respuesta += f"El ganador de Condorcet es: {candidates[i]}\n"
             return respuesta
 
-    return None
+    respuesta += f"El ganador de Condorcet es: None\n"
+    return respuesta
 
 
 # Ejemplo de uso:

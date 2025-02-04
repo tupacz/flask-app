@@ -1,46 +1,46 @@
-El cuaderno dorado le gana a El extranjero
-El cuaderno dorado le gana a Las uvas de la ira
-Cien años de soledad le gana a El cuaderno dorado
+El cuaderno dorado le gana a Cien aÃ±os de soledad
+Actos humanos le gana a Cien aÃ±os de soledad
+Del amor y otros demonios le gana a Cien aÃ±os de soledad
+Las uvas de la ira le gana a Cien aÃ±os de soledad
+La colmena le gana a Cien aÃ±os de soledad
+Klara y el sol le gana a Cien aÃ±os de soledad
+El extranjero le gana a Cien aÃ±os de soledad
+Ensayo sobre la ceguera le gana a Cien aÃ±os de soledad
 El cuaderno dorado le gana a Actos humanos
 El cuaderno dorado le gana a Del amor y otros demonios
+El cuaderno dorado le gana a Las uvas de la ira
 El cuaderno dorado le gana a La colmena
-El cuaderno dorado le gana a Ensayo sobre la ceguera
 El cuaderno dorado le gana a Klara y el sol
-El extranjero le gana a Las uvas de la ira
-Cien años de soledad le gana a El extranjero
-El extranjero le gana a Actos humanos
-El extranjero le gana a Del amor y otros demonios
-El extranjero le gana a La colmena
-El extranjero le gana a Ensayo sobre la ceguera
-El extranjero le gana a Klara y el sol
-Cien años de soledad le gana a Las uvas de la ira
-Actos humanos le gana a Las uvas de la ira
-Las uvas de la ira le gana a Del amor y otros demonios
-Las uvas de la ira le gana a La colmena
-Las uvas de la ira le gana a Ensayo sobre la ceguera
-Klara y el sol le gana a Las uvas de la ira
-Cien años de soledad le gana a Actos humanos
-Cien años de soledad le gana a Del amor y otros demonios
-Cien años de soledad le gana a La colmena
-Cien años de soledad le gana a Ensayo sobre la ceguera
-Cien años de soledad le gana a Klara y el sol
+El cuaderno dorado le gana a El extranjero
+Ensayo sobre la ceguera le gana a El cuaderno dorado
 Actos humanos le gana a Del amor y otros demonios
+Actos humanos le gana a Las uvas de la ira
 Actos humanos le gana a La colmena
-Actos humanos le gana a Ensayo sobre la ceguera
-Actos humanos le gana a Klara y el sol
-Del amor y otros demonios le gana a La colmena
-Del amor y otros demonios le gana a Ensayo sobre la ceguera
+Klara y el sol le gana a Actos humanos
+Actos humanos le gana a El extranjero
+Ensayo sobre la ceguera le gana a Actos humanos
+Las uvas de la ira le gana a Del amor y otros demonios
+La colmena le gana a Del amor y otros demonios
 Klara y el sol le gana a Del amor y otros demonios
-La colmena le gana a Ensayo sobre la ceguera
+El extranjero le gana a Del amor y otros demonios
+Ensayo sobre la ceguera le gana a Del amor y otros demonios
+Las uvas de la ira le gana a La colmena
+Klara y el sol le gana a Las uvas de la ira
+Las uvas de la ira le gana a El extranjero
+Ensayo sobre la ceguera le gana a Las uvas de la ira
 Klara y el sol le gana a La colmena
-Klara y el sol le gana a Ensayo sobre la ceguera
-El candidato El cuaderno dorado ganó 7 contiendas.
-El candidato El extranjero ganó 6 contiendas.
-El candidato Las uvas de la ira ganó 3 contiendas.
-El candidato Cien años de soledad ganó 8 contiendas.
-El candidato Actos humanos ganó 5 contiendas.
-El candidato Del amor y otros demonios ganó 2 contiendas.
-El candidato La colmena ganó 1 contiendas.
-El candidato Ensayo sobre la ceguera ganó 0 contiendas.
-El candidato Klara y el sol ganó 4 contiendas.
-El ganador de Condorcet es: Cien años de soledad
+La colmena le gana a El extranjero
+Ensayo sobre la ceguera le gana a La colmena
+Klara y el sol le gana a El extranjero
+Ensayo sobre la ceguera le gana a Klara y el sol
+Ensayo sobre la ceguera le gana a El extranjero
+El candidato Cien aÃ±os de soledad ganÃ³ 0 contiendas.
+El candidato El cuaderno dorado ganÃ³ 7 contiendas.
+El candidato Actos humanos ganÃ³ 5 contiendas.
+El candidato Del amor y otros demonios ganÃ³ 1 contiendas.
+El candidato Las uvas de la ira ganÃ³ 4 contiendas.
+El candidato La colmena ganÃ³ 3 contiendas.
+El candidato Klara y el sol ganÃ³ 6 contiendas.
+El candidato El extranjero ganÃ³ 2 contiendas.
+El candidato Ensayo sobre la ceguera ganÃ³ 8 contiendas.
+El ganador de Condorcet es: Ensayo sobre la ceguera
