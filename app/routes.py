@@ -60,7 +60,16 @@ def submit():
 
     if name != 'kek':
         try:
-            with open(file_path_data, 'a', encoding='utf-8') as file:
+            with open(file_path_data, 'a+', encoding='utf-8') as file:
+                file.seek(0)  # Move the cursor to the beginning of the file
+                file_contents = file.read()
+                
+                search_string = name
+                if search_string in file_contents:
+                    raise Exception(f"{search_string} ya votó.")
+                else:
+                    print(f"'{search_string}' not found in file.")
+
                 file.write(f"Nombre: {name}; Lista: {ordered_list}; fecha: {fechahora}\n")
         except Exception as e:
             return (jsonify({'message': f'Error al guardar los datos: {str(e)}'}), 500)
@@ -85,7 +94,7 @@ def submit_books():
         description = book['description']
         books2.append(Book.Book(title, author, description))
 
-    books_dao = Book.BooksDAO()
+    books_dao = Book.BooksDAO(file_path_books)
     books_dao.save_books(books=books2)
     
     return jsonify({'message': 'Datos guardados correctamente'}), 200
