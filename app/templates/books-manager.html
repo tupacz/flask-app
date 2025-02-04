@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Libros</title>
+    <style>
+        body {
+            font-family: 'Segoe UI Emoji', sans-serif;
+            padding-left: 1em;
+            padding-right: 2em;
+        }
+        .book-block {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+        }
+        .book-block input {
+            display: block;
+            margin-bottom: 10px;
+            width: 90%;
+            padding: 5px;
+        }
+        .book-block textarea {
+            display: block;
+            margin-bottom: 10px;
+            width: 90%;
+            padding: 5px;
+        }
+        .book-block button {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .book-block button:hover {
+            background-color: #ff1a1a;
+        }
+        #add-book-button, #submit-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        #add-book-button:hover, #submit-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Agregar Libros</h1>
+    <div id="book-container">
+        {% for book in books %}
+        <div class="book-block">
+            <input type="text" name="title" placeholder="Nombre del libro" value="{{ book.title }}" required>
+            <input type="text" name="author" placeholder="Autor" value="{{ book.author }}" required>
+            <textarea name="description" placeholder="Descripción" required>{{ book.description }}</textarea>
+            <button class="delete-button">Borrar</button>
+        </div>
+        {% endfor %}
+        {% if books|length == 0 %}
+        <div class="book-block">
+            <input type="text" name="title" placeholder="Nombre del libro" required>
+            <input type="text" name="author" placeholder="Autor" required>
+            <textarea name="description" placeholder="Descripción" required>{{ book.description }}</textarea>
+            <button class="delete-button">Borrar</button>
+        </div>
+        {% endif %}
+    </div>
+    <button id="add-book-button">Agregar nuevo libro</button>
+    <button id="submit-button">Submit</button>
+
+    <script>
+        document.getElementById('add-book-button').addEventListener('click', () => {
+            const bookContainer = document.getElementById('book-container');
+            const newBookBlock = document.createElement('div');
+            newBookBlock.className = 'book-block';
+            newBookBlock.innerHTML = `
+                <input type="text" name="title" placeholder="Nombre del libro" required>
+                <input type="text" name="author" placeholder="Autor" required>
+                <textarea name="description" placeholder="Descripción" required></textarea>
+                <button class="delete-button">Borrar</button>
+            `;
+            bookContainer.appendChild(newBookBlock);
+        });
+
+        document.getElementById('book-container').addEventListener('click', (event) => {
+            if (event.target.classList.contains('delete-button')) {
+                event.target.parentElement.remove();
+            }
+        });
+
+        document.getElementById('submit-button').addEventListener('click', () => {
+            const bookBlocks = document.querySelectorAll('.book-block');
+            const books = Array.from(bookBlocks).map(block => {
+                return {
+                    title: block.querySelector('input[name="title"]').value,
+                    author: block.querySelector('input[name="author"]').value,
+                    description: block.querySelector('textarea[name="description"]').value
+                };
+            });
+
+            fetch('/submit-book', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(books)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+
+            console.log('Books:', books);
+        });
+    </script>
+</body>
+</html>

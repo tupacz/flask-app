@@ -1,21 +1,29 @@
 from flask import Blueprint, render_template, request, jsonify
 from datetime import datetime
 
-from app import Book
 try:
     from app import voting_condorcet
+    from app import Book
 except ImportError:
     import voting_condorcet
+    import Book
 
 # Crear un Blueprint
 main = Blueprint('main', __name__)
 
+books = [ Book.Book("Cien años de soledad", "Gabriel García Márquez", "La obra cumbre del realismo mágico que consolidó a García Márquez como una figura central de la literatura mundial.")
+    ]
+
 # Ruta para la página principal
 @main.route('/')
 def index():
-    books = [ Book("Cien años de soledad", "Gabriel García Márquez", "La obra cumbre del realismo mágico que consolidó a García Márquez como una figura central de la literatura mundial.")
-    ]
-    return render_template('index.html')
+    books_dao = Book.BooksDAO()
+    return render_template('index.html', books=books_dao.load_books())
+
+@main.route('/books-manager')
+def books_manager():
+    books_dao = Book.BooksDAO()
+    return render_template('books-manager.html', books=books_dao.load_books())
 
 @main.route('/submit', methods=['POST'])
 def submit():
@@ -66,3 +74,26 @@ def submit():
         file.write(f"{fechahora}\n{winner}\n\n")
 
     return jsonify({'message': 'Datos guardados correctamente', 'winner': winner}), 200
+
+@main.route('/submit-book', methods=['POST'])
+def submit_books():
+    try:
+        data = request.get_json()
+        print('JSON recibido:', data)  # Imprime el JSON recibido
+    except Exception as e:
+        return jsonify({'message': f'Error al procesar JSON: {str(e)}'}), 400
+    
+    # Data es un array que contiene diccionarios con los datos del libro
+    books2 = []
+    for book in data:
+        if 'title' not in book or 'author' not in book or 'description' not in book:
+            return jsonify({'message': 'Datos inválidos'}), 400
+        title = book['title']
+        author = book['author']
+        description = book['description']
+        books2.append(Book.Book(title, author, description))
+
+    books_dao = Book.BooksDAO()
+    books_dao.save_books(books=books2)
+    
+    return jsonify({'message': 'Datos guardados correctamente'}), 200
