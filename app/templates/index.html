@@ -5,39 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ordenar y Enviar Lista</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <style>
-        body {
-            font-family: 'Segoe UI Emoji', sans-serif;
-            padding-left: 1em;
-            padding-right: 2em;
-        }
-        #sortable-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        #sortable-list li {
-            font-size: small;
-            padding: 10px;
-            margin: 5px 0;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            cursor: grab;
-        }
-
-        #sortable-list li b{
-            font-size: medium
-        }
-
-        #sortable-list li:hover {
-            background-color: #e0e0e0;
-        }
-
-        #form-container {
-            margin-bottom: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <h1>Ordená la lista y completá tu nombre</h1>

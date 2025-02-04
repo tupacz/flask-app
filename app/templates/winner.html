@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ganador de Condorcet</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        table {
+          border-collapse: collapse;
+          font-family: Arial, sans-serif;
+          font-size: 14px;
+        }
+        
+        th, td {
+          border: 1px solid #ccc;
+          padding: 8px;
+          text-align: center;
+          min-width: 40px;
+        }
+        
+        th {
+          background-color: #f0f0f0;
+          font-weight: bold;
+        }
+        
+        .title-cell {
+          text-align: left;
+          background-color: #f0f0f0;
+          font-weight: bold;
+        }
+        
+        .highlight-yellow {
+          background-color: #ffffcc;
+        }
+        
+        .highlight-pink {
+          background-color: #ffd9d9;
+        }
+        
+        .diagonal {
+          background-color: #f0f0f0;
+        }
+        
+        .container {
+          max-width: 100%;
+          overflow-x: auto;
+          padding: 20px;
+        }
+      </style>
+</head>
+<body>
+<div class="container">
+  <table>
+    <tr>
+      <th></th>
+      {% for candidate in winner.candidatos %}
+        <th>{{ candidate }}</th>
+      {% endfor %}
+    </tr>
+    
+    {% for row_candidate in winner.candidatos %}
+    <tr>
+      <td class="title-cell">{{ row_candidate }}</td>
+      {% for col_candidate in winner.candidatos %}
+        {% if row_candidate == col_candidate %}
+          <td class="diagonal">-</td>
+        {% else %}
+          {% set row_index = winner.candidatos.index(row_candidate) %}
+          {% set col_index = winner.candidatos.index(col_candidate) %}
+          {% set votes = winner.get_votes[row_index][col_index] %}
+          <td class="
+            {%- if votes < winner.half %}highlight-pink
+            {%- elif votes > winner.half %}highlight-yellow
+            {%- endif -%}">
+            {{ votes }}
+          </td>
+        {% endif %}
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h2>Ganador de Condorcet: {{ winner.ganador_condorcet }}</h2>
+  <p>{{ winner.respuesta_escrita }}</p>
+</div>
+</body>
+</html>

@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, request, jsonify
 from datetime import datetime
 
+from app.voting_condorcet import get_condorcet_winner
+
 try:
     from app import voting_condorcet
     from app import Book
@@ -25,6 +27,12 @@ def books_manager():
     books_dao = Book.BooksDAO()
     return render_template('books-manager.html', books=books_dao.load_books())
 
+@main.route('/winner')
+def winner():
+    winner = get_condorcet_winner()
+    return render_template('winner.html', winner=winner)
+    
+
 @main.route('/submit', methods=['POST'])
 def submit():
     try:
@@ -42,14 +50,16 @@ def submit():
 
     if name != 'kek':
         try:
-            with open('app/data/data.txt', 'a') as file:
+            with open('app/data/data.txt', 'a', encoding='utf-8') as file:
                 file.write(f"Nombre: {name}; Lista: {ordered_list}; fecha: {fechahora}\n")
         except Exception as e:
             return (jsonify({'message': f'Error al guardar los datos: {str(e)}'}), 500)
+        
+    return jsonify({'message': 'Datos guardados correctamente'}), 200
 
     # Armo un array de arrays llamados Lista de data.txt
     #Obtengo un array de arrays del archivo data.txt
-    with open('app/data/data.txt', 'r') as file:
+""" with open('app/data/data.txt', 'r') as file:
         data = []
         for line in file:
             if line.strip():
@@ -73,7 +83,7 @@ def submit():
     with open('app/data/winnerHistorico.txt', 'a') as file:
         file.write(f"{fechahora}\n{winner}\n\n")
 
-    return jsonify({'message': 'Datos guardados correctamente', 'winner': winner}), 200
+    return jsonify({'message': 'Datos guardados correctamente', 'winner': winner}), 200 """
 
 @main.route('/submit-book', methods=['POST'])
 def submit_books():

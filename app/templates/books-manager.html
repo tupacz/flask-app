@@ -4,52 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agregar Libros</title>
-    <style>
-        body {
-            font-family: 'Segoe UI Emoji', sans-serif;
-            padding-left: 1em;
-            padding-right: 2em;
-        }
-        .book-block {
-            margin-bottom: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            background-color: #f0f0f0;
-        }
-        .book-block input {
-            display: block;
-            margin-bottom: 10px;
-            width: 90%;
-            padding: 5px;
-        }
-        .book-block textarea {
-            display: block;
-            margin-bottom: 10px;
-            width: 90%;
-            padding: 5px;
-        }
-        .book-block button {
-            background-color: #ff4d4d;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-        .book-block button:hover {
-            background-color: #ff1a1a;
-        }
-        #add-book-button, #submit-button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        #add-book-button:hover, #submit-button:hover {
-            background-color: #45a049;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <h1>Agregar Libros</h1>
