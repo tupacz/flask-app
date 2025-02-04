@@ -2,3 +2,4 @@
 __pycache__/
 app/__pycache__/
 *.pyc
+app/__pycache__/routes.cpython-310.pyc
