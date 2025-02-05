@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ganador de Condorcet</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var password = prompt("Por favor, ingrese la contraseña:");
+            if (password !== "{{ password }}") {
+                alert("Contraseña incorrecta");
+                window.location.href = "/";
+            }
+        });
+    </script>
+</head>
+<body>
+    <p>{{ data }}</p>
+    <p>
+        <textarea name="description" placeholder="Descripción" style="width: 80%;" required>{{ data }}</textarea>
+    </p>
+    <p>
+        <button id="submit-button">Cambiar</button>
+    </p>
+    
+
+    <script>
+        document.getElementById('submit-button').addEventListener('click', () => {
+            const data = document.querySelector('textarea[name="description"]').value;
+
+            fetch('/submit-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>

@@ -41,7 +41,24 @@ def winner():
 
 @main.route('/votes')
 def votes():
-    return render_template('votes.html')
+    # obtengo todo un string de data.txt
+    with open(file_path_data, 'r', encoding='utf-8') as file:
+        data = file.read()
+    return render_template('votes.html', data=data, password='1234')
+
+
+@main.route('/submit-data', methods=['POST'])
+def cambiar_data():
+    try:
+        data = request.get_json()
+        print('JSON recibido:', data)  # Imprime el JSON recibido
+    except Exception as e:
+        return jsonify({'message': f'Error al procesar JSON: {str(e)}'}), 400
+    
+    with open(file_path_data, 'w', encoding='utf-8') as file:
+        file.write(data)
+
+    return jsonify({'message': 'Datos guardados correctamente'}), 200
 
 @main.route('/submit', methods=['POST'])
 def submit():
