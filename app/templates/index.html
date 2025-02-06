@@ -38,9 +38,10 @@
             }
 
             const listItems = document.querySelectorAll('#sortable-list li');
-            const orderedList = Array.from(listItems).map((item, index) => `${index + 1} - ${item.dataset.value}`);
+            const orderedList = Array.from(listItems).map(item => item.dataset.value);
+            const orderedListToDisplay = Array.from(listItems).map((item, index) => `${index + 1} - ${item.dataset.value}`);
 
-            const confirmationMessage = `Resumen de tu selección:\n\n${orderedList.join('\n')}\n\n¿Aceptas?`;
+            const confirmationMessage = `Resumen de tu selección:\n\n${orderedListToDisplay.join('\n')}\n\n¿Aceptas?`;
             const userConfirmed = confirm(confirmationMessage);
 
             if (!userConfirmed) {
