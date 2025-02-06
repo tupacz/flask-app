@@ -1,4 +1,5 @@
 import os
+import random
 from flask import Blueprint, render_template, request, jsonify
 from datetime import datetime
 
@@ -26,8 +27,9 @@ file_path_books = os.path.join(base_dir, 'data', 'books.json')
 # Ruta para la página principal
 @main.route('/')
 def index():
-    books_dao = Book.BooksDAO(file_path_books)
-    return render_template('index.html', books=books_dao.load_books())
+    books_to_send = Book.BooksDAO(file_path_books).load_books()
+    random.shuffle(books_to_send)
+    return render_template('index.html', books=books_to_send)
 
 @main.route('/books-manager')
 def books_manager():
