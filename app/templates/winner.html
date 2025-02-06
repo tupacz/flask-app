@@ -82,7 +82,8 @@
   </table>
 
   <h2>Ganador de Condorcet: {{ winner.ganador_condorcet }}</h2>
-  <p>{{ winner.respuesta_escrita }}</p>
+  <h3>Lógica:</h3>
+  <p>{{ winner.respuesta_escrita | replace('\n', '<br>') | safe }}</p>
 </div>
 </body>
 </html>
