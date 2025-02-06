@@ -67,12 +67,12 @@ def condorcet_winner(ballots):
                     break
         if wins_all:
             respuesta += f"El ganador de Condorcet es: {candidates[i]}\n"
+            resultado["respuesta_escrita"] = respuesta
             resultado["ganador_condorcet"] = candidates[i]
+            return resultado
             
-
-    respuesta += f"El ganador de Condorcet es: None\n"
-    
     # desempate por quién gana más contiendas y quién gana por más votos
+    respuesta += f"No hay ganador Condorcet definitivo. El desempate se realiza por el que gane más contiendas.\n"
     max_wins = max(wins_count)
     max_wins_indices = [i for i, wins in enumerate(wins_count) if wins == max_wins]
     
@@ -81,14 +81,14 @@ def condorcet_winner(ballots):
         if max_wins > half:
             respuesta += f"El ganador de Condorcet es: {candidates[max_wins_index]}\n"
             resultado["ganador_condorcet"] = candidates[max_wins_index]
-            return respuesta
     else:
         # Manejar el caso de empate
-        respuesta += "Hay un empate entre los siguientes candidatos:\n"
+        respuesta += "Estos candidatos ganaron la misma cantidad de contiendas:\n"
         for index in max_wins_indices:
             respuesta += f"{candidates[index]}\n"
         
         # Se realiza entonces desempate por cantidad de votos entre los candidatos que empataron, eso se puede hacer con preference_counts
+        respuesta += "Se realiza desempate por cantidad de votos entre los candidatos que empataron.\n"
         max_votes = -1
         condorcet_winner = None
         for i in max_wins_indices:
@@ -101,7 +101,7 @@ def condorcet_winner(ballots):
             respuesta += f"El ganador de Condorcet por desempate es: {condorcet_winner}\n"
             resultado["ganador_condorcet"] = condorcet_winner
         else:
-            respuesta += "No se pudo determinar un ganador de Condorcet por desempate.\n"
+            respuesta += "No se pudo determinar un ganador de Condorcet por desempate. Recomiendo tirar un dado o un ballotage.\n"
             resultado["ganador_condorcet"] = None
     
     resultado["respuesta_escrita"] = respuesta
