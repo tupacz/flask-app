@@ -28,6 +28,7 @@
     </div>
     <button id="add-book-button">Agregar nuevo libro</button>
     <button id="submit-button">Submit</button>
+    <label id="guardando" style="visibility:hidden">Guardando...</label>
 
     <script>
         document.getElementById('add-book-button').addEventListener('click', () => {
@@ -50,6 +51,7 @@
         });
 
         document.getElementById('submit-button').addEventListener('click', () => {
+            esperandoAlGuardar();
             const bookBlocks = document.querySelectorAll('.book-block');
             const books = Array.from(bookBlocks).map(block => {
                 return {
@@ -69,13 +71,36 @@
             .then(response => response.json())
             .then(data => {
                 console.log('Success:', data);
+                exitoAlGuardar();
             })
             .catch((error) => {
                 console.error('Error:', error);
+                errorAlGuardar();
             });
 
             console.log('Books:', books);
         });
+
+        function esperandoAlGuardar() {
+            const labelGuardando = document.getElementById('guardando');
+            labelGuardando.style.visibility = 'visible';
+            labelGuardando.style.color = 'blue';
+            labelGuardando.innerText = 'Guardando...';
+        }
+
+        function exitoAlGuardar() {
+            const labelGuardando = document.getElementById('guardando');
+            labelGuardando.style.visibility = 'visible';
+            labelGuardando.style.color = 'green';
+            labelGuardando.innerText = 'Guardado!';
+        }
+
+        function errorAlGuardar() {
+            const labelGuardando = document.getElementById('guardando');
+            labelGuardando.style.visibility = 'visible';
+            labelGuardando.style.color = 'red';
+            labelGuardando.innerText = 'Error!';
+        }
     </script>
 </body>
 </html>
