@@ -133,7 +133,7 @@ def get_condorcet_winner(ruta_archivo: str):
                 name, ordered_list, fechahora = line.strip().split('; ')
                 #Obtengo dentro de ordered list los valores que están entre ''
                 ordered_list = ordered_list.split(': ')[1]
-                ordered_list = ordered_list[1:-1].split("', '")
+                ordered_list = ast.literal_eval(ordered_list)
                 # Dentro de cada item en ordered_list, elimino las comillas simples y dobles
                 for i in range(len(ordered_list)):
                     ordered_list[i] = ordered_list[i].replace("'", "")
