@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Votación de Libros{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <h1 class="navbar-title">📚 Votación de Libros</h1>
+            <div class="navbar-nav">
+                <a href="{{ url_for('main.index') }}" class="nav-button {% if request.endpoint == 'main.index' %}active{% endif %}">
+                    🗳️ Votar
+                </a>
+                <a href="{{ url_for('main.winner') }}" class="nav-button {% if request.endpoint == 'main.winner' %}active{% endif %}">
+                    🏆 Ganador
+                </a>
+                <a href="#" onclick="accessVotes()" class="nav-button protected {% if request.endpoint == 'main.votes' %}active{% endif %}">
+                    📊 Ver Votos
+                </a>
+                <a href="{{ url_for('main.books_manager') }}" class="nav-button {% if request.endpoint == 'main.books_manager' %}active{% endif %}">
+                    📚 Gestionar Libros
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <script>
+        function accessVotes() {
+            const password = prompt("Por favor, ingrese la contraseña para ver los votos:");
+            if (password === "1234") {
+                window.location.href = "{{ url_for('main.votes') }}";
+            } else if (password !== null) {
+                alert("Contraseña incorrecta");
+            }
+        }
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

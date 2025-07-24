@@ -1,55 +1,54 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ganador de Condorcet</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <style>
-        table {
-          border-collapse: collapse;
-          font-family: Arial, sans-serif;
-          font-size: 14px;
-        }
-        
-        th, td {
-          border: 1px solid #ccc;
-          padding: 8px;
-          text-align: center;
-          min-width: 40px;
-        }
-        
-        th {
-          background-color: #f0f0f0;
-          font-weight: bold;
-        }
-        
-        .title-cell {
-          text-align: left;
-          background-color: #f0f0f0;
-          font-weight: bold;
-        }
-        
-        .highlight-yellow {
-          background-color: #ffffcc;
-        }
-        
-        .highlight-pink {
-          background-color: #ffd9d9;
-        }
-        
-        .diagonal {
-          background-color: #f0f0f0;
-        }
-        
-        .container {
-          max-width: 100%;
-          overflow-x: auto;
-          padding: 20px;
-        }
-      </style>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Ganador - Sistema de Votación de Libros{% endblock %}
+
+{% block extra_css %}
+<style>
+    table {
+      border-collapse: collapse;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+    }
+    
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+      min-width: 40px;
+    }
+    
+    th {
+      background-color: #f0f0f0;
+      font-weight: bold;
+    }
+    
+    .title-cell {
+      text-align: left;
+      background-color: #f0f0f0;
+      font-weight: bold;
+    }
+    
+    .highlight-yellow {
+      background-color: #ffffcc;
+    }
+    
+    .highlight-pink {
+      background-color: #ffd9d9;
+    }
+    
+    .diagonal {
+      background-color: #f0f0f0;
+    }
+    
+    .container {
+      max-width: 100%;
+      overflow-x: auto;
+      padding: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
 <div class="container">
   <!-- Estadísticas de votación -->
   <div style="margin-bottom: 30px; padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
@@ -132,13 +131,5 @@
     <p>Los resultados aparecerán aquí una vez que se registren votos.</p>
   </div>
   {% endif %}
-  
-  <!-- Enlaces útiles -->
-  <div style="margin-top: 30px; text-align: center;">
-    <a href="/" style="margin: 0 10px; padding: 10px 20px; background-color: #2196f3; color: white; text-decoration: none; border-radius: 5px;">🗳️ Votar</a>
-    <a href="/votes" style="margin: 0 10px; padding: 10px 20px; background-color: #ff9800; color: white; text-decoration: none; border-radius: 5px;">📊 Ver Votos</a>
-    <a href="/votes-json" style="margin: 0 10px; padding: 10px 20px; background-color: #9c27b0; color: white; text-decoration: none; border-radius: 5px;">📄 JSON</a>
-  </div>
 </div>
-</body>
-</html>
+{% endblock %}

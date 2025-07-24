@@ -1,74 +1,79 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ordenar y Enviar Lista</title>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-    <h1>Ordená la lista y completá tu nombre</h1>
-    
-    <div id="form-container">
-        <label for="user-name">Nombre:</label>
-        <input type="text" id="user-name" name="user-name" placeholder="Escribí tu nombre" required>
-    </div>
+{% extends "base.html" %}
 
-    <ul id="sortable-list">
-        {% for book in books %}
-        <li data-value="{{ book.title }}"><b>"{{ book.title }}"</b> – {{ book.author }}<br><br>
-            {{ book.description }}</li>
-        {% endfor %}
-    </ul>
-    <br>
-    <button id="send-button">Enviar boleta 🗳️</button>
+{% block title %}Votar - Sistema de Votación de Libros{% endblock %}
 
-    <script>
-        const sortable = new Sortable(document.getElementById('sortable-list'), {
-            animation: 150,
-        });
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+{% endblock %}
 
-        document.getElementById('send-button').addEventListener('click', async () => {
-            const userName = document.getElementById('user-name').value;
+{% block content %}
+<h1>Ordená la lista y completá tu nombre</h1>
 
-            if (!userName.trim()) {
-                alert('Por favor, ingresá tu nombre.');
-                return;
+<div id="form-container">
+    <label for="user-name">Nombre:</label>
+    <input type="text" id="user-name" name="user-name" placeholder="Escribí tu nombre" required>
+</div>
+
+<ul id="sortable-list">
+    {% for book in books %}
+    <li data-value="{{ book.title }}"><b>"{{ book.title }}"</b> – {{ book.author }}<br><br>
+        {{ book.description }}</li>
+    {% endfor %}
+</ul>
+<br>
+<button id="send-button">Enviar boleta 🗳️</button>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const sortable = new Sortable(document.getElementById('sortable-list'), {
+        animation: 150,
+    });
+
+    document.getElementById('send-button').addEventListener('click', async () => {
+        const userName = document.getElementById('user-name').value;
+
+        if (!userName.trim()) {
+            alert('Por favor, ingresá tu nombre.');
+            return;
+        }
+
+        const listItems = document.querySelectorAll('#sortable-list li');
+        const orderedList = Array.from(listItems).map(item => item.dataset.value);
+        const orderedListToDisplay = Array.from(listItems).map((item, index) => `${index + 1} - ${item.dataset.value}`);
+
+        const confirmationMessage = `Resumen de tu selección:\n\n${orderedListToDisplay.join('\n')}\n\n¿Aceptas?`;
+        const userConfirmed = confirm(confirmationMessage);
+
+        if (!userConfirmed) {
+            return;
+        }
+
+        const dataToSend = {
+            name: userName,
+            orderedList: orderedList
+        };
+
+        try {
+            const response = await fetch('/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dataToSend)
+            });
+
+            const result = await response.json();
+            alert(result.message);
+            
+            // Limpiar el formulario después de enviar
+            if (response.ok) {
+                document.getElementById('user-name').value = '';
             }
-
-            const listItems = document.querySelectorAll('#sortable-list li');
-            const orderedList = Array.from(listItems).map(item => item.dataset.value);
-            const orderedListToDisplay = Array.from(listItems).map((item, index) => `${index + 1} - ${item.dataset.value}`);
-
-            const confirmationMessage = `Resumen de tu selección:\n\n${orderedListToDisplay.join('\n')}\n\n¿Aceptas?`;
-            const userConfirmed = confirm(confirmationMessage);
-
-            if (!userConfirmed) {
-                return;
-            }
-
-            const dataToSend = {
-                name: userName,
-                orderedList: orderedList
-            };
-
-            try {
-                const response = await fetch('/submit', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(dataToSend)
-                });
-
-                const result = await response.json();
-                alert(result.message);
-            } catch (error) {
-                console.error('Error al enviar:', error);
-                alert('Hubo un error al enviar los datos.');
-            }
-        });
-    </script>
-</body>
-</html>
+        } catch (error) {
+            console.error('Error al enviar:', error);
+            alert('Hubo un error al enviar los datos.');
+        }
+    });
+</script>
+{% endblock %}

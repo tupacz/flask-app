@@ -1,133 +1,239 @@
-# Telegram Mini App - Book Voting System
+# Sistema de Votación de Libros - Flask Web App
 
-This Flask application has been converted to work as a Telegram Mini App for voting on books using ranked choice voting.
+Esta aplicación Flask permite votar por libros usando un sistema de voto por ranking (Condorcet) con una interfaz web intuitiva y navegación completa.
 
-## 🚀 Quick Start with ngrok (Local Development)
+## 🌟 Características Principales
 
-### Prerequisites
+### 📊 Sistema de Navegación Completo
+- **Pantalla Principal (🗳️ Votar)**: Interfaz para ordenar y votar por libros
+- **Pantalla de Ganador (🏆 Ganador)**: Muestra resultados usando el método Condorcet
+- **Pantalla de Votos (📊 Ver Votos)**: Vista protegida por contraseña para administrar votos
+- **Gestión de Libros (📚 Gestionar Libros)**: Agregar, editar y eliminar libros
+
+### 🔐 Seguridad
+- Acceso protegido a la pantalla de votos con contraseña (1234)
+- Validación de datos en frontend y backend
+- Prevención de votos duplicados
+
+### � Interfaces Múltiples
+- **Interfaz Web**: Navegación completa con barra de navegación fija
+- **Telegram Mini App**: Interfaz optimizada para Telegram
+- **Responsive Design**: Funciona en dispositivos móviles y desktop
+
+## 🚀 Inicio Rápido
+
+### Requisitos Previos
 - Python 3.10+
-- Telegram account
-- [ngrok account](https://ngrok.com) (free tier works)
+- Cuenta de Telegram (para la funcionalidad de Mini App)
+- [Cuenta de ngrok](https://ngrok.com) (opcional, para desarrollo local)
 
-### Step 1: Create a Telegram Bot
+### Paso 1: Crear un Bot de Telegram
 
-1. Message [@BotFather](https://t.me/botfather) on Telegram
-2. Use `/newbot` command and follow the instructions
-3. Save your bot token (looks like `1234567890:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`)
+1. Envía un mensaje a [@BotFather](https://t.me/botfather) en Telegram
+2. Usa el comando `/newbot` y sigue las instrucciones
+3. Guarda tu token del bot (se ve como `1234567890:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`)
 
-### Step 2: Install Dependencies
+### Paso 2: Instalar Dependencias
 
 ```powershell
-# Clone or download the repository
+# Clonar o descargar el repositorio
 cd flask-app
 
-# Create virtual environment
+# Crear entorno virtual
 python -m venv venv
 
-# Activate virtual environment
+# Activar entorno virtual
 venv\Scripts\activate
 
-# Install dependencies
+# Instalar dependencias
 pip install -r requirements.txt
 ```
 
-### Step 3: Install and Setup ngrok
+### Paso 3: Configurar Variables de Entorno
 
-1. **Download ngrok**:
-   - Go to [ngrok.com](https://ngrok.com)
-   - Sign up for free account
-   - Download ngrok for Windows
-   - Extract `ngrok.exe` to your project folder
+Crea un archivo `.env` en la raíz del proyecto:
 
-2. **Authenticate ngrok**:
+```env
+# Obtén esto de @BotFather
+TELEGRAM_BOT_TOKEN=your_bot_token_here
+
+# Esto se actualizará con la URL de ngrok
+WEB_APP_URL=https://your-ngrok-url.ngrok.io/telegram
+
+# Cualquier cadena aleatoria segura
+SECRET_KEY=your-super-secret-key-here
+```
+
+### Paso 4: Ejecutar la Aplicación
+
+```powershell
+# Ejecutar la aplicación Flask
+python run.py
+```
+
+La aplicación estará disponible en `http://localhost:5000`
+
+## 🧭 Navegación Web
+
+### Pantallas Disponibles
+
+#### 🗳️ Pantalla Principal - Votar
+- **URL**: `http://localhost:5000/`
+- **Función**: Interfaz principal para ordenar y votar por libros
+- **Características**:
+  - Lista de libros arrastrables para ordenar por preferencia
+  - Campo para ingresar nombre del votante
+  - Confirmación antes de enviar el voto
+  - Validación de datos en tiempo real
+
+#### 🏆 Pantalla de Ganador
+- **URL**: `http://localhost:5000/winner`
+- **Función**: Muestra los resultados usando el método de votación Condorcet
+- **Características**:
+  - Estadísticas detalladas de votación (total, Telegram, Web)
+  - Tabla de enfrentamientos directos entre libros
+  - Explicación completa del resultado
+  - Ganador determinado por el método Condorcet
+
+#### 📊 Pantalla de Votos (Protegida)
+- **URL**: `http://localhost:5000/votes`
+- **Función**: Vista administrativa para gestionar votos
+- **Seguridad**: Requiere contraseña `1234`
+- **Características**:
+  - Resumen completo de todos los votos
+  - Detalles de cada voto (timestamp, usuario, ranking, fuente)
+  - Exportación a JSON
+  - Capacidad de editar datos de votación
+  - Botones para actualizar y exportar datos
+
+#### 📚 Gestión de Libros
+- **URL**: `http://localhost:5000/books-manager`
+- **Función**: Administrar la lista de libros disponibles para votación
+- **Características**:
+  - Agregar nuevos libros con título, autor y descripción
+  - Editar libros existentes
+  - Eliminar libros (con confirmación)
+  - Validación de campos obligatorios
+  - Retroalimentación visual al guardar
+
+### Navegación por Botones
+
+La aplicación incluye una **barra de navegación fija** en la parte superior con botones para acceder a cada pantalla:
+
+- **🗳️ Votar**: Ir a la pantalla principal de votación
+- **🏆 Ganador**: Ver resultados de la votación
+- **📊 Ver Votos**: Acceder a la vista de administración (solicita contraseña)
+- **📚 Gestionar Libros**: Administrar la lista de libros
+
+### Funciones Especiales
+
+#### Protección por Contraseña
+- La pantalla de votos está protegida con contraseña (`1234`)
+- Se solicita la contraseña tanto al hacer clic en el botón como al acceder directamente a la URL
+- Redirección automática a la página principal si la contraseña es incorrecta
+
+#### Diseño Responsive
+- La navegación se adapta automáticamente a dispositivos móviles
+- Los botones se reorganizan en columna en pantallas pequeñas
+- Espaciado ajustado para touch interfaces
+
+## 🔧 Configuración Avanzada con ngrok (Para Telegram Mini App)
+
+### Paso 1: Instalar y Configurar ngrok
+
+1. **Descargar ngrok**:
+   - Ve a [ngrok.com](https://ngrok.com)
+   - Regístrate para una cuenta gratuita
+   - Descarga ngrok para Windows
+   - Extrae `ngrok.exe` a la carpeta de tu proyecto
+
+2. **Autenticar ngrok**:
    ```powershell
    .\ngrok.exe authtoken YOUR_NGROK_AUTHTOKEN
    ```
 
-### Step 4: Configure Environment Variables
+### Paso 2: Configurar Variables de Entorno para Telegram
 
-Create a `.env` file in your project root:
+Actualiza tu archivo `.env`:
 
 ```env
-# Get this from @BotFather
+# Obtén esto de @BotFather
 TELEGRAM_BOT_TOKEN=your_bot_token_here
 
-# This will be updated with ngrok URL
+# Esto se actualizará con la URL de ngrok
 WEB_APP_URL=https://your-ngrok-url.ngrok.io/telegram
 
-# Any secure random string
+# Cualquier cadena aleatoria segura
 SECRET_KEY=your-super-secret-key-here
 ```
 
-### Step 5: Start the Application
+### Paso 3: Ejecutar la Aplicación con Telegram (Requiere 4 terminales)
 
-**You need 4 terminal windows/tabs:**
-
-#### Terminal 1: Start ngrok
+#### Terminal 1: Iniciar ngrok
 ```powershell
-# Expose local Flask app (port 5000)
+# Exponer la aplicación Flask local (puerto 5000)
 .\ngrok.exe http 5000
 ```
-Copy the HTTPS URL (like `https://abc123.ngrok.io`)
+Copia la URL HTTPS (como `https://abc123.ngrok.io`)
 
-#### Terminal 2: Update ngrok URL
+#### Terminal 2: Actualizar URL de ngrok
 ```powershell
-# Update the .env file with your ngrok URL
+# Actualizar el archivo .env con tu URL de ngrok
 python update_ngrok_url.py
 ```
-Paste your ngrok URL when prompted (it will automatically add `/telegram`)
+Pega tu URL de ngrok cuando se solicite (automáticamente agregará `/telegram`)
 
-#### Terminal 3: Configure Telegram Bot
+#### Terminal 3: Configurar Bot de Telegram
 ```powershell
-# Configure the Web App in your Telegram bot
+# Configurar la Web App en tu bot de Telegram
 python setup_bot_correct.py
 ```
 
-#### Terminal 4: Start Flask App
+#### Terminal 4: Iniciar Aplicación Flask
 ```powershell
-# Start the Flask application
+# Iniciar la aplicación Flask
 python run.py
 ```
 
-#### Terminal 5: Start Telegram Bot (Optional)
+#### Terminal 5: Iniciar Bot de Telegram (Opcional)
 ```powershell
-# Start the bot to handle /start commands
+# Iniciar el bot para manejar comandos /start
 python telegram_bot_correct.py
 ```
 
-### Step 6: Test Your Mini App
+### Paso 4: Probar tu Mini App
 
-1. Open Telegram
-2. Search for your bot (e.g., `@YourBotName`)
-3. Send `/start`
-4. Click the "📚 Votar Libros" button
-5. The Mini App should open inside Telegram!
+1. Abrir Telegram
+2. Buscar tu bot (ej. `@YourBotName`)
+3. Enviar `/start`
+4. Hacer clic en el botón "📚 Votar Libros"
+5. ¡La Mini App debería abrirse dentro de Telegram!
 
-## 🔧 Development Workflow
+## 🔧 Flujo de Trabajo de Desarrollo
 
-### Daily Development Routine
+### Rutina de Desarrollo Diaria
 
-1. **Start ngrok** (Terminal 1):
+1. **Iniciar ngrok** (Terminal 1):
    ```powershell
    .\ngrok.exe http 5000
    ```
 
-2. **Update URL if ngrok URL changed** (Terminal 2):
+2. **Actualizar URL si cambió la URL de ngrok** (Terminal 2):
    ```powershell
    python update_ngrok_url.py
    python setup_bot_correct.py
    ```
 
-3. **Start Flask** (Terminal 3):
+3. **Iniciar Flask** (Terminal 3):
    ```powershell
    python run.py
    ```
 
-4. **Test in Telegram**: Send `/start` to your bot
+4. **Probar en Telegram**: Enviar `/start` a tu bot
 
-### Automatic Setup (Alternative)
+### Configuración Automática (Alternativa)
 
-Create a `start_dev.py` script:
+Crear un script `start_dev.py`:
 
 ```python
 from dotenv import load_dotenv

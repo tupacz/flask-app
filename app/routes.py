@@ -43,6 +43,39 @@ def telegram_app():
     random.shuffle(books_to_send)
     return render_template('telegram_index.html', books=books_to_send)
 
+# Nuevas rutas específicas para Telegram Mini App
+@main.route('/telegram-winner')
+def telegram_winner():
+    # Obtener todos los rankings para el cálculo de Condorcet
+    rankings = voting_manager.get_rankings_for_condorcet()
+    
+    if not rankings:
+        return render_template('telegram_winner.html', 
+                             winner="No hay votos aún", 
+                             total_votes=0)
+    
+    # Usar el sistema de votación Condorcet existente
+    try:
+        # Usar la función condorcet_winner directamente con los rankings
+        winner_result = condorcet_winner(rankings)
+        total_votes = voting_manager.get_vote_count()
+        
+        return render_template('telegram_winner.html', 
+                             winner=winner_result, 
+                             total_votes=total_votes,
+                             telegram_votes=voting_manager.get_telegram_votes_count(),
+                             web_votes=voting_manager.get_web_votes_count())
+    except Exception as e:
+        print(f"Error calculando ganador: {e}")
+        return render_template('telegram_winner.html', 
+                             winner="Error calculando resultado", 
+                             total_votes=voting_manager.get_vote_count())
+
+@main.route('/telegram-books')
+def telegram_books():
+    books_dao = Book.BooksDAO(file_path_books)
+    return render_template('telegram_books.html', books=books_dao.load_books())
+
 # Endpoint para validar autenticación de Telegram
 @main.route('/telegram-auth', methods=['POST'])
 def telegram_auth():
@@ -117,7 +150,6 @@ def votes():
     
     return render_template('votes.html', 
                          data=data_text, 
-                         password='1234',
                          summary=summary)
 
 @main.route('/votes-json')

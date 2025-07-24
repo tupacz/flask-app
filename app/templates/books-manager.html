@@ -1,106 +1,149 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agregar Libros</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-    <h1>Agregar Libros</h1>
-    <div id="book-container">
-        {% for book in books %}
-        <div class="book-block">
-            <input type="text" name="title" placeholder="Nombre del libro" value="{{ book.title }}" required>
-            <input type="text" name="author" placeholder="Autor" value="{{ book.author }}" required>
-            <textarea name="description" placeholder="Descripción" required>{{ book.description }}</textarea>
-            <button class="delete-button">Borrar</button>
-        </div>
-        {% endfor %}
-        {% if books|length == 0 %}
-        <div class="book-block">
+{% extends "base.html" %}
+
+{% block title %}Gestionar Libros - Sistema de Votación de Libros{% endblock %}
+
+{% block content %}
+<h1>📚 Gestionar Libros</h1>
+
+<div style="margin-bottom: 20px; padding: 15px; background-color: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
+    <h3 style="margin-top: 0; color: #1976d2;">ℹ️ Instrucciones</h3>
+    <p style="margin-bottom: 0;">Aquí puedes agregar, editar o eliminar libros de la votación. Asegúrate de completar todos los campos antes de guardar.</p>
+</div>
+
+<div id="book-container">
+    {% for book in books %}
+    <div class="book-block">
+        <input type="text" name="title" placeholder="Nombre del libro" value="{{ book.title }}" required>
+        <input type="text" name="author" placeholder="Autor" value="{{ book.author }}" required>
+        <textarea name="description" placeholder="Descripción" required>{{ book.description }}</textarea>
+        <button class="delete-button">🗑️ Borrar</button>
+    </div>
+    {% endfor %}
+    {% if books|length == 0 %}
+    <div class="book-block">
+        <input type="text" name="title" placeholder="Nombre del libro" required>
+        <input type="text" name="author" placeholder="Autor" required>
+        <textarea name="description" placeholder="Descripción" required></textarea>
+        <button class="delete-button">🗑️ Borrar</button>
+    </div>
+    {% endif %}
+</div>
+
+<div style="margin-top: 20px;">
+    <button id="add-book-button">➕ Agregar nuevo libro</button>
+    <button id="submit-button">💾 Guardar cambios</button>
+    <label id="guardando" style="visibility:hidden; margin-left: 10px; font-weight: bold;">Guardando...</label>
+</div>
+
+<div style="margin-top: 20px; padding: 15px; background-color: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+    <h4 style="margin-top: 0;">⚠️ Nota Importante</h4>
+    <p style="margin-bottom: 0;">Los cambios en los libros afectarán futuras votaciones. Si hay votaciones en curso, consulta con el administrador antes de hacer cambios significativos.</p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('add-book-button').addEventListener('click', () => {
+        const bookContainer = document.getElementById('book-container');
+        const newBookBlock = document.createElement('div');
+        newBookBlock.className = 'book-block';
+        newBookBlock.innerHTML = `
             <input type="text" name="title" placeholder="Nombre del libro" required>
             <input type="text" name="author" placeholder="Autor" required>
-            <textarea name="description" placeholder="Descripción" required>{{ book.description }}</textarea>
-            <button class="delete-button">Borrar</button>
-        </div>
-        {% endif %}
-    </div>
-    <button id="add-book-button">Agregar nuevo libro</button>
-    <button id="submit-button">Submit</button>
-    <label id="guardando" style="visibility:hidden">Guardando...</label>
+            <textarea name="description" placeholder="Descripción" required></textarea>
+            <button class="delete-button">🗑️ Borrar</button>
+        `;
+        bookContainer.appendChild(newBookBlock);
+    });
 
-    <script>
-        document.getElementById('add-book-button').addEventListener('click', () => {
-            const bookContainer = document.getElementById('book-container');
-            const newBookBlock = document.createElement('div');
-            newBookBlock.className = 'book-block';
-            newBookBlock.innerHTML = `
-                <input type="text" name="title" placeholder="Nombre del libro" required>
-                <input type="text" name="author" placeholder="Autor" required>
-                <textarea name="description" placeholder="Descripción" required></textarea>
-                <button class="delete-button">Borrar</button>
-            `;
-            bookContainer.appendChild(newBookBlock);
-        });
-
-        document.getElementById('book-container').addEventListener('click', (event) => {
-            if (event.target.classList.contains('delete-button')) {
+    document.getElementById('book-container').addEventListener('click', (event) => {
+        if (event.target.classList.contains('delete-button')) {
+            if (confirm('¿Estás seguro de que quieres eliminar este libro?')) {
                 event.target.parentElement.remove();
             }
+        }
+    });
+
+    document.getElementById('submit-button').addEventListener('click', () => {
+        const bookBlocks = document.querySelectorAll('.book-block');
+        const books = [];
+        
+        let hasEmptyFields = false;
+        
+        Array.from(bookBlocks).forEach(block => {
+            const title = block.querySelector('input[name="title"]').value.trim();
+            const author = block.querySelector('input[name="author"]').value.trim();
+            const description = block.querySelector('textarea[name="description"]').value.trim();
+            
+            if (!title || !author || !description) {
+                hasEmptyFields = true;
+                return;
+            }
+            
+            books.push({
+                title: title,
+                author: author,
+                description: description
+            });
         });
 
-        document.getElementById('submit-button').addEventListener('click', () => {
-            esperandoAlGuardar();
-            const bookBlocks = document.querySelectorAll('.book-block');
-            const books = Array.from(bookBlocks).map(block => {
-                return {
-                    title: block.querySelector('input[name="title"]').value,
-                    author: block.querySelector('input[name="author"]').value,
-                    description: block.querySelector('textarea[name="description"]').value
-                };
-            });
+        if (hasEmptyFields) {
+            alert('Por favor, completa todos los campos antes de guardar.');
+            return;
+        }
 
-            fetch('/submit-book', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(books)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-                exitoAlGuardar();
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                errorAlGuardar();
-            });
+        if (books.length === 0) {
+            alert('Debe haber al menos un libro para guardar.');
+            return;
+        }
 
-            console.log('Books:', books);
+        esperandoAlGuardar();
+
+        fetch('/submit-book', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(books)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            exitoAlGuardar();
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            errorAlGuardar();
         });
+    });
 
-        function esperandoAlGuardar() {
-            const labelGuardando = document.getElementById('guardando');
-            labelGuardando.style.visibility = 'visible';
-            labelGuardando.style.color = 'blue';
-            labelGuardando.innerText = 'Guardando...';
-        }
+    function esperandoAlGuardar() {
+        const labelGuardando = document.getElementById('guardando');
+        labelGuardando.style.visibility = 'visible';
+        labelGuardando.style.color = 'blue';
+        labelGuardando.innerText = 'Guardando...';
+    }
 
-        function exitoAlGuardar() {
-            const labelGuardando = document.getElementById('guardando');
-            labelGuardando.style.visibility = 'visible';
-            labelGuardando.style.color = 'green';
-            labelGuardando.innerText = 'Guardado!';
-        }
+    function exitoAlGuardar() {
+        const labelGuardando = document.getElementById('guardando');
+        labelGuardando.style.visibility = 'visible';
+        labelGuardando.style.color = 'green';
+        labelGuardando.innerText = '✅ Guardado!';
+        
+        setTimeout(() => {
+            labelGuardando.style.visibility = 'hidden';
+        }, 3000);
+    }
 
-        function errorAlGuardar() {
-            const labelGuardando = document.getElementById('guardando');
-            labelGuardando.style.visibility = 'visible';
-            labelGuardando.style.color = 'red';
-            labelGuardando.innerText = 'Error!';
-        }
-    </script>
-</body>
-</html>
+    function errorAlGuardar() {
+        const labelGuardando = document.getElementById('guardando');
+        labelGuardando.style.visibility = 'visible';
+        labelGuardando.style.color = 'red';
+        labelGuardando.innerText = '❌ Error al guardar!';
+        
+        setTimeout(() => {
+            labelGuardando.style.visibility = 'hidden';
+        }, 3000);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Votación de Libros{% endblock %}</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='telegram_styles.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navegación para Telegram -->
+    <nav class="telegram-navbar">
+        <div class="telegram-nav-container">
+            <h1 class="telegram-nav-title">📚 Votación</h1>
+            <div class="telegram-nav-buttons">
+                <a href="/telegram" class="telegram-nav-button {% if request.endpoint == 'main.telegram_app' %}active{% endif %}">🗳️ Votar</a>
+                <a href="/telegram-winner" class="telegram-nav-button {% if request.endpoint == 'main.telegram_winner' %}active{% endif %}">🏆 Ganador</a>
+                <a href="#" onclick="accessVotesFromTelegram()" class="telegram-nav-button protected">📊 Votos</a>
+                <a href="/telegram-books" class="telegram-nav-button {% if request.endpoint == 'main.telegram_books' %}active{% endif %}">📚 Libros</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <script>
+        // Initialize Telegram Web App
+        const tg = window.Telegram.WebApp;
+        
+        // Configure Telegram Web App
+        tg.ready();
+        tg.expand();
+
+        // Set theme
+        document.body.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color || '#ffffff');
+        document.body.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#000000');
+        document.body.style.setProperty('--tg-theme-hint-color', tg.themeParams.hint_color || '#999999');
+        document.body.style.setProperty('--tg-theme-link-color', tg.themeParams.link_color || '#2481cc');
+        document.body.style.setProperty('--tg-theme-button-color', tg.themeParams.button_color || '#2481cc');
+        document.body.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color || '#ffffff');
+
+        // Función para acceder a votos desde Telegram
+        function accessVotesFromTelegram() {
+            tg.showPopup({
+                title: "Acceso Protegido",
+                message: "Esta sección requiere contraseña:",
+                buttons: [
+                    {
+                        id: "cancel",
+                        type: "cancel",
+                        text: "Cancelar"
+                    },
+                    {
+                        id: "access",
+                        type: "default",
+                        text: "Acceder"
+                    }
+                ]
+            }, function(buttonId) {
+                if (buttonId === "access") {
+                    // Solicitar contraseña usando Telegram API
+                    const password = prompt("Ingrese la contraseña:");
+                    if (password === "1234") {
+                        // Abrir en el navegador externo
+                        tg.openLink("/votes");
+                    } else if (password !== null) {
+                        tg.showAlert("Contraseña incorrecta");
+                    }
+                }
+            });
+        }
+
+        {% block extra_js %}{% endblock %}
+    </script>
+</body>
+</html>

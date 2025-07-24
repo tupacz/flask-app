@@ -1,0 +1,101 @@
+{% extends "telegram_base.html" %}
+
+{% block title %}Ganador - Votación de Libros{% endblock %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <!-- Estadísticas de votación -->
+    <div style="margin-bottom: 20px; padding: 15px; background-color: var(--tg-theme-secondary-bg-color, #f1f1f1); border-radius: 12px;">
+        <h2 style="margin-top: 0; font-size: 18px; color: var(--tg-theme-text-color);">📊 Estadísticas</h2>
+        
+        {% if total_votes %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; margin-top: 15px;">
+            <div style="text-align: center; padding: 10px; background-color: var(--tg-theme-bg-color); border-radius: 8px;">
+                <div style="font-size: 20px; font-weight: bold; color: var(--tg-theme-link-color);">{{ total_votes }}</div>
+                <div style="font-size: 12px; color: var(--tg-theme-hint-color);">Total</div>
+            </div>
+            
+            {% if telegram_votes is defined %}
+            <div style="text-align: center; padding: 10px; background-color: var(--tg-theme-bg-color); border-radius: 8px;">
+                <div style="font-size: 16px; font-weight: bold; color: var(--tg-theme-button-color);">{{ telegram_votes }}</div>
+                <div style="font-size: 12px; color: var(--tg-theme-hint-color);">📱 Telegram</div>
+            </div>
+            {% endif %}
+            
+            {% if web_votes is defined %}
+            <div style="text-align: center; padding: 10px; background-color: var(--tg-theme-bg-color); border-radius: 8px;">
+                <div style="font-size: 16px; font-weight: bold; color: var(--tg-theme-button-color);">{{ web_votes }}</div>
+                <div style="font-size: 12px; color: var(--tg-theme-hint-color);">🌐 Web</div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    {% if winner and winner.candidatos %}
+    <!-- Resultado del ganador -->
+    <div style="margin-bottom: 20px; padding: 15px; background-color: var(--tg-theme-button-color); border-radius: 12px; color: var(--tg-theme-button-text-color);">
+        <h2 style="margin-top: 0; font-size: 18px;">🏆 Ganador</h2>
+        <div style="font-size: 16px; font-weight: bold; margin: 10px 0;">{{ winner.ganador_condorcet }}</div>
+    </div>
+
+    <!-- Tabla de enfrentamientos (simplificada para móvil) -->
+    <div style="margin-bottom: 20px;">
+        <h3 style="font-size: 16px; margin-bottom: 10px; color: var(--tg-theme-text-color);">📋 Enfrentamientos</h3>
+        <div style="font-size: 12px; color: var(--tg-theme-hint-color); margin-bottom: 10px;">
+            Votos ganados en enfrentamientos directos:
+        </div>
+        
+        <div style="display: grid; gap: 8px;">
+            {% for row_candidate in winner.candidatos %}
+            <div style="padding: 10px; background-color: var(--tg-theme-secondary-bg-color, #f1f1f1); border-radius: 8px;">
+                <div style="font-weight: bold; font-size: 14px; margin-bottom: 5px;">{{ row_candidate }}</div>
+                <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                    {% for col_candidate in winner.candidatos %}
+                        {% if row_candidate != col_candidate %}
+                            {% set row_index = winner.candidatos.index(row_candidate) %}
+                            {% set col_index = winner.candidatos.index(col_candidate) %}
+                            {% set votes = winner.get_votes[row_index][col_index] %}
+                            <span style="background-color: 
+                                {%- if votes > winner.half %}var(--tg-theme-button-color)
+                                {%- else %}var(--tg-theme-hint-color)
+                                {%- endif %}; 
+                                color: var(--tg-theme-button-text-color); 
+                                padding: 2px 6px; 
+                                border-radius: 4px; 
+                                font-size: 12px;">
+                                vs {{ col_candidate[:10] }}{% if col_candidate|length > 10 %}...{% endif %}: {{ votes }}
+                            </span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Explicación del resultado -->
+    <div style="padding: 15px; background-color: var(--tg-theme-secondary-bg-color, #f1f1f1); border-radius: 12px;">
+        <h3 style="margin-top: 0; font-size: 16px; color: var(--tg-theme-text-color);">📝 Explicación</h3>
+        <div style="white-space: pre-line; line-height: 1.4; font-size: 14px; color: var(--tg-theme-text-color);">{{ winner.respuesta_escrita }}</div>
+    </div>
+    
+    {% else %}
+    <div style="text-align: center; padding: 40px; color: var(--tg-theme-hint-color);">
+        <h2 style="font-size: 18px;">{{ winner if winner else "No hay votos suficientes" }}</h2>
+        <p style="font-size: 14px;">Los resultados aparecerán aquí una vez que se registren votos.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+// Configurar botón principal de Telegram
+tg.MainButton.text = "VOTAR AHORA";
+tg.MainButton.color = tg.themeParams.button_color;
+tg.MainButton.textColor = tg.themeParams.button_text_color;
+tg.MainButton.show();
+tg.MainButton.onClick(function() {
+    window.location.href = '/telegram';
+});
+{% endblock %}
