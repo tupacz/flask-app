@@ -1,0 +1,6 @@
+Nombre: Lu; Lista: ['The martian', "The time traveller's wife", '1984', 'Soy leyenda', 'Sueñan los androides con ovejas electricas?', 'Fahrenheit 451']; fecha: 2025-05-28 15:12:24
+Nombre: Mafe; Lista: ["The time traveller's wife", 'Fahrenheit 451', '1984', 'Soy leyenda', 'The martian', 'Sueñan los androides con ovejas electricas?']; fecha: 2025-05-28 15:12:35
+Nombre: Tupac; Lista: ['Fahrenheit 451', '1984', 'Sueñan los androides con ovejas electricas?', 'Soy leyenda', "The time traveller's wife", 'The martian']; fecha: 2025-05-28 15:13:29
+Nombre: Carla; Lista: ['The martian', 'Sueñan los androides con ovejas electricas?', 'Fahrenheit 451', 'Soy leyenda', "The time traveller's wife", '1984']; fecha: 2025-05-28 15:14:25
+Nombre: Vero; Lista: [ 'The martian', 'Fahrenheit 451', '1984', 'Sueñan los androides con ovejas electricas?', 'Soy leyenda', "The time traveller's wife"]; fecha: 2025-05-28 15:15:23
+TG_ID:11518363; Nombre: Tupac 🌹; Lista: ['Cien años de soledad', 'kek']; fecha: 2025-07-23 01:57:42

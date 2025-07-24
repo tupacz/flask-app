@@ -51,6 +51,43 @@
 </head>
 <body>
 <div class="container">
+  <!-- Estadísticas de votación -->
+  <div style="margin-bottom: 30px; padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
+    <h2 style="margin-top: 0;">📊 Estadísticas de Votación</h2>
+    
+    {% if total_votes %}
+    <div style="display: flex; gap: 20px; margin-bottom: 15px;">
+      <div style="flex: 1; text-align: center; padding: 15px; background-color: #e3f2fd; border-radius: 5px;">
+        <h3 style="margin: 0; color: #1976d2;">Total de Votos</h3>
+        <p style="margin: 5px 0 0 0; font-size: 24px; font-weight: bold; color: #1976d2;">{{ total_votes }}</p>
+      </div>
+      
+      {% if telegram_votes is defined %}
+      <div style="flex: 1; text-align: center; padding: 15px; background-color: #e8f5e8; border-radius: 5px;">
+        <h3 style="margin: 0; color: #388e3c;">📱 Telegram</h3>
+        <p style="margin: 5px 0 0 0; font-size: 20px; font-weight: bold; color: #388e3c;">{{ telegram_votes }}</p>
+      </div>
+      {% endif %}
+      
+      {% if web_votes is defined %}
+      <div style="flex: 1; text-align: center; padding: 15px; background-color: #fff3e0; border-radius: 5px;">
+        <h3 style="margin: 0; color: #f57c00;">🌐 Web</h3>
+        <p style="margin: 5px 0 0 0; font-size: 20px; font-weight: bold; color: #f57c00;">{{ web_votes }}</p>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Tabla de enfrentamientos -->
+  {% if winner and winner.candidatos %}
+  <h2 style="margin-bottom: 15px;">📋 Tabla de Enfrentamientos Directos</h2>
+  <p style="margin-bottom: 20px; color: #666;">
+    <strong>Cómo leer:</strong> Cada celda muestra cuántos votos obtuvo el candidato de la fila contra el candidato de la columna.
+    <span style="background-color: #ffffcc; padding: 2px 4px;">Amarillo</span> = gana este enfrentamiento,
+    <span style="background-color: #ffd9d9; padding: 2px 4px;">Rosa</span> = pierde este enfrentamiento.
+  </p>
+  
   <table>
     <tr>
       <th></th>
@@ -81,9 +118,27 @@
     {% endfor %}
   </table>
 
-  <h2>Ganador de Condorcet: {{ winner.ganador_condorcet }}</h2>
-  <h3>Lógica:</h3>
-  <p>{{ winner.respuesta_escrita | replace('\n', '<br>') | safe }}</p>
+  <!-- Resultado final -->
+  <div style="margin-top: 30px; padding: 20px; background-color: #e8f5e8; border-radius: 8px; border-left: 5px solid #4caf50;">
+    <h2 style="margin-top: 0; color: #2e7d32;">🏆 Ganador de Condorcet: {{ winner.ganador_condorcet }}</h2>
+    
+    <h3 style="color: #2e7d32;">Explicación del Resultado:</h3>
+    <div style="white-space: pre-line; line-height: 1.6; color: #333;">{{ winner.respuesta_escrita }}</div>
+  </div>
+  
+  {% else %}
+  <div style="text-align: center; padding: 40px; color: #666;">
+    <h2>{{ winner if winner else "No hay votos suficientes para calcular un ganador" }}</h2>
+    <p>Los resultados aparecerán aquí una vez que se registren votos.</p>
+  </div>
+  {% endif %}
+  
+  <!-- Enlaces útiles -->
+  <div style="margin-top: 30px; text-align: center;">
+    <a href="/" style="margin: 0 10px; padding: 10px 20px; background-color: #2196f3; color: white; text-decoration: none; border-radius: 5px;">🗳️ Votar</a>
+    <a href="/votes" style="margin: 0 10px; padding: 10px 20px; background-color: #ff9800; color: white; text-decoration: none; border-radius: 5px;">📊 Ver Votos</a>
+    <a href="/votes-json" style="margin: 0 10px; padding: 10px 20px; background-color: #9c27b0; color: white; text-decoration: none; border-radius: 5px;">📄 JSON</a>
+  </div>
 </div>
 </body>
 </html>

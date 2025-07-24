@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votación de Libros</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='telegram_styles.css') }}">
+</head>
+<body>
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Cargando...</p>
+    </div>
+
+    <div id="app" class="app-container" style="display: none;">
+        <div class="header">
+            <h1>📚 Votación de Libros</h1>
+            <p id="user-greeting">¡Hola! Ordená los libros de tu preferencia</p>
+        </div>
+
+        <div class="instructions">
+            <p>Arrastrá y soltá los libros para ordenarlos según tu preferencia (del que más te gusta al que menos):</p>
+        </div>
+
+        <ul id="sortable-list" class="book-list">
+            {% for book in books %}
+            <li class="book-item" data-value="{{ book.title }}">
+                <div class="book-content">
+                    <div class="book-title">"{{ book.title }}"</div>
+                    <div class="book-author">{{ book.author }}</div>
+                    <div class="book-description">{{ book.description }}</div>
+                </div>
+                <div class="drag-handle">⋮⋮</div>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <div class="submit-container">
+            <button id="send-button" class="submit-button">
+                <span class="button-text">Enviar Voto 🗳️</span>
+                <div class="button-spinner" style="display: none;"></div>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Telegram Web App
+        const tg = window.Telegram.WebApp;
+        let userData = null;
+        let sortable = null;
+
+        // Configure Telegram Web App
+        tg.ready();
+        tg.expand();
+
+        // Set theme
+        document.body.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color || '#ffffff');
+        document.body.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#000000');
+        document.body.style.setProperty('--tg-theme-hint-color', tg.themeParams.hint_color || '#999999');
+        document.body.style.setProperty('--tg-theme-link-color', tg.themeParams.link_color || '#2481cc');
+        document.body.style.setProperty('--tg-theme-button-color', tg.themeParams.button_color || '#2481cc');
+        document.body.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color || '#ffffff');
+
+        async function authenticateUser() {
+            try {
+                const initData = tg.initData;
+                if (!initData) {
+                    throw new Error('No hay datos de inicialización de Telegram');
+                }
+
+                const response = await fetch('/telegram-auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ initData: initData })
+                });
+
+                const result = await response.json();
+                
+                if (result.valid) {
+                    userData = result.user;
+                    document.getElementById('user-greeting').textContent = 
+                        `¡Hola ${result.userName}! Ordená los libros según tu preferencia`;
+                    return true;
+                } else {
+                    throw new Error(result.error || 'Autenticación fallida');
+                }
+            } catch (error) {
+                console.error('Error de autenticación:', error);
+                tg.showAlert('Error de autenticación: ' + error.message);
+                return false;
+            }
+        }
+
+        function initializeSortable() {
+            sortable = new Sortable(document.getElementById('sortable-list'), {
+                animation: 200,
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+                dragClass: 'sortable-drag',
+                handle: '.drag-handle',
+                onStart: function() {
+                    tg.HapticFeedback.impactOccurred('light');
+                },
+                onEnd: function() {
+                    tg.HapticFeedback.impactOccurred('light');
+                }
+            });
+        }
+
+        async function submitVote() {
+            const button = document.getElementById('send-button');
+            const buttonText = button.querySelector('.button-text');
+            const buttonSpinner = button.querySelector('.button-spinner');
+            
+            // Disable button and show loading
+            button.disabled = true;
+            buttonText.style.display = 'none';
+            buttonSpinner.style.display = 'inline-block';
+
+            try {
+                const listItems = document.querySelectorAll('#sortable-list li');
+                const orderedList = Array.from(listItems).map(item => item.dataset.value);
+
+                const response = await fetch('/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        initData: tg.initData,
+                        orderedList: orderedList
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    tg.HapticFeedback.notificationOccurred('success');
+                    tg.showAlert('¡Voto enviado exitosamente! 🎉');
+                    tg.close();
+                } else {
+                    throw new Error(result.message || 'Error al enviar el voto');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                tg.HapticFeedback.notificationOccurred('error');
+                tg.showAlert('Error: ' + error.message);
+                
+                // Re-enable button
+                button.disabled = false;
+                buttonText.style.display = 'inline';
+                buttonSpinner.style.display = 'none';
+            }
+        }
+
+        // Initialize the app
+        async function initApp() {
+            const isAuthenticated = await authenticateUser();
+            
+            if (isAuthenticated) {
+                initializeSortable();
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('app').style.display = 'block';
+                
+                // Setup submit button
+                document.getElementById('send-button').addEventListener('click', submitVote);
+                
+                // Setup Telegram main button (optional)
+                tg.MainButton.text = "ENVIAR VOTO";
+                tg.MainButton.show();
+                tg.MainButton.onClick(submitVote);
+            }
+        }
+
+        // Start the app when DOM is loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+    </script>
+</body>
+</html>
