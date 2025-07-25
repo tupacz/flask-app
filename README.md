@@ -1,4 +1,35 @@
-# Sistema de Votación de Libros - Flask Web App
+# Sistema de Votación de Libros - Fl└── votes.json          # Datos de votación
+```
+
+## ⚡ Scripts de Conveniencia
+
+Para simplificar el trabajo diario, se han creado scripts de conveniencia:
+
+### `setup.bat` - Configuración Rápida
+```powershell
+setup.bat
+```
+- ✅ Configura la URL de ngrok
+- ✅ Configura el bot de Telegram
+- ✅ Todo en un solo comando
+
+### `dev.bat` - Desarrollo
+```powershell
+dev.bat
+```
+- ✅ Verifica la configuración
+- ✅ Inicia el servidor de desarrollo
+- ✅ Variables de entorno pre-configuradas
+
+### `test.bat` - Testing Completo
+```powershell
+test.bat
+```
+- ✅ Ejecuta todos los tests
+- ✅ Verifica configuración, navegación y sistema de votación
+- ✅ Reporte completo de estado
+
+## 🚀 Inicio RápidoWeb App
 
 Esta aplicación Flask permite votar por libros usando un sistema de voto por ranking (Condorcet) con una interfaz web intuitiva y navegación completa.
 
@@ -20,7 +51,24 @@ Esta aplicación Flask permite votar por libros usando un sistema de voto por ra
 - **Telegram Mini App**: Interfaz optimizada para Telegram
 - **Responsive Design**: Funciona en dispositivos móviles y desktop
 
-## 🚀 Inicio Rápido
+## � Estructura del Proyecto
+
+```
+flask-app/
+├── app/                    # Aplicación principal Flask
+├── scripts/               # Scripts de utilidad organizados
+│   ├── development/       # Scripts de desarrollo
+│   ├── testing/          # Scripts de testing
+│   ├── utilities/        # Scripts de configuración y utilidades
+│   └── demo/            # Scripts de demostración
+├── docs/                 # Documentación técnica
+├── run.py               # Punto de entrada principal
+├── config.py            # Configuración de la aplicación
+├── requirements.txt     # Dependencias Python
+└── votes.json          # Datos de votación
+```
+
+## �🚀 Inicio Rápido
 
 ### Requisitos Previos
 - Python 3.10+
@@ -179,14 +227,14 @@ Copia la URL HTTPS (como `https://abc123.ngrok.io`)
 #### Terminal 2: Actualizar URL de ngrok
 ```powershell
 # Actualizar el archivo .env con tu URL de ngrok
-python update_ngrok_url.py
+python scripts/utilities/update_ngrok_url.py
 ```
 Pega tu URL de ngrok cuando se solicite (automáticamente agregará `/telegram`)
 
 #### Terminal 3: Configurar Bot de Telegram
 ```powershell
 # Configurar la Web App en tu bot de Telegram
-python setup_bot_correct.py
+python scripts/utilities/setup_bot_correct.py
 ```
 
 #### Terminal 4: Iniciar Aplicación Flask
@@ -198,7 +246,7 @@ python run.py
 #### Terminal 5: Iniciar Bot de Telegram (Opcional)
 ```powershell
 # Iniciar el bot para manejar comandos /start
-python telegram_bot_correct.py
+python scripts/utilities/telegram_bot_correct.py
 ```
 
 ### Paso 4: Probar tu Mini App
@@ -220,8 +268,8 @@ python telegram_bot_correct.py
 
 2. **Actualizar URL si cambió la URL de ngrok** (Terminal 2):
    ```powershell
-   python update_ngrok_url.py
-   python setup_bot_correct.py
+   python scripts/utilities/update_ngrok_url.py
+   python scripts/utilities/setup_bot_correct.py
    ```
 
 3. **Iniciar Flask** (Terminal 3):
@@ -257,8 +305,8 @@ def start_development():
     print("✅ Services started!")
     print("📝 Manual steps needed:")
     print("1. Run: ngrok http 5000")
-    print("2. Run: python update_ngrok_url.py")
-    print("3. Run: python setup_bot_correct.py")
+    print("2. Run: python scripts/utilities/update_ngrok_url.py")
+    print("3. Run: python scripts/utilities/setup_bot_correct.py")
     print("4. Test your bot in Telegram!")
     
     try:
@@ -273,7 +321,7 @@ if __name__ == '__main__':
     start_development()
 ```
 
-Then just run: `python start_dev.py`
+Then just run: `python scripts/development/dev_run.py` (o crear un script start_dev.py consolidado)
 
 ## 🔍 Troubleshooting
 
@@ -289,13 +337,13 @@ Then just run: `python start_dev.py`
    - ✅ Ensure URL is HTTPS (ngrok provides this)
 
 3. **Bot doesn't respond to /start**
-   - ✅ Run `python telegram_bot_correct.py`
+   - ✅ Run `python scripts/utilities/telegram_bot_correct.py`
    - ✅ Check bot token is valid
 
 4. **"This site can't be reached"**
    - ✅ Restart ngrok: `.\ngrok.exe http 5000`
-   - ✅ Update URL: `python update_ngrok_url.py`
-   - ✅ Reconfigure bot: `python setup_bot_correct.py`
+   - ✅ Update URL: `python scripts/utilities/update_ngrok_url.py`
+   - ✅ Reconfigure bot: `python scripts/utilities/setup_bot_correct.py`
 
 ### Verification Scripts
 
@@ -303,13 +351,13 @@ Test your setup:
 
 ```powershell
 # Check if all packages are installed
-python check_telegram_version.py
+python scripts/development/check_telegram_version.py
 
-# Test web app accessibility
-python test_webapp.py
+# Test web app accessibility (si existe)
+python scripts/testing/test_webapp.py
 
 # Verify votes are being saved
-python show_data_locations.py
+python scripts/utilities/show_data_locations.py
 ```
 
 ## 📂 Data Storage
@@ -343,12 +391,12 @@ Each vote contains:
 
 **View Statistics:**
 ```powershell
-python show_data_locations.py
+python scripts/utilities/show_data_locations.py
 ```
 
 **Test System:**
 ```powershell
-python test_voting_system.py
+python scripts/testing/test_voting_system.py
 ```
 
 **API Endpoints:**
@@ -379,7 +427,7 @@ For production, replace ngrok with:
 1. Deploy your app to a hosting service
 2. Update `WEB_APP_URL` with your production domain
 3. Set environment variables on your hosting platform
-4. Run `python setup_bot_correct.py` with production URL
+4. Run `python scripts/utilities/setup_bot_correct.py` with production URL
 5. Your bot will work with the production URL
 
 ## Features
@@ -440,7 +488,7 @@ After deployment, update the `WEB_APP_URL` in your bot configuration:
 ### 6. Test Your Bot
 
 1. Run the Flask app: `python run.py`
-2. Run the bot script: `python telegram_bot.py`
+2. Run the bot script: `python scripts/utilities/telegram_bot.py`
 3. Message your bot on Telegram
 4. Use `/start` or the menu button to access the Mini App
 
