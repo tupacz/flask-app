@@ -56,6 +56,8 @@ def condorcet_winner(ballots):
                 wins_count[j] += 1
                 respuesta += f"{candidates[j]} le gana a {candidates[i]}\n"
 
+    resultado["duelos_ganados"] = wins_count
+
     # Imprimir el número de contiendas ganadas por cada candidato
     for i, c in enumerate(candidates):
         respuesta += f"El candidato {c} ganó {wins_count[i]} contiendas.\n"

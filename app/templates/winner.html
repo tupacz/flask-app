@@ -38,6 +38,12 @@
           background-color: #ffd9d9;
         }
         
+        .duelos {
+          border-left: 3px solid #999;
+          font-weight: bold;
+          white-space: nowrap;
+        }
+
         .diagonal {
           background-color: #f0f0f0;
         }
@@ -57,6 +63,7 @@
       {% for candidate in winner.candidatos %}
         <th>{{ candidate }}</th>
       {% endfor %}
+      <th class="duelos">Duelos ganados</th>
     </tr>
     
     {% for row_candidate in winner.candidatos %}
@@ -77,6 +84,11 @@
           </td>
         {% endif %}
       {% endfor %}
+      {% set ganados = winner.duelos_ganados[winner.candidatos.index(row_candidate)] %}
+      <td class="duelos
+        {%- if ganados == winner.candidatos|length - 1 %} highlight-yellow{% endif -%}">
+        {{ ganados }} de {{ winner.candidatos|length - 1 }}
+      </td>
     </tr>
     {% endfor %}
   </table>
