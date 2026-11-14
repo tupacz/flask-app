@@ -88,6 +88,44 @@ body {
     background-color: #fde8e8;
 }
 
+.barra-admin {
+    font-size: small;
+    color: #555;
+    padding: 6px 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    display: inline-block;
+}
+
+.votantes {
+    columns: 2 12em;
+    padding-left: 1.4em;
+}
+
+.votantes li {
+    margin: 3px 0;
+}
+
+.nota {
+    font-size: small;
+    color: #555;
+}
+
+form.login {
+    display: grid;
+    gap: 8px;
+    max-width: 20em;
+}
+
+form.login input[type="password"] {
+    padding: 6px;
+}
+
+form.login button {
+    margin-top: 4px;
+    justify-self: start;
+}
+
 #voto-registrado {
     max-width: 40em;
     padding: 16px 20px;

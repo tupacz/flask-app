@@ -57,6 +57,7 @@
 </head>
 <body>
 <div class="container">
+  <p class="barra-admin">Modo admin · {{ cantidad_votos }} {{ 'voto' if cantidad_votos == 1 else 'votos' }} · <a href="{{ url_for('main.votes') }}">Editar votos</a> · <a href="{{ url_for('main.logout') }}">Salir del modo admin</a></p>
   <table>
     <tr>
       <th></th>

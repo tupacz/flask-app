@@ -1,6 +1,7 @@
 import os
+import hmac
 import random
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for, current_app
 from datetime import datetime
 
 from app.voting_condorcet import get_condorcet_winner
@@ -36,21 +37,69 @@ def books_manager():
     books_dao = Book.BooksDAO(file_path_books)
     return render_template('books-manager.html', books=books_dao.load_books())
 
+def es_admin():
+    return session.get('admin') is True
+
+def nombres_de_votantes(ruta_archivo):
+    """Nombres de quienes ya votaron, en el orden en que votaron."""
+    nombres = []
+    with open(ruta_archivo, 'r', encoding='utf-8') as file:
+        for linea in file:
+            if linea.startswith('Nombre: '):
+                nombres.append(linea.split('; ')[0][len('Nombre: '):].strip())
+    return nombres
+
+# Páginas a las que se puede volver después de ingresar como admin
+DESTINOS_ADMIN = {'/votes', '/winner'}
+
 @main.route('/winner')
 def winner():
+    nombres = nombres_de_votantes(file_path_data)
+    if not es_admin() or not nombres:
+        # El público solo ve quién votó; el resultado completo es solo para el admin
+        return render_template('winner_publico.html', nombres=nombres, admin=es_admin())
     winner = get_condorcet_winner(file_path_data)
-    return render_template('winner.html', winner=winner)
+    return render_template('winner.html', winner=winner, cantidad_votos=len(nombres))
+
+@main.route('/login', methods=['GET', 'POST'])
+def login():
+    destino = request.values.get('next', '/votes')
+    if destino not in DESTINOS_ADMIN:
+        destino = '/votes'
+    if request.method == 'GET':
+        if es_admin():
+            return redirect(destino)
+        return render_template('login.html', error=None, next=destino)
+
+    clave = current_app.config.get('ADMIN_PASSWORD')
+    ingresada = request.form.get('password', '')
+    if clave and hmac.compare_digest(ingresada.encode('utf-8'), clave.encode('utf-8')):
+        session.clear()
+        session['admin'] = True
+        session.permanent = True
+        return redirect(destino)
+    error = 'Contraseña incorrecta.' if clave else 'Falta configurar la contraseña de admin en el servidor.'
+    return render_template('login.html', error=error, next=destino), 401
+
+@main.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('main.index'))
 
 @main.route('/votes')
 def votes():
+    if not es_admin():
+        return render_template('login.html', error=None, next='/votes')
     # obtengo todo un string de data.txt
     with open(file_path_data, 'r', encoding='utf-8') as file:
         data = file.read()
-    return render_template('votes.html', data=data, password='1234')
+    return render_template('votes.html', data=data)
 
 
 @main.route('/submit-data', methods=['POST'])
 def cambiar_data():
+    if not es_admin():
+        return jsonify({'message': 'Solo el admin puede cambiar los votos. Ingresá de nuevo en /votes.'}), 403
     try:
         data = request.get_json()
         print('JSON recibido:', data)  # Imprime el JSON recibido

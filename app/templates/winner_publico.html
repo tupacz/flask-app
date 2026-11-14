@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votación en curso</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    {% if admin %}
+    <p class="barra-admin">Modo admin · <a href="{{ url_for('main.votes') }}">Editar votos</a> · <a href="{{ url_for('main.logout') }}">Salir del modo admin</a></p>
+    {% endif %}
+
+    <h1>Votación en curso 🗳️</h1>
+
+    {% if nombres %}
+    <p>Ya {{ 'votó' if nombres|length == 1 else 'votaron' }} <b>{{ nombres|length }}</b> {{ 'persona' if nombres|length == 1 else 'personas' }}:</p>
+    <ul class="votantes">
+        {% for nombre in nombres %}
+        <li>{{ nombre }}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>Todavía no votó nadie.</p>
+    {% endif %}
+
+    {% if not admin %}
+    <p>El resultado lo ve solo quien organiza la votación.</p>
+    {% endif %}
+    <p><a href="{{ url_for('main.index') }}">Ir a votar</a></p>
+
+    {% if not admin %}
+    <p class="nota"><a href="{{ url_for('main.login', next='/winner') }}">¿Organizás la votación? Ingresá como admin</a></p>
+    {% endif %}
+</body>
+</html>
