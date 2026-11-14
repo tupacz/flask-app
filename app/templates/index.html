@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,28 +8,97 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Ordená la lista y completá tu nombre</h1>
-    
-    <div id="form-container">
-        <label for="user-name">Nombre:</label>
-        <input type="text" id="user-name" name="user-name" placeholder="Escribí tu nombre" required>
+    <div id="votacion">
+        <h1>Ordená la lista y completá tu nombre</h1>
+
+        <div id="form-container">
+            <label for="user-name">Nombre:</label>
+            <input type="text" id="user-name" name="user-name" placeholder="Escribí tu nombre" required>
+        </div>
+
+        <ul id="sortable-list">
+            {% for book in books %}
+            <li data-value="{{ book.title }}"><b>"{{ book.title }}"</b> – {{ book.author }}<br><br>
+                {{ book.description }}</li>
+            {% endfor %}
+        </ul>
+        <br>
+        <button id="send-button">Enviar boleta 🗳️</button>
+        <div id="mensaje" class="mensaje" role="alert" hidden></div>
     </div>
 
-    <ul id="sortable-list">
-        {% for book in books %}
-        <li data-value="{{ book.title }}"><b>"{{ book.title }}"</b> – {{ book.author }}<br><br>
-            {{ book.description }}</li>
-        {% endfor %}
-    </ul>
-    <br>
-    <button id="send-button">Enviar boleta 🗳️</button>
+    <div id="voto-registrado" hidden>
+        <h2>✅ ¡Listo, <span id="vr-nombre"></span>! Tu voto quedó guardado</h2>
+        <p>Lo enviaste el <b id="vr-fecha"></b>. Este fue tu orden:</p>
+        <ol id="vr-lista"></ol>
+        <p class="otro-nombre">¿Sos otra persona usando este mismo teléfono o compu? <button type="button" id="otro-nombre">Votar con otro nombre</button></p>
+    </div>
 
     <script>
         const sortable = new Sortable(document.getElementById('sortable-list'), {
             animation: 150,
         });
 
-        document.getElementById('send-button').addEventListener('click', async () => {
+        // Cada votación se identifica por sus libros: si cambian los libros, es una votación nueva
+        // y el recordatorio de la anterior deja de aplicar.
+        const titulos = Array.from(document.querySelectorAll('#sortable-list li')).map(li => li.dataset.value).sort();
+        let hash = 5381;
+        for (const ch of titulos.join('|')) hash = ((hash * 33) ^ ch.codePointAt(0)) >>> 0;
+        const claveVoto = 'voto-' + hash.toString(36);
+
+        function leerVoto() {
+            try { return JSON.parse(localStorage.getItem(claveVoto)); } catch (e) { return null; }
+        }
+        function guardarVoto(voto) {
+            try { localStorage.setItem(claveVoto, JSON.stringify(voto)); } catch (e) { /* sin almacenamiento: igual se muestra la confirmación */ }
+        }
+        function borrarVoto() {
+            try { localStorage.removeItem(claveVoto); } catch (e) { }
+        }
+
+        // '2026-06-28 22:35:19' -> '28/06 a las 22:35'
+        function fechaLegible(fecha) {
+            const m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})/.exec(fecha || '');
+            return m ? `${m[3]}/${m[2]} a las ${m[4]}:${m[5]}` : (fecha || '');
+        }
+
+        function mostrarMensaje(texto, esError) {
+            const el = document.getElementById('mensaje');
+            el.textContent = texto;
+            el.classList.toggle('error', !!esError);
+            el.hidden = false;
+        }
+
+        function mostrarVotoRegistrado(voto) {
+            document.getElementById('vr-nombre').textContent = voto.nombre;
+            document.getElementById('vr-fecha').textContent = fechaLegible(voto.fecha);
+            const ol = document.getElementById('vr-lista');
+            ol.innerHTML = '';
+            voto.lista.forEach(titulo => {
+                const li = document.createElement('li');
+                li.textContent = titulo;
+                ol.appendChild(li);
+            });
+            document.getElementById('votacion').hidden = true;
+            document.getElementById('voto-registrado').hidden = false;
+            window.scrollTo(0, 0);
+        }
+
+        document.getElementById('otro-nombre').addEventListener('click', () => {
+            borrarVoto();
+            document.getElementById('user-name').value = '';
+            document.getElementById('mensaje').hidden = true;
+            document.getElementById('voto-registrado').hidden = true;
+            document.getElementById('votacion').hidden = false;
+        });
+
+        const votoPrevio = leerVoto();
+        if (votoPrevio && votoPrevio.nombre && Array.isArray(votoPrevio.lista)) {
+            mostrarVotoRegistrado(votoPrevio);
+        }
+
+        const sendButton = document.getElementById('send-button');
+        sendButton.addEventListener('click', async () => {
             const userName = document.getElementById('user-name').value;
 
             if (!userName.trim()) {
@@ -53,6 +122,8 @@
                 orderedList: orderedList
             };
 
+            sendButton.disabled = true;
+            document.getElementById('mensaje').hidden = true;
             try {
                 const response = await fetch('/submit', {
                     method: 'POST',
@@ -63,10 +134,20 @@
                 });
 
                 const result = await response.json();
-                alert(result.message);
+                if (response.ok) {
+                    const voto = { nombre: userName.trim(), lista: orderedList, fecha: result.fecha };
+                    guardarVoto(voto);
+                    mostrarVotoRegistrado(voto);
+                } else if (response.status === 409) {
+                    mostrarMensaje(result.message, false);
+                } else {
+                    mostrarMensaje(result.message || 'Hubo un error al enviar los datos.', true);
+                }
             } catch (error) {
                 console.error('Error al enviar:', error);
-                alert('Hubo un error al enviar los datos.');
+                mostrarMensaje('No se pudo enviar el voto. Revisá tu conexión y probá de nuevo.', true);
+            } finally {
+                sendButton.disabled = false;
             }
         });
     </script>

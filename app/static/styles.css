@@ -69,3 +69,55 @@ body {
 #form-container {
     margin-bottom: 20px;
 }
+
+#send-button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.mensaje {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border: 1px solid #e0a800;
+    background-color: #fff6d6;
+    max-width: 40em;
+}
+
+.mensaje.error {
+    border-color: #d9534f;
+    background-color: #fde8e8;
+}
+
+#voto-registrado {
+    max-width: 40em;
+    padding: 16px 20px;
+    border: 1px solid #4CAF50;
+    background-color: #eef8ee;
+}
+
+#voto-registrado h2 {
+    margin-top: 0;
+}
+
+#voto-registrado ol {
+    padding-left: 1.6em;
+}
+
+#voto-registrado li {
+    margin: 4px 0;
+}
+
+#voto-registrado .otro-nombre {
+    font-size: small;
+    color: #555;
+}
+
+#voto-registrado .otro-nombre button {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #1a5fb4;
+    text-decoration: underline;
+    cursor: pointer;
+    font: inherit;
+}

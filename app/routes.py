@@ -85,15 +85,39 @@ def submit():
                 
                 search_string = name
                 if search_string in file_contents:
-                    raise Exception(f"{search_string} ya votó.")
+                    fecha_previa = buscar_fecha_de_voto(file_contents, name)
+                    if fecha_previa:
+                        mensaje = f"{name.strip()} ya votó el {fecha_legible(fecha_previa)}. Si sos otra persona, probá con otro nombre (por ejemplo, sumando tu apellido)."
+                    else:
+                        mensaje = f'El nombre "{name.strip()}" ya figura en los votos. Probá con otro nombre (por ejemplo, sumando tu apellido).'
+                    return jsonify({'message': mensaje, 'yaVoto': True, 'fecha': fecha_previa}), 409
                 else:
                     print(f"'{search_string}' not found in file.")
 
                 file.write(f"Nombre: {name}; Lista: {ordered_list}; fecha: {fechahora}\n")
         except Exception as e:
             return (jsonify({'message': f'Error al guardar los datos: {str(e)}'}), 500)
-        
-    return jsonify({'message': 'Datos guardados correctamente'}), 200
+
+    return jsonify({'message': 'Datos guardados correctamente', 'fecha': fechahora}), 200
+
+def buscar_fecha_de_voto(contenido, nombre):
+    """Devuelve la fecha del voto cuyo nombre coincide exactamente (sin importar mayúsculas ni espacios), o None."""
+    buscado = nombre.strip().lower()
+    for linea in contenido.splitlines():
+        if not linea.startswith('Nombre: ') or 'fecha: ' not in linea:
+            continue
+        nombre_linea = linea.split('; ')[0][len('Nombre: '):]
+        if nombre_linea.strip().lower() == buscado:
+            return linea.rsplit('fecha: ', 1)[1].strip()
+    return None
+
+def fecha_legible(fecha):
+    """'2026-06-28 22:35:19' -> '28/06 a las 22:35'"""
+    try:
+        d = datetime.strptime(fecha, '%Y-%m-%d %H:%M:%S')
+        return f"{d:%d/%m} a las {d:%H:%M}"
+    except ValueError:
+        return fecha
 
 @main.route('/submit-book', methods=['POST'])
 def submit_books():
