@@ -187,16 +187,17 @@ a { color: var(--c-enlace); text-decoration: none; }
     background: var(--c-seccion);
 }
 
-/* El número de posición es también el agarre para arrastrar */
+/* El número de posición es también el agarre: mantenerlo apretado levanta el libro para arrastrarlo.
+   Sin touch-action: none, así un deslizamiento que empieza en el número sigue scrolleando la página. */
 .agarre {
     flex: 0 0 40px;
     height: 44px;
     display: grid;
     place-items: center;
     cursor: grab;
-    touch-action: none;
     user-select: none;
     -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 .posicion {
@@ -209,7 +210,24 @@ a { color: var(--c-enlace); text-decoration: none; }
     color: var(--c-boton-texto);
     font-size: 15px;
     font-weight: 600;
+    transition: transform 0.15s ease;
 }
+/* Al apoyar el dedo, el número se hunde un poco */
+.agarre:active .posicion { transform: scale(0.88); }
+
+/* Cumplida la espera, el libro se levanta: ya se puede arrastrar */
+.libro.libro-elegido {
+    position: relative;
+    z-index: 2;
+    border-radius: var(--radio);
+    /* Tinte del color de acento: en tema oscuro la sombra sola casi no se ve */
+    background: var(--c-seccion);
+    background: color-mix(in srgb, var(--c-acento) 14%, var(--c-seccion));
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+    transform: scale(1.03);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.libro.libro-elegido .posicion { transform: scale(1.12); }
 
 .libro-info {
     flex: 1;
@@ -272,10 +290,12 @@ a { color: var(--c-enlace); text-decoration: none; }
 .flecha:disabled:active { background: none; }
 
 /* Lugar que deja el libro mientras se arrastra, y el libro que se lleva con el dedo */
-.libro-hueco { background: var(--c-fondo); }
+.libro.libro-hueco { background: var(--c-fondo); box-shadow: none; transform: none; }
 .libro-hueco > * { opacity: 0; }
 .libro-arrastrado {
     border-radius: var(--radio);
+    background: var(--c-seccion);
+    background: color-mix(in srgb, var(--c-acento) 14%, var(--c-seccion));
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     opacity: 1 !important;
 }

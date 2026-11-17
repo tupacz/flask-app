@@ -37,6 +37,45 @@ setTimeout(() => {
   info.click();
   r.descripcionSeCierra = desc.hidden && info.getAttribute('aria-expanded') === 'false';
   r.orden = orden();
+  window.__resultado = r;
+}, 1000);
+
+// Mantener apretado el número con el dedo (eventos táctiles simulados)
+window.__hapticos = [];
+Telegram.WebApp.HapticFeedback.impactOccurred = (fuerza) => window.__hapticos.push(fuerza);
+const esperar = (ms) => new Promise(listo => setTimeout(listo, ms));
+function dedo(tipo, el, dy) {
+  const caja = el.getBoundingClientRect();
+  const evento = new PointerEvent(tipo, { bubbles: true, cancelable: true, pointerType: 'touch', isPrimary: true, pointerId: 1,
+                                         button: 0, clientX: caja.left + 10, clientY: caja.top + 10 + (dy || 0) });
+  (tipo === 'pointerdown' ? el : document).dispatchEvent(evento);
+}
+setTimeout(async () => {
+  const r = window.__resultado;
+  const libro = document.querySelectorAll('.libro')[3];
+  const numero = libro.querySelector('.posicion');
+  r.numeroNoBloqueaElScroll = getComputedStyle(libro.querySelector('.agarre')).touchAction !== 'none';
+
+  // Dedo quieto: a los 250 ms el libro se levanta y vibra
+  dedo('pointerdown', numero);
+  await esperar(120);
+  r.noSeLevantaAntesDeTiempo = !libro.classList.contains('libro-elegido');
+  await esperar(300);
+  r.seLevantaAlMantener = libro.classList.contains('libro-elegido');
+  r.vibraAlLevantarse = window.__hapticos.includes('medium');
+  dedo('pointerup', numero);
+  await esperar(50);
+  r.bajaAlSoltar = !libro.classList.contains('libro-elegido');
+
+  // Dedo que se desliza enseguida: es scroll, el libro no se levanta
+  window.__hapticos.length = 0;
+  dedo('pointerdown', numero);
+  await esperar(40);
+  dedo('pointermove', numero, 30);
+  await esperar(400);
+  r.deslizarNoLevanta = !libro.classList.contains('libro-elegido') && window.__hapticos.length === 0;
+  dedo('pointerup', numero, 30);
+
   document.body.setAttribute('data-resultado', JSON.stringify(r));
 }, 1500);
 </script>"""
@@ -45,7 +84,7 @@ setTimeout(() => {
 def main():
     cliente = armar_cliente()
     archivo = guardar_pagina(cliente, '/', 'claro', SESION_VOTANDO, 'flechas', extra=PRUEBA)
-    salida = edge('--virtual-time-budget=5000', '--dump-dom', url_local(archivo))
+    salida = edge('--virtual-time-budget=8000', '--dump-dom', url_local(archivo))
     m = re.search(r'data-resultado="([^"]*)"', salida.stdout)
     if not m:
         print('La página no llegó a correr la prueba:\n' + salida.stdout[-800:])

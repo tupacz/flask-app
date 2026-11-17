@@ -184,17 +184,19 @@
             if (info && !info.disabled) alternarDescripcion(info);
         });
 
+        // Mantener apretado el número (250 ms) levanta el libro; si el dedo se mueve antes, es scroll.
         new Sortable(lista, {
             animation: movimientoReducido ? 0 : 150,
             handle: '.agarre',
-            delay: 120,
+            delay: 250,
             delayOnTouchOnly: true,
-            touchStartThreshold: 5,
+            touchStartThreshold: 6,
             forceFallback: true,
             fallbackTolerance: 3,
+            chosenClass: 'libro-elegido',
             ghostClass: 'libro-hueco',
             fallbackClass: 'libro-arrastrado',
-            onStart: () => vibrar('light'),
+            onChoose: () => vibrar('medium'),
             onEnd: (evento) => {
                 actualizarPosiciones();
                 if (evento.oldIndex !== evento.newIndex) { marcarCambio(); vibrar('seleccion'); }
