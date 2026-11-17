@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Editar los votos</title>
+    <title>Votos</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
@@ -12,18 +12,47 @@
 
     <main class="pagina">
         <header class="encabezado">
-            <h1>Editar los votos</h1>
-            <p class="sub">Cada línea es un voto. Para empezar una votación nueva, borrá todo y guardá.</p>
+            <h1>Votos</h1>
+            <p class="sub" id="resumen">{% if votos %}{{ 'Votó' if votos|length == 1 else 'Votaron' }} {{ votos|length }} {{ 'persona' if votos|length == 1 else 'personas' }}. Tocá un nombre para ver su orden.{% else %}Todavía no votó nadie.{% endif %}</p>
         </header>
 
-        <h2 class="titulo-seccion">Archivo de votos</h2>
-        <div class="seccion">
-            <textarea id="datos" class="campo codigo" aria-label="Archivo de votos" spellcheck="false" autocapitalize="off">{{ data }}</textarea>
-        </div>
-        <p class="pie-seccion">No borres la marca [tg:…] del nombre: es lo que impide que alguien vote dos veces.</p>
+        {% if votos %}
+        <h2 class="titulo-seccion">Quiénes votaron</h2>
+        <ul id="votantes" class="seccion">
+            {% for voto in votos %}
+            <li class="votante" data-clave="{{ voto.clave }}" data-nombre="{{ voto.nombre }}">
+                <button type="button" class="votante-fila" aria-expanded="false" aria-controls="boleta-{{ loop.index }}">
+                    <span class="votante-texto">
+                        <span class="votante-nombre">{{ voto.nombre }}</span>
+                        <span class="votante-fecha">{% if voto.cuando %}Votó el {{ voto.cuando }}{% endif %}{% if voto.tg_id is none %}{{ ', ' if voto.cuando }}sin cuenta de Telegram{% endif %}</span>
+                    </span>
+                    <svg class="chevron" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5l5 5 5-5"/></svg>
+                </button>
+                <div class="votante-boleta" id="boleta-{{ loop.index }}" hidden>
+                    <ol class="lista-orden boleta">
+                        {% for titulo in voto.lista %}
+                        <li>{{ titulo }}</li>
+                        {% endfor %}
+                    </ol>
+                    <button type="button" class="boton-texto peligro borrar">Borrar el voto de {{ voto.nombre }}</button>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        <p class="pie-seccion">
+            {% if abierta %}Si alguien quiere votar de nuevo, borrá su voto: va a poder abrir la app y votar otra vez.
+            {% else %}La votación está cerrada. Si borrás el voto de alguien, va a poder votar de nuevo cuando la reabras.{% endif %}
+            {% if votos | selectattr('tg_id', 'none') | list %}Los votos sin cuenta de Telegram son del sistema anterior: esas personas pueden votar desde la app aunque no borres su voto, y quedaría repetido.{% endif %}
+        </p>
 
-        <div id="mensaje" class="mensaje" role="alert" hidden></div>
-        <button type="button" id="guardar" class="boton" hidden>Guardar cambios</button>
+        {% if not abierta %}
+        <h2 class="titulo-seccion">Votación nueva</h2>
+        <div class="seccion">
+            <button type="button" class="boton-texto peligro" id="borrar-todos">Borrar todos los votos</button>
+        </div>
+        <p class="pie-seccion">Para empezar otra votación. No se puede deshacer.</p>
+        {% endif %}
+        {% endif %}
 
         <h2 class="titulo-seccion">Organización</h2>
         <div class="seccion enlaces">
@@ -35,42 +64,103 @@
 
     <script>
     (function () {
-        const { confirmar, vibrar, botonPrincipal } = window.App;
-        const mensaje = document.getElementById('mensaje');
-        let guardando = false;
+        const { avisar, confirmar, vibrar, fetchTelegram, movimientoReducido } = window.App;
+        const ABIERTA = {{ abierta | tojson }};
+        const lista = document.getElementById('votantes');
+        if (!lista) return;
 
-        function mostrarMensaje(texto, esError) {
-            mensaje.textContent = texto;
-            mensaje.classList.toggle('error', !!esError);
-            mensaje.hidden = false;
+        function abrir(li, si) {
+            li.querySelector('.votante-boleta').hidden = !si;
+            li.classList.toggle('abierto', si);
+            li.querySelector('.votante-fila').setAttribute('aria-expanded', String(si));
         }
 
-        async function guardar() {
-            if (guardando) return;
-            const ok = await confirmar('¿Guardás los cambios? Se reemplaza todo el archivo de votos.');
-            if (!ok) return;
-            guardando = true;
-            boton.cargando(true);
-            try {
-                const respuesta = await fetch('/submit-data', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(document.getElementById('datos').value),
-                });
-                const resultado = await respuesta.json();
-                mostrarMensaje(resultado.message, !respuesta.ok);
-                vibrar(respuesta.ok ? 'success' : 'error');
-            } catch (error) {
-                console.error('Error:', error);
-                mostrarMensaje('No se pudieron guardar los cambios. Probá de nuevo.', true);
-                vibrar('error');
-            } finally {
-                guardando = false;
-                boton.cargando(false);
+        // Tocar un nombre muestra su orden ahí mismo. Uno abierto a la vez.
+        function alternar(li) {
+            const si = !li.classList.contains('abierto');
+            for (const otro of lista.querySelectorAll('.votante.abierto')) abrir(otro, false);
+            abrir(li, si);
+            vibrar('light');
+            if (si) {
+                const r = li.getBoundingClientRect();
+                if (r.bottom > window.innerHeight) li.scrollIntoView({ block: 'nearest', behavior: movimientoReducido ? 'auto' : 'smooth' });
             }
         }
 
-        const boton = botonPrincipal('Guardar cambios', guardar, document.getElementById('guardar'));
+        function actualizarResumen(cantidad) {
+            document.getElementById('resumen').textContent = cantidad === 0 ? 'Todavía no votó nadie.'
+                : `${cantidad === 1 ? 'Votó' : 'Votaron'} ${cantidad} ${cantidad === 1 ? 'persona' : 'personas'}. Tocá un nombre para ver su orden.`;
+        }
+
+        function quitar(li, cantidad) {
+            const terminar = () => {
+                li.remove();
+                if (!lista.querySelector('.votante')) window.location.reload();
+                else actualizarResumen(cantidad);
+            };
+            if (movimientoReducido || !li.animate) return terminar();
+            li.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, easing: 'ease-out' }).onfinish = terminar;
+        }
+
+        async function borrar(li, boton) {
+            const nombre = li.dataset.nombre;
+            const texto = ABIERTA
+                ? `¿Borrás el voto de ${nombre}? Va a poder abrir la app y votar de nuevo.`
+                : `¿Borrás el voto de ${nombre}? Como la votación está cerrada, va a poder votar de nuevo cuando la reabras.`;
+            if (!(await confirmar(texto))) return;
+            boton.disabled = true;
+            try {
+                const respuesta = await fetchTelegram('/borrar-voto', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ clave: li.dataset.clave }),
+                });
+                const resultado = await respuesta.json();
+                if (respuesta.ok || respuesta.status === 404) {
+                    // 404: ya lo había borrado otra persona, igual se saca de la lista
+                    vibrar(respuesta.ok ? 'success' : 'warning');
+                    if (!respuesta.ok) await avisar(resultado.message);
+                    quitar(li, resultado.cantidad);
+                    return;
+                }
+                vibrar('error');
+                await avisar(resultado.message || 'No se pudo borrar el voto.');
+            } catch (error) {
+                console.error('Error al borrar:', error);
+                vibrar('error');
+                await avisar('No se pudo conectar. Revisá tu conexión y probá de nuevo.');
+            }
+            boton.disabled = false;
+        }
+
+        lista.addEventListener('click', (evento) => {
+            const li = evento.target.closest('.votante');
+            if (!li) return;
+            const boton = evento.target.closest('.borrar');
+            if (boton) { if (!boton.disabled) borrar(li, boton); return; }
+            if (evento.target.closest('.votante-fila')) alternar(li);
+        });
+
+        const borrarTodos = document.getElementById('borrar-todos');
+        if (borrarTodos) {
+            borrarTodos.addEventListener('click', async () => {
+                const cantidad = lista.querySelectorAll('.votante').length;
+                if (!(await confirmar(`¿Borrás ${cantidad === 1 ? 'el único voto' : `los ${cantidad} votos`}? No se puede deshacer.`))) return;
+                borrarTodos.disabled = true;
+                try {
+                    const respuesta = await fetchTelegram('/borrar-votos', { method: 'POST' });
+                    const resultado = await respuesta.json();
+                    vibrar(respuesta.ok ? 'success' : 'error');
+                    await avisar(resultado.message || 'No se pudieron borrar los votos.');
+                    if (respuesta.ok) { window.location.reload(); return; }
+                } catch (error) {
+                    console.error('Error al borrar todos:', error);
+                    vibrar('error');
+                    await avisar('No se pudo conectar. Revisá tu conexión y probá de nuevo.');
+                }
+                borrarTodos.disabled = false;
+            });
+        }
     })();
     </script>
 </body>

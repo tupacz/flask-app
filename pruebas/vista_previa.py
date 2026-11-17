@@ -63,6 +63,8 @@ SESION_CERRADA = dict(SESION_YA_VOTO, abierta=False)
 
 # Abre la descripción del quinto libro, para ver cómo queda desplegada
 ABRIR_DESCRIPCION = """<script>setTimeout(() => document.querySelectorAll('.libro-info')[4].click(), 800);</script>"""
+# Despliega el orden de la segunda persona en la pantalla de votos
+ABRIR_VOTANTE = """<script>setTimeout(() => document.querySelectorAll('.votante-fila')[1].click(), 800);</script>"""
 
 
 def armar_cliente():
@@ -76,6 +78,8 @@ def armar_cliente():
         for i, nombre in enumerate(['Ana', 'Beto', 'Caro']):
             orden = TITULOS[i:] + TITULOS[:i]
             f.write(f"Nombre: {nombre} [tg:{i + 1}]; Lista: {orden}; fecha: 2026-11-20 21:0{i}:00\n")
+        # Un voto del sistema anterior, sin cuenta de Telegram
+        f.write(f"Nombre: Koty ; Lista: {list(reversed(TITULOS))}; fecha: 2026-11-14 01:29:24\n")
     cliente = create_app().test_client()
     with cliente.session_transaction() as s:
         s['admin'] = True
@@ -143,6 +147,8 @@ def main():
         'resultado-cerrada': ('/winner', SESION_CERRADA, '', publico, False),
         'libros': ('/books-manager', None, '', admin, True),
         'votos': ('/votes', None, '', admin, True),
+        'votos-desplegado': ('/votes', None, ABRIR_VOTANTE, admin, True),
+        'votos-cerrada': ('/votes', None, '', admin, False),
     }
     for tema in TEMAS:
         for nombre, (url, sesion, extra, cliente, abierta) in paginas.items():

@@ -62,7 +62,7 @@ def winner():
 def estado_votacion():
     """Botón de la página de resultados para cerrar o reabrir (lo mismo que /cerrar y /votacion en el grupo).
     Dentro de Telegram Web la cookie de admin no viaja, así que también vale la identidad de Telegram."""
-    if not (es_admin() or es_admin_telegram(usuario_de_request())):
+    if not admin_de_request():
         return jsonify({'message': 'Solo quien organiza la votación puede abrirla o cerrarla.'}), 403
     data = request.get_json(silent=True)
     abrir = data.get('abierta') if isinstance(data, dict) else None
@@ -111,31 +111,54 @@ def logout():
     session.clear()
     return redirect(url_for('main.index'))
 
+def admin_de_request():
+    """Admin por la cookie de sesión o, dentro de Telegram Web (donde la cookie no viaja), por initData."""
+    return es_admin() or es_admin_telegram(usuario_de_request())
+
+SOLO_ADMIN = 'Solo quien organiza la votación puede hacer eso.'
+
 @main.route('/votes')
 def votes():
+    """Quiénes votaron y la boleta de cada uno. Los votos no se editan: solo se borran,
+    para que esa persona pueda votar de nuevo."""
     if not es_admin():
         return render_template('login.html', error=None, next='/votes')
-    # obtengo todo un string de data.txt
-    with open(votos.RUTA_VOTOS, 'r', encoding='utf-8') as file:
-        data = file.read()
-    return render_template('votes.html', data=data)
+    lista = [dict(voto, clave=votos.clave_de(voto), cuando=fecha_legible(voto['fecha']))
+             for voto in votos.leer_votos()]
+    return render_template('votes.html', votos=lista, abierta=votos.votacion_abierta())
 
+def _despues_de_borrar():
+    """Con la votación abierta, la tarjeta del grupo vuelve a listar quiénes votaron."""
+    nombres = votos.nombres_de_votantes()
+    if votos.votacion_abierta():
+        telegram_bot.actualizar_tarjeta(nombres)
+    return len(nombres)
 
-@main.route('/submit-data', methods=['POST'])
-def cambiar_data():
-    if not es_admin():
-        return jsonify({'message': 'Solo el admin puede cambiar los votos. Ingresá de nuevo en /votes.'}), 403
-    try:
-        data = request.get_json()
-    except Exception as e:
-        return jsonify({'message': f'Error al procesar JSON: {str(e)}'}), 400
-    if not isinstance(data, str):
+@main.route('/borrar-voto', methods=['POST'])
+def borrar_voto():
+    if not admin_de_request():
+        return jsonify({'message': SOLO_ADMIN}), 403
+    data = request.get_json(silent=True)
+    clave = data.get('clave') if isinstance(data, dict) else None
+    if not isinstance(clave, str) or not clave:
         return jsonify({'message': 'Datos inválidos'}), 400
+    borrados = votos.borrar_votos(clave)
+    if not borrados:
+        return jsonify({'message': 'Ese voto ya no está. Puede que lo haya borrado otra persona.',
+                        'cantidad': len(votos.nombres_de_votantes())}), 404
+    cantidad = _despues_de_borrar()
+    return jsonify({'message': f"Listo, borraste el voto de {borrados[0]['nombre']}.", 'cantidad': cantidad})
 
-    with open(votos.RUTA_VOTOS, 'w', encoding='utf-8') as file:
-        file.write(data)
-
-    return jsonify({'message': 'Cambios guardados.'}), 200
+@main.route('/borrar-votos', methods=['POST'])
+def borrar_todos_los_votos():
+    """Para empezar una votación nueva. Solo con la votación cerrada, así no se usa por error mientras se vota."""
+    if not admin_de_request():
+        return jsonify({'message': SOLO_ADMIN}), 403
+    if votos.votacion_abierta():
+        return jsonify({'message': 'Cerrá la votación antes de borrar todos los votos.'}), 409
+    borrados = votos.borrar_votos()
+    return jsonify({'message': f"Listo, borraste {len(borrados)} {'voto' if len(borrados) == 1 else 'votos'}.",
+                    'cantidad': _despues_de_borrar()})
 
 
 def _voto_para_mostrar(voto):

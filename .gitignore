@@ -11,3 +11,4 @@ app/webhook_secret.txt
 app/admin_ids.txt
 app/data/telegram.json
 pruebas/capturas/
+app/data/votos_borrados.txt
