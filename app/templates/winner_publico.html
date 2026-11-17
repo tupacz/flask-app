@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Votación en curso</title>
+    <title>{% if abierta %}Votación en curso{% else %}Votación cerrada{% endif %}</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body data-volver="{{ url_for('main.index') }}">
+{# Con la votación cerrada esta es la pantalla de inicio: no hay a dónde volver #}
+<body{% if abierta %} data-volver="{{ url_for('main.index') }}"{% endif %}>
     <script src="{{ url_for('static', filename='telegram.js') }}"></script>
 
     <main class="pagina">
         <header class="encabezado">
-            <h1>Votación en curso</h1>
+            <h1>{% if abierta %}Votación en curso{% else %}La votación está cerrada{% endif %}</h1>
             {% if nombres %}
             <p class="sub">Ya {{ 'votó' if nombres|length == 1 else 'votaron' }} {{ nombres|length }} {{ 'persona' if nombres|length == 1 else 'personas' }}.</p>
             {% else %}
-            <p class="sub">Todavía no votó nadie.</p>
+            <p class="sub">{% if abierta %}Todavía no votó nadie.{% else %}No votó nadie.{% endif %}</p>
             {% endif %}
         </header>
 
@@ -27,23 +28,25 @@
             <li class="celda">{{ nombre }}</li>
             {% endfor %}
         </ul>
+        {% if abierta %}
+        <p class="pie-seccion">El resultado se ve acá cuando cierre la votación.</p>
+        {% endif %}
+        {% elif admin and abierta %}
+        <p class="pie-seccion">Cuando alguien vote, acá vas a ver el resultado completo.</p>
         {% endif %}
 
-        {% if admin %}
-        <p class="pie-seccion">Cuando alguien vote, acá vas a ver el resultado completo.</p>
-        <h2 class="titulo-seccion">Organización</h2>
-        <div class="seccion enlaces">
-            <a href="{{ url_for('main.books_manager') }}">Cambiar los libros</a>
-            <a href="{{ url_for('main.votes') }}">Editar los votos</a>
-            <a href="{{ url_for('main.logout') }}">Salir del modo admin</a>
-        </div>
-        {% else %}
-        <p class="pie-seccion">El resultado lo ve solo quien organiza la votación.</p>
+        {% include '_tu_boleta.html' %}
+
+        {% include '_organizacion.html' %}
+
+        {% if not admin %}
         <div class="seccion enlaces solo-navegador" style="margin-top: 24px">
-            <a href="{{ url_for('main.index') }}">Ir a votar</a>
+            {% if abierta %}<a href="{{ url_for('main.index') }}">Ir a votar</a>{% endif %}
             <a href="{{ url_for('main.login', next='/winner') }}">Organizo la votación, quiero entrar</a>
         </div>
         {% endif %}
     </main>
+
+    <script src="{{ url_for('static', filename='resultado.js') }}"></script>
 </body>
 </html>

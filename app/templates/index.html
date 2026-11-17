@@ -66,14 +66,14 @@
             </div>
             <h2 class="titulo-seccion">Tu orden</h2>
             <ol id="vr-lista" class="seccion lista-orden"></ol>
-            <p class="pie-seccion">Cuando se cierre la votación, el bot anuncia el ganador en el grupo.</p>
+            <p class="pie-seccion">Cuando se cierre la votación, el bot anuncia el ganador en el grupo y acá vas a ver el resultado completo.</p>
         </section>
 
-        <section id="cerrada" class="vacio" hidden>
-            <div class="icono" aria-hidden="true">🔒</div>
-            <h1>La votación ya cerró</h1>
-            <p>El resultado se anunció en el grupo del club.</p>
-        </section>
+        <nav id="barra-votantes" hidden>
+            <div class="seccion enlaces" style="margin-top: 24px">
+                <a href="{{ url_for('main.winner') }}">Quiénes votaron</a>
+            </div>
+        </nav>
 
         <nav id="barra-admin" hidden>
             <h2 class="titulo-seccion">Organización</h2>
@@ -87,7 +87,9 @@
 
     <script>
     (function () {
-        const { tg, enTelegram, movimientoReducido, vibrar, confirmar, fetchTelegram, botonPrincipal } = window.App;
+        const { tg, enTelegram, movimientoReducido, vibrar, avisar, confirmar, fetchTelegram, botonPrincipal, fechaLegible } = window.App;
+        const ABIERTA = {{ abierta | tojson }};
+        const URL_RESULTADO = {{ url_for('main.winner') | tojson }};
         const lista = document.getElementById('sortable-list');
         let nombre = '';
         let boton = null;
@@ -95,16 +97,29 @@
         let huboCambios = false;
 
         function mostrar(id) {
-            for (const otro of ['cargando', 'fuera', 'sin-identidad', 'votacion', 'voto-registrado', 'cerrada']) {
+            for (const otro of ['cargando', 'fuera', 'sin-identidad', 'votacion', 'voto-registrado']) {
                 document.getElementById(otro).hidden = (otro !== id);
             }
             window.scrollTo(0, 0);
         }
 
-        // '2026-06-28 22:35:19' -> '28/06 a las 22:35'
-        function fechaLegible(fecha) {
-            const m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})/.exec(fecha || '');
-            return m ? `${m[3]}/${m[2]} a las ${m[4]}:${m[5]}` : (fecha || '');
+        // Con la votación cerrada, la pantalla de inicio es el resultado. replace: que Atrás no vuelva acá.
+        function irAlResultado() {
+            window.location.replace(URL_RESULTADO);
+        }
+
+        // Salir a otra página recarga esta y mezcla los libros de nuevo: si ya los ordenó, se avisa antes
+        for (const barra of ['barra-votantes', 'barra-admin']) {
+            document.getElementById(barra).addEventListener('click', async (evento) => {
+                const enlace = evento.target.closest('a');
+                if (!enlace || !huboCambios) return;
+                evento.preventDefault();
+                const destino = enlace.href;
+                if (await confirmar('Si salís ahora se pierde el orden que armaste. ¿Salís igual?')) {
+                    terminarVotacion();
+                    window.location.href = destino;
+                }
+            });
         }
 
         function mostrarMensaje(texto, esError) {
@@ -227,6 +242,7 @@
 
         function terminarVotacion() {
             if (boton) boton.ocultar();
+            huboCambios = false;
             if (window.App.soporta('6.2')) tg.disableClosingConfirmation();
         }
 
@@ -251,7 +267,9 @@
                     mostrarVotoRegistrado(resultado.voto);
                 } else if (resultado.cerrada) {
                     terminarVotacion();
-                    mostrar('cerrada');
+                    vibrar('warning');
+                    await avisar('La votación cerró mientras ordenabas. Ahora vas a ver el resultado.');
+                    irAlResultado();
                 } else {
                     vibrar('error');
                     mostrarMensaje(resultado.message || 'Hubo un error al enviar el voto.', true);
@@ -271,6 +289,10 @@
                 mostrar('fuera');
                 return;
             }
+            if (!ABIERTA) {
+                irAlResultado();
+                return;
+            }
             let sesion;
             try {
                 const respuesta = await fetchTelegram('/sesion-telegram', { method: 'POST' });
@@ -287,13 +309,19 @@
                 return;
             }
 
+            if (!sesion.abierta) {
+                // Se cerró entre que se armó la página y ahora
+                irAlResultado();
+                return;
+            }
+
             nombre = sesion.nombre || '';
+            // Quien organiza ya tiene Ver el resultado en su barra, que lleva a la misma página
             document.getElementById('barra-admin').hidden = !sesion.esAdmin;
+            document.getElementById('barra-votantes').hidden = sesion.esAdmin;
 
             if (sesion.voto) {
                 mostrarVotoRegistrado(sesion.voto);
-            } else if (!sesion.abierta) {
-                mostrar('cerrada');
             } else {
                 document.getElementById('saludo').textContent = nombre ? `¡Hola, ${nombre}!` : '¡Hola!';
                 mostrar('votacion');

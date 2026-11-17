@@ -25,7 +25,8 @@ main = Blueprint('main', __name__)
 def index():
     books_to_send = Book.BooksDAO(votos.RUTA_LIBROS).load_books()
     random.shuffle(books_to_send)
-    return render_template('index.html', books=books_to_send,
+    # Con la votación cerrada, la Mini App lleva directo al resultado
+    return render_template('index.html', books=books_to_send, abierta=votos.votacion_abierta(),
                            bot_username=current_app.config.get('BOT_USERNAME'))
 
 def es_admin():
@@ -44,13 +45,40 @@ def books_manager():
 @main.route('/winner')
 def winner():
     nombres = votos.nombres_de_votantes()
-    if not es_admin() or not nombres:
-        # El público solo ve quién votó; el resultado completo es solo para el admin
-        return render_template('winner_publico.html', nombres=nombres, admin=es_admin())
+    abierta = votos.votacion_abierta()
+    admin = es_admin()
+    # Mientras la votación está abierta, el resultado lo ve solo quien organiza; al cerrarla, todos.
+    # La boleta de cada uno la completa resultado.js con /sesion-telegram.
+    if not nombres or (abierta and not admin):
+        return render_template('winner_publico.html', nombres=nombres, abierta=abierta, admin=admin)
     winner = get_condorcet_winner(votos.RUTA_VOTOS)
     ganador, empatados = telegram_bot.definir_ganador(winner)
     return render_template('winner.html', winner=winner, ganador=ganador, empatados=empatados,
-                           cantidad_votos=len(nombres), abierta=votos.votacion_abierta())
+                           nombres=nombres, abierta=abierta, admin=admin)
+
+@main.route('/estado-votacion', methods=['POST'])
+def estado_votacion():
+    """Botón de la página de resultados para cerrar o reabrir (lo mismo que /cerrar y /votacion en el grupo).
+    Dentro de Telegram Web la cookie de admin no viaja, así que también vale la identidad de Telegram."""
+    if not (es_admin() or es_admin_telegram(usuario_de_request())):
+        return jsonify({'message': 'Solo quien organiza la votación puede abrirla o cerrarla.'}), 403
+    data = request.get_json(silent=True)
+    abrir = data.get('abierta') if isinstance(data, dict) else None
+    if not isinstance(abrir, bool):
+        return jsonify({'message': 'Datos inválidos'}), 400
+
+    if abrir == votos.votacion_abierta():
+        return jsonify({'message': 'La votación ya estaba ' + ('abierta.' if abrir else 'cerrada.'), 'abierta': abrir})
+    if abrir:
+        telegram_bot.reabrir_votacion()
+        return jsonify({'message': 'Listo, la votación está abierta otra vez.', 'abierta': True})
+    try:
+        anunciado = telegram_bot.cerrar_y_anunciar()
+    except telegram_bot.NoSePuedeCerrar as e:
+        return jsonify({'message': str(e)}), 409
+    return jsonify({'message': 'Listo, cerraste la votación y el bot anunció el ganador en el grupo.' if anunciado
+                    else 'Listo, cerraste la votación. No pude avisar en el grupo: mandá /cerrar ahí para anunciarlo.',
+                    'abierta': False})
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():

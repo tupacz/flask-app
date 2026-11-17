@@ -1,0 +1,22 @@
+{# Herramientas de quien organiza. Con la cookie de admin se ve de entrada; dentro de Telegram,
+   donde la cookie a veces no viaja, la muestra resultado.js si /sesion-telegram dice que organiza. #}
+<nav id="barra-admin"{% if not admin %} hidden{% endif %}>
+    <h2 class="titulo-seccion">Organización</h2>
+    <div class="seccion enlaces">
+        {% if not abierta %}
+        <button type="button" class="boton-texto" id="cambiar-estado" data-abrir="true"
+                data-confirmar="¿Reabrís la votación? El resultado se vuelve a ocultar hasta que la cierres de nuevo.">Reabrir la votación</button>
+        {% elif nombres %}
+        <button type="button" class="boton-texto" id="cambiar-estado" data-abrir="false"
+                data-confirmar="¿Cerrás la votación? El bot anuncia el ganador en el grupo y todos pueden ver este resultado.">Cerrar la votación y anunciar el ganador</button>
+        {% endif %}
+        <a href="{{ url_for('main.books_manager') }}">Cambiar los libros</a>
+        <a href="{{ url_for('main.votes') }}">Editar los votos</a>
+        <a href="{{ url_for('main.logout') }}">Salir del modo admin</a>
+    </div>
+    {% if not abierta %}
+    <p class="pie-seccion">Para una votación nueva, borrá los votos y mandá /votacion en el grupo.</p>
+    {% elif nombres %}
+    <p class="pie-seccion">También podés cerrarla mandando /cerrar en el grupo.</p>
+    {% endif %}
+</nav>

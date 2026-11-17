@@ -7,14 +7,15 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body data-volver="{{ url_for('main.index') }}">
+{# Con la votación cerrada esta es la pantalla de inicio: no hay a dónde volver #}
+<body{% if abierta %} data-volver="{{ url_for('main.index') }}"{% endif %}>
     <script src="{{ url_for('static', filename='telegram.js') }}"></script>
 
     <main class="pagina">
         <header class="encabezado">
             <h1>Resultado</h1>
-            <p class="sub">Votaron {{ cantidad_votos }} {{ 'persona' if cantidad_votos == 1 else 'personas' }}.
-                {% if abierta %}La votación sigue abierta.{% else %}La votación está cerrada.{% endif %}</p>
+            <p class="sub">Votaron {{ nombres|length }} {{ 'persona' if nombres|length == 1 else 'personas' }}.
+                {% if abierta %}La votación sigue abierta, así que esto lo ves solo vos porque organizás.{% else %}La votación está cerrada.{% endif %}</p>
         </header>
 
         <h2 class="titulo-seccion">Ganador</h2>
@@ -32,6 +33,8 @@
             <p>Mirá los duelos para decidir entre los que empataron.</p>
             {% endif %}
         </div>
+
+        {% include '_tu_boleta.html' %}
 
         <h2 class="titulo-seccion">Duelos mano a mano</h2>
         <div class="seccion tabla-scroll">
@@ -69,13 +72,16 @@
         <h2 class="titulo-seccion">Cómo se llegó al resultado</h2>
         <div class="seccion logica">{{ winner.respuesta_escrita | trim }}</div>
 
-        <h2 class="titulo-seccion">Organización</h2>
-        <div class="seccion enlaces">
-            <a href="{{ url_for('main.books_manager') }}">Cambiar los libros</a>
-            <a href="{{ url_for('main.votes') }}">Editar los votos</a>
-            <a href="{{ url_for('main.logout') }}">Salir del modo admin</a>
-        </div>
-        <p class="pie-seccion">Para cerrar la votación y anunciar el ganador, mandá /cerrar en el grupo.</p>
+        <h2 class="titulo-seccion">Quiénes votaron</h2>
+        <ul class="seccion">
+            {% for nombre in nombres %}
+            <li class="celda">{{ nombre }}</li>
+            {% endfor %}
+        </ul>
+
+        {% include '_organizacion.html' %}
     </main>
+
+    <script src="{{ url_for('static', filename='resultado.js') }}"></script>
 </body>
 </html>

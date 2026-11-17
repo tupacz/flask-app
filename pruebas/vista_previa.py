@@ -59,6 +59,7 @@ TITULOS = [libro['title'] for libro in LIBROS_DE_EJEMPLO]
 SESION_VOTANDO ={'nombre': 'Pato', 'voto': None, 'abierta': True, 'esAdmin': True}
 SESION_YA_VOTO = {'nombre': 'Pato', 'abierta': True, 'esAdmin': False,
                   'voto': {'lista': TITULOS, 'fecha': '2026-11-20 21:03:11'}}
+SESION_CERRADA = dict(SESION_YA_VOTO, abierta=False)
 
 # Abre la descripción del quinto libro, para ver cómo queda desplegada
 ABRIR_DESCRIPCION = """<script>setTimeout(() => document.querySelectorAll('.libro-info')[4].click(), 800);</script>"""
@@ -128,19 +129,24 @@ def url_local(archivo):
 
 
 def main():
-    cliente = armar_cliente()
+    admin = armar_cliente()
+    publico = create_app().test_client()
     salida = os.path.join(AQUI, 'capturas')
     os.makedirs(salida, exist_ok=True)
+    # nombre: (url, sesión que responde /sesion-telegram, html extra, cliente, votación abierta)
     paginas = {
-        'votar': ('/', SESION_VOTANDO, ''),
-        'votar-descripcion': ('/', SESION_VOTANDO, ABRIR_DESCRIPCION),
-        'votado': ('/', SESION_YA_VOTO, ''),
-        'resultado': ('/winner', None, ''),
-        'libros': ('/books-manager', None, ''),
-        'votos': ('/votes', None, ''),
+        'votar': ('/', SESION_VOTANDO, '', admin, True),
+        'votar-descripcion': ('/', SESION_VOTANDO, ABRIR_DESCRIPCION, admin, True),
+        'votado': ('/', SESION_YA_VOTO, '', publico, True),
+        'quienes-votaron': ('/winner', SESION_YA_VOTO, '', publico, True),
+        'resultado': ('/winner', None, '', admin, True),
+        'resultado-cerrada': ('/winner', SESION_CERRADA, '', publico, False),
+        'libros': ('/books-manager', None, '', admin, True),
+        'votos': ('/votes', None, '', admin, True),
     }
     for tema in TEMAS:
-        for nombre, (url, sesion, extra) in paginas.items():
+        for nombre, (url, sesion, extra, cliente, abierta) in paginas.items():
+            votos.guardar_estado({'abierta': abierta})
             archivo = guardar_pagina(cliente, url, tema, sesion, f'{nombre}-{tema}', extra)
             png = os.path.join(salida, f'{nombre}-{tema}.png')
             edge('--hide-scrollbars', '--force-device-scale-factor=1', '--window-size=500,1100',

@@ -318,7 +318,11 @@ a { color: var(--c-enlace); text-decoration: none; }
     font-weight: 600;
 }
 
-/* ---------- Resultado (admin) ---------- */
+/* En tu boleta, el libro que ganó */
+.lista-orden .es-ganador { font-weight: 600; }
+.lista-orden .copa { margin-left: auto; }
+
+/* ---------- Resultado ---------- */
 
 .ganador { padding: 16px; text-align: center; }
 .seccion.ganador > * + * { border-top: 0; }

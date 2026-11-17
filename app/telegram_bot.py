@@ -85,11 +85,12 @@ def texto_tarjeta(nombres, abierta=True, ganador=None):
     return texto + f"Ya votaron {len(nombres)} personas: {unir_nombres(nombres)}."
 
 
-def boton_votar():
+def boton_votar(texto='🗳️ Votar'):
+    """Botón que abre la Mini App. Con la votación cerrada, la Mini App va directo al resultado."""
     usuario_bot = current_app.config.get('BOT_USERNAME')
     if not usuario_bot:
         return None
-    return {'inline_keyboard': [[{'text': '🗳️ Votar', 'url': f"https://t.me/{usuario_bot}?startapp"}]]}
+    return {'inline_keyboard': [[{'text': texto, 'url': f"https://t.me/{usuario_bot}?startapp"}]]}
 
 
 def definir_ganador(resultado):
@@ -154,9 +155,53 @@ def actualizar_tarjeta(nombres, abierta=True, ganador=None):
         'message_id': estado['message_id'],
         'text': texto_tarjeta(nombres, abierta, ganador),
     }
-    if abierta and boton_votar():
-        params['reply_markup'] = boton_votar()
+    boton = boton_votar() if abierta else boton_votar('🏆 Ver el resultado')
+    if boton:
+        params['reply_markup'] = boton
     llamar('editMessageText', params)
+
+
+# ---------- Estado de la votación ----------
+
+class NoSePuedeCerrar(Exception):
+    """El motivo, listo para mostrarle a quien quiso cerrar."""
+
+
+def cerrar_votacion():
+    """Cuenta los votos y marca la votación como cerrada. Devuelve (anuncio, ganador).
+    Si no hay votos o no se pueden contar, no cierra nada y lanza NoSePuedeCerrar."""
+    nombres = votos.nombres_de_votantes()
+    if not nombres:
+        raise NoSePuedeCerrar("Todavía no votó nadie, así que no hay nada que cerrar.")
+    try:
+        resultado = get_condorcet_winner(votos.RUTA_VOTOS)
+    except Exception as e:
+        print(f"No se pudo contar los votos: {e}")
+        raise NoSePuedeCerrar("No pude contar los votos. Revisá el archivo de votos desde la página de admin.")
+
+    estado = votos.leer_estado()
+    estado['abierta'] = False
+    votos.guardar_estado(estado)
+    ganador, _ = definir_ganador(resultado)
+    return texto_anuncio(resultado, len(nombres)), ganador
+
+
+def cerrar_y_anunciar():
+    """Cierre desde la página de resultados: anuncia en el grupo de la tarjeta y la edita.
+    Devuelve True si el anuncio llegó al grupo."""
+    anuncio, ganador = cerrar_votacion()
+    chat_tarjeta = votos.leer_estado().get('chat_id')
+    anunciado = bool(chat_tarjeta) and llamar('sendMessage', {'chat_id': chat_tarjeta, 'text': anuncio}) is not None
+    actualizar_tarjeta(votos.nombres_de_votantes(), abierta=False, ganador=ganador)
+    return anunciado
+
+
+def reabrir_votacion():
+    """Reabre sin publicar otra tarjeta: la que ya está en el grupo vuelve a tener el botón Votar."""
+    estado = votos.leer_estado()
+    estado['abierta'] = True
+    votos.guardar_estado(estado)
+    actualizar_tarjeta(votos.nombres_de_votantes())
 
 
 # ---------- Comandos ----------
@@ -190,30 +235,18 @@ def _abrir_votacion(mensaje):
 
 
 def _cerrar_votacion(mensaje):
-    nombres = votos.nombres_de_votantes()
-    if not nombres:
-        _responder(mensaje, "Todavía no votó nadie, así que no hay nada que cerrar.")
-        return
     try:
-        resultado = get_condorcet_winner(votos.RUTA_VOTOS)
-    except Exception as e:
-        print(f"No se pudo contar los votos: {e}")
-        _responder(mensaje, "No pude contar los votos. Revisá el archivo de votos desde la página de admin.")
+        anuncio, ganador = cerrar_votacion()
+    except NoSePuedeCerrar as e:
+        _responder(mensaje, str(e))
         return
-
-    estado = votos.leer_estado()
-    estado['abierta'] = False
-    votos.guardar_estado(estado)
-
-    ganador, _ = definir_ganador(resultado)
-    anuncio = texto_anuncio(resultado, len(nombres))
-    chat_tarjeta = estado.get('chat_id')
+    chat_tarjeta = votos.leer_estado().get('chat_id')
     if chat_tarjeta and chat_tarjeta != mensaje['chat']['id']:
         llamar('sendMessage', {'chat_id': chat_tarjeta, 'text': anuncio})
         _responder(mensaje, "Listo, cerré la votación y anuncié el resultado en el grupo.")
     else:
         _responder(mensaje, anuncio)
-    actualizar_tarjeta(nombres, abierta=False, ganador=ganador)
+    actualizar_tarjeta(votos.nombres_de_votantes(), abierta=False, ganador=ganador)
 
 
 def _bienvenida(mensaje):

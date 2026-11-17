@@ -89,5 +89,11 @@
         };
     }
 
-    window.App = { tg, enTelegram, soporta, movimientoReducido, avisar, confirmar, vibrar, fetchTelegram, botonPrincipal };
+    // '2026-06-28 22:35:19' -> '28/06 a las 22:35'
+    function fechaLegible(fecha) {
+        const m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})/.exec(fecha || '');
+        return m ? `${m[3]}/${m[2]} a las ${m[4]}:${m[5]}` : (fecha || '');
+    }
+
+    window.App = { tg, enTelegram, soporta, movimientoReducido, avisar, confirmar, vibrar, fetchTelegram, botonPrincipal, fechaLegible };
 })();

@@ -133,6 +133,9 @@ chequear(b'Libros de la votaci' not in cliente.get('/books-manager').data, '/boo
 chequear(cliente.post('/submit-book', json=[]).status_code == 403, '/submit-book rechaza a quien no es admin')
 r = cliente.get('/winner')
 chequear(r.status_code == 200 and 'Quiénes votaron'.encode() in r.data and b'[tg:' not in r.data, '/winner público sin marcas')
+chequear(b'Duelos mano a mano' not in r.data and b'Tu boleta' in r.data, '/winner con la votación abierta: sin resultado, con lugar para la boleta')
+chequear(b'data-volver' in r.data and b'id="barra-admin" hidden' in r.data, '/winner abierta: vuelve a votar y no muestra organización')
+chequear(b'const ABIERTA = true' in cliente.get('/').data, 'GET / sabe que la votación está abierta')
 chequear(cliente.get('/login').status_code == 200, '/login renderiza')
 
 # ---------- Webhook ----------
@@ -175,8 +178,16 @@ chequear(metodos == ['sendMessage', 'editMessageText'], f'/cerrar anuncia y cier
 print('     anuncio:\n' + '\n'.join('       ' + l for l in llamadas[0][1]['text'].splitlines()))
 print('     tarjeta cerrada:', repr(llamadas[1][1]['text']))
 chequear('Empataron' in llamadas[0][1]['text'] and 'ganó' not in llamadas[1][1]['text'], 'dos votos opuestos: empate, sin ganador en la tarjeta')
-chequear('reply_markup' not in llamadas[1][1], 'la tarjeta cerrada no tiene botón')
+boton_cerrada = llamadas[1][1]['reply_markup']['inline_keyboard'][0][0]
+chequear(boton_cerrada['text'] == '🏆 Ver el resultado' and boton_cerrada['url'] == 'https://t.me/ClubTestBot?startapp', 'la tarjeta cerrada lleva al resultado')
 chequear(votos.votacion_abierta() is False, 'la votación queda cerrada')
+chequear(b'const ABIERTA = false' in cliente.get('/').data, 'GET / sabe que cerró (y la página lleva al resultado)')
+r = cliente.get('/winner')
+chequear(r.status_code == 200 and b'Duelos mano a mano' in r.data and b'Tu boleta' in r.data, 'cerrada: cualquiera ve el resultado completo y su boleta')
+chequear('Quiénes votaron'.encode() in r.data and b'Ana O Brien x' in r.data and b'[tg:' not in r.data, 'cerrada: el resultado también lista quiénes votaron')
+chequear(b'data-volver' not in r.data, 'cerrada: el resultado es la pantalla de inicio, sin Atrás')
+chequear(b'id="barra-admin" hidden' in r.data, 'cerrada: quien no organiza no ve la organización')
+chequear(b'Reabrir la votaci' in admin.get('/winner').data, 'cerrada: el admin puede reabrir desde el resultado')
 r = cliente.post('/submit', json={'orderedList': orden}, headers=tma({'id': 444, 'first_name': 'Beto'}))
 chequear(r.status_code == 409 and r.json.get('cerrada'), '/submit con la votación cerrada -> 409')
 r = cliente.post('/sesion-telegram', headers=tma({'id': 444, 'first_name': 'Beto'}))
@@ -192,6 +203,48 @@ chequear(admin.get('/winner').status_code == 200, '/winner con data.txt vacío n
 # /votacion reabre
 cliente.post('/telegram/webhook', json=update('/votacion', ADMIN), headers=SECRETO)
 chequear(votos.votacion_abierta() is True, '/votacion reabre la votación')
+
+# ---------- Cerrar y reabrir desde la página de resultados ----------
+def cambiar_estado(abierta, quien=None, cliente_http=None):
+    return (cliente_http or app.test_client()).post('/estado-votacion', json={'abierta': abierta},
+                                                    headers=tma(quien) if quien else {})
+
+chequear(cambiar_estado(False).status_code == 403, '/estado-votacion sin identidad -> 403')
+chequear(cambiar_estado(False, ANA).status_code == 403, '/estado-votacion de quien no organiza -> 403')
+chequear(app.test_client().post('/estado-votacion', json={'abierta': 'no'}, headers=tma(ADMIN)).status_code == 400, '/estado-votacion con datos inválidos -> 400')
+r = cambiar_estado(False, ADMIN)
+chequear(r.status_code == 409 and 'Todavía no votó nadie' in r.json['message'] and votos.votacion_abierta(), 'no se puede cerrar sin votos')
+
+with open(votos.RUTA_VOTOS, 'w', encoding='utf-8') as f:
+    for i, orden_i in enumerate([orden, orden, list(reversed(orden))]):
+        f.write(f"Nombre: Persona {i} [tg:{i + 500}]; Lista: {orden_i}; fecha: 2026-11-20 21:0{i}:00\n")
+chequear(b'Cerrar la votaci' in admin.get('/winner').data, 'abierta: el admin ve el botón para cerrar')
+
+llamadas.clear()
+r = cambiar_estado(False, ADMIN)  # admin por initData, sin cookie (como en Telegram Web)
+metodos = [m for m, _ in llamadas]
+chequear(r.status_code == 200 and r.json['abierta'] is False and not votos.votacion_abierta(), f'el admin cierra desde la app: {r.json}')
+chequear(metodos == ['sendMessage', 'editMessageText'] and llamadas[0][1]['chat_id'] == -100 and 'Ganó Rayuela' in llamadas[0][1]['text'],
+         f'al cerrar desde la app, el bot anuncia en el grupo de la tarjeta: {metodos}')
+llamadas.clear()
+r = cambiar_estado(False, cliente_http=admin)  # admin por cookie
+chequear(r.status_code == 200 and 'ya estaba cerrada' in r.json['message'] and not llamadas, 'cerrar dos veces no anuncia de nuevo')
+r = cliente.get('/winner')
+chequear(b'Duelos mano a mano' in r.data and 'Rayuela</div>'.encode() in r.data, 'cerrada desde la app: el resultado es público')
+
+llamadas.clear()
+r = cambiar_estado(True, ADMIN)
+chequear(r.status_code == 200 and votos.votacion_abierta(), 'el admin reabre desde la app')
+chequear([m for m, _ in llamadas] == ['editMessageText'] and llamadas[0][1]['reply_markup']['inline_keyboard'][0][0]['text'] == '🗳️ Votar',
+         'al reabrir, la tarjeta vuelve a tener el botón Votar')
+chequear(b'Duelos mano a mano' not in cliente.get('/winner').data, 'reabierta: el resultado se oculta otra vez')
+
+# Sin tarjeta publicada, cerrar desde la app avisa que no pudo anunciar
+votos.guardar_estado({'abierta': True})
+llamadas.clear()
+r = cambiar_estado(False, ADMIN)
+chequear(r.status_code == 200 and 'No pude avisar en el grupo' in r.json['message'] and not llamadas, 'sin tarjeta: cierra y avisa que no anunció')
+votos.guardar_estado({'abierta': True})
 
 # ---------- Anuncio sin ganador estricto (ciclo A>B>C>A) ----------
 from app.voting_condorcet import condorcet_winner  # noqa: E402

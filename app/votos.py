@@ -88,5 +88,5 @@ def guardar_estado(estado):
 
 
 def votacion_abierta():
-    """Mientras nadie la cierre con /cerrar, la votación está abierta."""
+    """Mientras nadie la cierre (con /cerrar o desde la página de resultados), la votación está abierta."""
     return leer_estado().get('abierta', True) is not False
