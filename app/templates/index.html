@@ -185,7 +185,11 @@
         });
 
         // Mantener apretado el número (250 ms) levanta el libro; si el dedo se mueve antes, es scroll.
+        // supportPointer: false hace que escuche touchmove en vez de pointermove: con eventos de puntero,
+        // el navegador se queda con el gesto para scrollear (pointercancel) y el libro levantado no sigue al dedo.
+        // Con eventos táctiles, una vez levantado Sortable cancela el scroll y el libro se arrastra.
         new Sortable(lista, {
+            supportPointer: false,
             animation: movimientoReducido ? 0 : 150,
             handle: '.agarre',
             delay: 250,

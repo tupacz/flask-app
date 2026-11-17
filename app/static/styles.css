@@ -292,7 +292,10 @@ a { color: var(--c-enlace); text-decoration: none; }
 /* Lugar que deja el libro mientras se arrastra, y el libro que se lleva con el dedo */
 .libro.libro-hueco { background: var(--c-fondo); box-shadow: none; transform: none; }
 .libro-hueco > * { opacity: 0; }
-.libro-arrastrado {
+/* La copia que sigue al dedo: sin transición, para que acompañe el movimiento al instante
+   (hereda .libro-elegido, cuya transición de transform la haría ir atrasada) */
+.libro.libro-arrastrado {
+    transition: none !important;
     border-radius: var(--radio);
     background: var(--c-seccion);
     background: color-mix(in srgb, var(--c-acento) 14%, var(--c-seccion));

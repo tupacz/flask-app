@@ -40,41 +40,88 @@ setTimeout(() => {
   window.__resultado = r;
 }, 1000);
 
-// Mantener apretado el número con el dedo (eventos táctiles simulados)
+// Mantener apretado el número con el dedo: eventos táctiles (touchstart/touchmove/touchend),
+// que son los que manda un teléfono. Todos salen del elemento donde se apoyó el dedo, como en un teléfono.
 window.__hapticos = [];
 Telegram.WebApp.HapticFeedback.impactOccurred = (fuerza) => window.__hapticos.push(fuerza);
 const esperar = (ms) => new Promise(listo => setTimeout(listo, ms));
+let inicioDedo = null;
 function dedo(tipo, el, dy) {
-  const caja = el.getBoundingClientRect();
-  const evento = new PointerEvent(tipo, { bubbles: true, cancelable: true, pointerType: 'touch', isPrimary: true, pointerId: 1,
-                                         button: 0, clientX: caja.left + 10, clientY: caja.top + 10 + (dy || 0) });
-  (tipo === 'pointerdown' ? el : document).dispatchEvent(evento);
+  if (tipo === 'touchstart') { const c = el.getBoundingClientRect(); inicioDedo = { x: c.left + c.width / 2, y: c.top + c.height / 2 }; }
+  const punto = new Touch({ identifier: 1, target: el, clientX: inicioDedo.x, clientY: inicioDedo.y + (dy || 0) });
+  const evento = new TouchEvent(tipo, { bubbles: true, cancelable: true, composed: true,
+    touches: tipo === 'touchend' ? [] : [punto], targetTouches: tipo === 'touchend' ? [] : [punto], changedTouches: [punto] });
+  el.dispatchEvent(evento);
+  return evento;
 }
+const titulos = () => Array.from(document.querySelectorAll('#sortable-list .libro')).map(l => l.dataset.value);
 setTimeout(async () => {
   const r = window.__resultado;
-  const libro = document.querySelectorAll('.libro')[3];
-  const numero = libro.querySelector('.posicion');
+  let libro = document.querySelectorAll('.libro')[3];
+  let numero = libro.querySelector('.posicion');
   r.numeroNoBloqueaElScroll = getComputedStyle(libro.querySelector('.agarre')).touchAction !== 'none';
 
-  // Dedo quieto: a los 250 ms el libro se levanta y vibra
-  dedo('pointerdown', numero);
+  // Dedo quieto: a los 250 ms el libro se levanta y vibra; al soltar sin mover, baja
+  dedo('touchstart', numero);
   await esperar(120);
   r.noSeLevantaAntesDeTiempo = !libro.classList.contains('libro-elegido');
   await esperar(300);
   r.seLevantaAlMantener = libro.classList.contains('libro-elegido');
   r.vibraAlLevantarse = window.__hapticos.includes('medium');
-  dedo('pointerup', numero);
-  await esperar(50);
+  dedo('touchend', numero);
+  await esperar(80);
   r.bajaAlSoltar = !libro.classList.contains('libro-elegido');
 
-  // Dedo que se desliza enseguida: es scroll, el libro no se levanta
+  // Dedo que se desliza enseguida: es scroll (no se bloquea) y el libro no se levanta
   window.__hapticos.length = 0;
-  dedo('pointerdown', numero);
+  dedo('touchstart', numero);
   await esperar(40);
-  dedo('pointermove', numero, 30);
+  const deslizamiento = dedo('touchmove', numero, 30);
+  r.deslizarDejaScrollear = !deslizamiento.defaultPrevented;
   await esperar(400);
   r.deslizarNoLevanta = !libro.classList.contains('libro-elegido') && window.__hapticos.length === 0;
-  dedo('pointerup', numero, 30);
+  dedo('touchend', numero, 30);
+  await esperar(80);
+
+  // Mantener y arrastrar: el libro sigue al dedo, el scroll queda bloqueado y al soltar cambia el orden
+  libro = document.querySelectorAll('.libro')[1];
+  numero = libro.querySelector('.posicion');
+  const titulo = libro.dataset.value;
+  const alto = libro.getBoundingClientRect().height;
+  dedo('touchstart', numero);
+  await esperar(350);
+  const primerMovimiento = dedo('touchmove', numero, 8);
+  r.arrastrarBloqueaScroll = primerMovimiento.defaultPrevented;
+  const posiciones = [];
+  const registro = [];
+  const instancia = Sortable.get(document.getElementById('sortable-list'));
+  instancia.option('onMove', (e) => { registro.push('move→' + e.related.dataset.value.slice(0, 6) + (e.willInsertAfter ? '+' : '-')
+    + ' dedo=' + Math.round(e.originalEvent.clientY) + ' fila=' + Math.round(e.relatedRect.top) + '..' + Math.round(e.relatedRect.bottom)
+    + ' arrastrado=' + Math.round(e.draggedRect.top) + '..' + Math.round(e.draggedRect.bottom) + ' t=' + Math.round(performance.now())); });
+  registro.push('inicio dedo=' + Math.round(inicioDedo.y) + ' t=' + Math.round(performance.now()));
+  instancia.option('onChange', (e) => { registro.push('change ' + e.newIndex); });
+  // Como un dedo real: un touchmove cada 16 ms, de a 5 px, hasta bajar 3 filas (el dedo queda en el medio de una fila)
+  for (let y = 8, n = 0; y <= alto * 3; y += 5, n++) {
+    dedo('touchmove', numero, y);
+    await esperar(16);
+    if (n % 7 === 6) {
+      const clon = document.querySelector('.libro-arrastrado');
+      posiciones.push(clon ? Math.round(clon.getBoundingClientRect().top) : null);
+    }
+  }
+  dedo('touchmove', numero, alto * 3);
+  r.clonSigueAlDedo = posiciones.every(p => p !== null) && posiciones.every((p, i) => i === 0 || p > posiciones[i - 1]);
+  const bajoDedo = document.elementFromPoint(inicioDedo.x, inicioDedo.y + alto * 3);
+  r.diagnostico = JSON.stringify({ registro: registro.slice(0, 30), bajoDedo: bajoDedo && (bajoDedo.className + ' / ' + (bajoDedo.closest('.libro') || {}).className),
+    filas: Array.from(document.querySelectorAll('#sortable-list > .libro')).map(l => Math.round(l.getBoundingClientRect().top)), dedoY: Math.round(inicioDedo.y + alto * 3),
+    posiciones, alto, clases:Array.from(document.querySelectorAll('#sortable-list > *')).map(e => e.className) });
+  // Como una persona: el dedo queda quieto un momento en el lugar elegido y recién ahí suelta
+  await esperar(300);
+  dedo('touchend', numero, alto * 3);
+  await esperar(400);
+  r.reordenaAlSoltar = titulos().indexOf(titulo) >= 3;
+  r.numerosAlDia = Array.from(document.querySelectorAll('.libro .posicion')).map(p => p.textContent).join('') === titulos().map((_, i) => i + 1).join('');
+  r.nadaQuedaLevantado = !document.querySelector('.libro-elegido') && !document.querySelector('.libro-arrastrado');
 
   document.body.setAttribute('data-resultado', JSON.stringify(r));
 }, 1500);
@@ -84,7 +131,7 @@ setTimeout(async () => {
 def main():
     cliente = armar_cliente()
     archivo = guardar_pagina(cliente, '/', 'claro', SESION_VOTANDO, 'flechas', extra=PRUEBA)
-    salida = edge('--virtual-time-budget=8000', '--dump-dom', url_local(archivo))
+    salida = edge('--virtual-time-budget=12000', '--dump-dom', url_local(archivo))
     m = re.search(r'data-resultado="([^"]*)"', salida.stdout)
     if not m:
         print('La página no llegó a correr la prueba:\n' + salida.stdout[-800:])
@@ -93,7 +140,11 @@ def main():
     import json
     resultado = json.loads(html.unescape(m.group(1)))
     orden = resultado.pop('orden')
+    diagnostico = resultado.pop('diagnostico', None)
     fallas = [nombre for nombre, ok in resultado.items() if not ok]
+    if fallas and diagnostico:
+        # Registro del arrastre (intercambios de SortableJS con la posición del dedo y de las filas)
+        print('diagnóstico:', diagnostico)
     for nombre, ok in resultado.items():
         print(('OK    ' if ok else 'FALLA ') + nombre)
     print('orden final:', orden)
