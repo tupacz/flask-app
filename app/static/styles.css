@@ -1,161 +1,320 @@
+/* Estilo de Mini App de Telegram: colores del tema del usuario, listas agrupadas,
+   tipografía del sistema y safe areas. Las variables --tg-* las inyecta telegram-web-app.js;
+   los valores por defecto son para cuando la página se abre en un navegador común. */
+
+:root {
+    --c-fondo: var(--tg-theme-secondary-bg-color, #efeff4);
+    --c-seccion: var(--tg-theme-section-bg-color, var(--tg-theme-bg-color, #ffffff));
+    --c-texto: var(--tg-theme-text-color, #000000);
+    --c-pista: var(--tg-theme-hint-color, #8e8e93);
+    --c-subtitulo: var(--tg-theme-subtitle-text-color, var(--tg-theme-hint-color, #6d6d72));
+    --c-titulo-seccion: var(--tg-theme-section-header-text-color, var(--tg-theme-hint-color, #6d6d72));
+    --c-acento: var(--tg-theme-accent-text-color, var(--tg-theme-link-color, #2481cc));
+    --c-enlace: var(--tg-theme-link-color, #2481cc);
+    --c-boton: var(--tg-theme-button-color, #2481cc);
+    --c-boton-texto: var(--tg-theme-button-text-color, #ffffff);
+    --c-peligro: var(--tg-theme-destructive-text-color, #e53935);
+    --c-separador: var(--tg-theme-section-separator-color, rgba(60, 60, 67, 0.2));
+    --c-presionado: rgba(127, 127, 127, 0.14);
+    --c-gana: rgba(52, 199, 89, 0.22);
+    --c-pierde: rgba(255, 59, 48, 0.16);
+
+    --radio: 12px;
+    --margen: 16px;
+    --seguro-arriba: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
+    --seguro-abajo: calc(var(--tg-safe-area-inset-bottom, 0px) + var(--tg-content-safe-area-inset-bottom, 0px));
+    --seguro-izq: calc(var(--tg-safe-area-inset-left, 0px) + var(--tg-content-safe-area-inset-left, 0px));
+    --seguro-der: calc(var(--tg-safe-area-inset-right, 0px) + var(--tg-content-safe-area-inset-right, 0px));
+    color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --c-fondo: var(--tg-theme-secondary-bg-color, #000000);
+        --c-seccion: var(--tg-theme-section-bg-color, var(--tg-theme-bg-color, #1c1c1e));
+        --c-texto: var(--tg-theme-text-color, #ffffff);
+        --c-pista: var(--tg-theme-hint-color, #8e8e93);
+        --c-subtitulo: var(--tg-theme-subtitle-text-color, var(--tg-theme-hint-color, #98989f));
+        --c-titulo-seccion: var(--tg-theme-section-header-text-color, var(--tg-theme-hint-color, #8d8d93));
+        --c-acento: var(--tg-theme-accent-text-color, var(--tg-theme-link-color, #3e9be9));
+        --c-enlace: var(--tg-theme-link-color, #3e9be9);
+        --c-boton: var(--tg-theme-button-color, #3e9be9);
+        --c-separador: var(--tg-theme-section-separator-color, rgba(84, 84, 88, 0.6));
+    }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
 body {
-    font-family: 'Segoe UI Emoji', sans-serif;
-    padding-left: 1em;
-    padding-right: 2em;
-}
-
-.book-block {
-    margin-bottom: 20px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    background-color: #f0f0f0;
-}
-
-.book-block input, .book-block textarea {
-    display: block;
-    margin-bottom: 10px;
-    width: 90%;
-    padding: 5px;
-}
-
-.book-block button {
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-}
-
-.book-block button:hover {
-    background-color: #ff1a1a;
-}
-
-#add-book-button, #submit-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    margin-top: 20px;
-}
-
-#add-book-button:hover, #submit-button:hover {
-    background-color: #45a049;
-}
-
-#sortable-list {
-    list-style: none;
-    padding: 0;
     margin: 0;
+    background: var(--c-fondo);
+    color: var(--c-texto);
+    font: 17px/1.35 -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Segoe UI", "Helvetica Neue", sans-serif;
+    -webkit-tap-highlight-color: transparent;
 }
 
-#sortable-list li {
-    font-size: small;
-    padding: 10px;
-    margin: 5px 0;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    cursor: grab;
+a { color: var(--c-enlace); text-decoration: none; }
+
+[hidden] { display: none !important; }
+.en-telegram .solo-navegador { display: none !important; }
+.fuera-de-telegram .solo-telegram { display: none !important; }
+
+.pagina {
+    max-width: 640px;
+    margin: 0 auto;
+    padding:
+        calc(var(--seguro-arriba) + 12px)
+        calc(var(--seguro-der) + var(--margen))
+        calc(var(--seguro-abajo) + 32px)
+        calc(var(--seguro-izq) + var(--margen));
 }
 
-#sortable-list li b {
-    font-size: medium;
+/* ---------- Encabezado ---------- */
+
+.encabezado { padding: 8px 4px 4px; }
+.encabezado h1 { font-size: 28px; line-height: 1.15; margin: 0 0 6px; font-weight: 700; }
+.encabezado .sub { margin: 0; font-size: 15px; color: var(--c-subtitulo); }
+
+/* ---------- Listas agrupadas ---------- */
+
+.titulo-seccion {
+    margin: 24px 16px 8px;
+    font-size: 13px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--c-titulo-seccion);
 }
 
-#sortable-list li:hover {
-    background-color: #e0e0e0;
+.seccion {
+    background: var(--c-seccion);
+    border-radius: var(--radio);
+    overflow: hidden;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
-#form-container {
-    margin-bottom: 20px;
+.seccion > * + * { border-top: 0.5px solid var(--c-separador); }
+
+.pie-seccion {
+    margin: 8px 16px 0;
+    font-size: 13px;
+    color: var(--c-pista);
 }
 
-#send-button:disabled {
-    opacity: 0.6;
-    cursor: wait;
+.celda {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    padding: 11px 16px;
 }
+
+.enlaces a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 11px 16px;
+    color: var(--c-enlace);
+}
+.enlaces a::after { content: "›"; margin-left: auto; padding-left: 12px; font-size: 22px; line-height: 1; color: var(--c-pista); }
+.enlaces a:active { background: var(--c-presionado); }
+
+/* ---------- Botones y avisos ---------- */
+
+.boton {
+    display: block;
+    width: 100%;
+    min-height: 50px;
+    margin-top: 16px;
+    padding: 14px 16px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--c-boton);
+    color: var(--c-boton-texto);
+    font: inherit;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+}
+.boton:active { opacity: 0.75; }
+.boton:disabled { opacity: 0.5; cursor: default; }
+.boton.secundario { background: var(--c-seccion); color: var(--c-acento); }
+
+.boton-texto {
+    border: 0;
+    background: none;
+    padding: 11px 16px;
+    min-height: 44px;
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    color: var(--c-acento);
+    cursor: pointer;
+}
+.boton-texto:active { background: var(--c-presionado); }
+.boton-texto.peligro { color: var(--c-peligro); }
 
 .mensaje {
-    margin-top: 12px;
-    padding: 10px 12px;
-    border: 1px solid #e0a800;
-    background-color: #fff6d6;
-    max-width: 40em;
+    margin-top: 16px;
+    padding: 12px 16px;
+    border-radius: var(--radio);
+    background: var(--c-seccion);
+    font-size: 15px;
+}
+.mensaje.error { color: var(--c-peligro); }
+
+/* Pantallas de una sola idea: ya votaste, votación cerrada, abrir desde Telegram */
+.vacio { text-align: center; padding: 40px 8px 8px; }
+.vacio .icono { font-size: 64px; line-height: 1; margin-bottom: 16px; }
+.vacio h1 { font-size: 22px; margin: 0 0 8px; }
+.vacio p { margin: 0 auto; max-width: 28em; font-size: 15px; color: var(--c-subtitulo); }
+
+.cargando { padding: 64px 0; text-align: center; color: var(--c-pista); font-size: 15px; }
+
+/* ---------- Votación ---------- */
+
+.libro {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 4px 10px 16px;
+    background: var(--c-seccion);
 }
 
-.mensaje.error {
-    border-color: #d9534f;
-    background-color: #fde8e8;
-}
-
-.barra-admin {
-    font-size: small;
-    color: #555;
-    padding: 6px 10px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    display: inline-block;
-}
-
-.votantes {
-    columns: 2 12em;
-    padding-left: 1.4em;
-}
-
-.votantes li {
-    margin: 3px 0;
-}
-
-.nota {
-    font-size: small;
-    color: #555;
-}
-
-form.login {
+.posicion {
+    flex: 0 0 28px;
+    height: 28px;
+    border-radius: 50%;
     display: grid;
-    gap: 8px;
-    max-width: 20em;
+    place-items: center;
+    background: var(--c-boton);
+    color: var(--c-boton-texto);
+    font-size: 15px;
+    font-weight: 600;
 }
 
-form.login input[type="password"] {
-    padding: 6px;
-}
+.libro-texto { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.libro-titulo { font-weight: 600; overflow-wrap: anywhere; }
+.libro-autor { font-size: 15px; color: var(--c-subtitulo); }
+.libro-desc { margin-top: 4px; font-size: 14px; color: var(--c-pista); }
 
-form.login button {
-    margin-top: 4px;
-    justify-self: start;
-}
-
-#voto-registrado {
-    max-width: 40em;
-    padding: 16px 20px;
-    border: 1px solid #4CAF50;
-    background-color: #eef8ee;
-}
-
-#voto-registrado h2 {
-    margin-top: 0;
-}
-
-#voto-registrado ol {
-    padding-left: 1.6em;
-}
-
-#voto-registrado li {
-    margin: 4px 0;
-}
-
-#voto-registrado .otro-nombre {
-    font-size: small;
-    color: #555;
-}
-
-#voto-registrado .otro-nombre button {
+.mover { display: flex; flex-direction: column; flex: 0 0 auto; }
+.flecha {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 10px;
     background: none;
-    border: none;
-    padding: 0;
-    color: #1a5fb4;
-    text-decoration: underline;
+    color: var(--c-acento);
+    font-size: 16px;
     cursor: pointer;
+}
+.flecha:active { background: var(--c-presionado); }
+.flecha:disabled { color: var(--c-pista); opacity: 0.35; cursor: default; }
+.flecha:disabled:active { background: none; }
+
+.agarre {
+    flex: 0 0 32px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    color: var(--c-pista);
+    font-size: 20px;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Lugar que deja el libro mientras se arrastra, y el libro que se lleva con el dedo */
+.libro-hueco { background: var(--c-fondo); }
+.libro-hueco > * { opacity: 0; }
+.libro-arrastrado {
+    border-radius: var(--radio);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    opacity: 1 !important;
+}
+
+.lista-orden { padding: 0; margin: 0; list-style: none; counter-reset: orden; }
+.lista-orden li { counter-increment: orden; }
+.lista-orden li::before {
+    content: counter(orden);
+    flex: 0 0 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--c-fondo);
+    color: var(--c-subtitulo);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+/* ---------- Resultado (admin) ---------- */
+
+.ganador { padding: 16px; text-align: center; }
+.seccion.ganador > * + * { border-top: 0; }
+.ganador .icono { font-size: 48px; line-height: 1; }
+.ganador .titulo { font-size: 22px; font-weight: 700; margin: 8px 0 4px; }
+.ganador p { margin: 0; font-size: 15px; color: var(--c-subtitulo); }
+
+.tabla-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table.duelos { border-collapse: collapse; font-size: 14px; min-width: 100%; }
+.duelos th, .duelos td {
+    padding: 8px 10px;
+    text-align: center;
+    border-bottom: 0.5px solid var(--c-separador);
+}
+.duelos tr:last-child td { border-bottom: 0; }
+.duelos th { font-size: 13px; font-weight: 600; color: var(--c-titulo-seccion); min-width: 4.5em; max-width: 9em; vertical-align: bottom; }
+.duelos .fila {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    text-align: left;
+    font-weight: 600;
+    min-width: 8em;
+    max-width: 11em;
+    background: var(--c-seccion);
+}
+.duelos .gana { background: var(--c-gana); }
+.duelos .pierde { background: var(--c-pierde); }
+.duelos .diagonal { color: var(--c-pista); }
+.duelos .col-duelos { border-left: 0.5px solid var(--c-separador); font-weight: 600; white-space: nowrap; }
+
+.logica { padding: 12px 16px; font-size: 15px; color: var(--c-subtitulo); white-space: pre-line; }
+
+/* ---------- Formularios (admin) ---------- */
+
+.campo {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--c-texto);
     font: inherit;
+    padding: 11px 16px;
+    min-height: 44px;
+}
+.campo::placeholder { color: var(--c-pista); }
+.campo:focus { outline: 2px solid var(--c-acento); outline-offset: -2px; }
+textarea.campo { min-height: 5.5em; resize: vertical; }
+textarea.campo.codigo {
+    min-height: 55vh;
+    font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    white-space: pre;
+    overflow: auto;
+}
+
+.libro-editable { margin-top: 16px; }
+
+/* ---------- Movimiento ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
 }

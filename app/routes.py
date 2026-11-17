@@ -1,4 +1,3 @@
-import os
 import hmac
 import random
 from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for, current_app
@@ -7,59 +6,51 @@ from datetime import datetime
 from app.voting_condorcet import get_condorcet_winner
 
 try:
-    from app import voting_condorcet
     from app import Book
+    from app import votos
+    from app import telegram_bot
+    from app.telegram_auth import usuario_de_request, es_admin_telegram, nombre_para_guardar
 except ImportError:
-    import voting_condorcet
     import Book
+    import votos
+    import telegram_bot
+    from telegram_auth import usuario_de_request, es_admin_telegram, nombre_para_guardar
 
 # Crear un Blueprint
 main = Blueprint('main', __name__)
 
-books = [ Book.Book("Cien años de soledad", "Gabriel García Márquez", "La obra cumbre del realismo mágico que consolidó a García Márquez como una figura central de la literatura mundial.")
-    ]
 
-
-# Construir una ruta absoluta al archivo
-base_dir = os.path.dirname(os.path.abspath(__file__))  # Obtiene la carpeta actual
-file_path_data = os.path.join(base_dir, 'data', 'data.txt')
-file_path_books = os.path.join(base_dir, 'data', 'books.json')
-
-# Ruta para la página principal
+# Ruta para la página principal: la Mini App de votación
 @main.route('/')
 def index():
-    books_to_send = Book.BooksDAO(file_path_books).load_books()
+    books_to_send = Book.BooksDAO(votos.RUTA_LIBROS).load_books()
     random.shuffle(books_to_send)
-    return render_template('index.html', books=books_to_send)
-
-@main.route('/books-manager')
-def books_manager():
-    books_dao = Book.BooksDAO(file_path_books)
-    return render_template('books-manager.html', books=books_dao.load_books())
+    return render_template('index.html', books=books_to_send,
+                           bot_username=current_app.config.get('BOT_USERNAME'))
 
 def es_admin():
     return session.get('admin') is True
 
-def nombres_de_votantes(ruta_archivo):
-    """Nombres de quienes ya votaron, en el orden en que votaron."""
-    nombres = []
-    with open(ruta_archivo, 'r', encoding='utf-8') as file:
-        for linea in file:
-            if linea.startswith('Nombre: '):
-                nombres.append(linea.split('; ')[0][len('Nombre: '):].strip())
-    return nombres
-
 # Páginas a las que se puede volver después de ingresar como admin
-DESTINOS_ADMIN = {'/votes', '/winner'}
+DESTINOS_ADMIN = {'/votes', '/winner', '/books-manager'}
+
+@main.route('/books-manager')
+def books_manager():
+    if not es_admin():
+        return render_template('login.html', error=None, next='/books-manager')
+    books_dao = Book.BooksDAO(votos.RUTA_LIBROS)
+    return render_template('books-manager.html', books=books_dao.load_books())
 
 @main.route('/winner')
 def winner():
-    nombres = nombres_de_votantes(file_path_data)
+    nombres = votos.nombres_de_votantes()
     if not es_admin() or not nombres:
         # El público solo ve quién votó; el resultado completo es solo para el admin
         return render_template('winner_publico.html', nombres=nombres, admin=es_admin())
-    winner = get_condorcet_winner(file_path_data)
-    return render_template('winner.html', winner=winner, cantidad_votos=len(nombres))
+    winner = get_condorcet_winner(votos.RUTA_VOTOS)
+    ganador, empatados = telegram_bot.definir_ganador(winner)
+    return render_template('winner.html', winner=winner, ganador=ganador, empatados=empatados,
+                           cantidad_votos=len(nombres), abierta=votos.votacion_abierta())
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
@@ -91,7 +82,7 @@ def votes():
     if not es_admin():
         return render_template('login.html', error=None, next='/votes')
     # obtengo todo un string de data.txt
-    with open(file_path_data, 'r', encoding='utf-8') as file:
+    with open(votos.RUTA_VOTOS, 'r', encoding='utf-8') as file:
         data = file.read()
     return render_template('votes.html', data=data)
 
@@ -102,63 +93,90 @@ def cambiar_data():
         return jsonify({'message': 'Solo el admin puede cambiar los votos. Ingresá de nuevo en /votes.'}), 403
     try:
         data = request.get_json()
-        print('JSON recibido:', data)  # Imprime el JSON recibido
     except Exception as e:
         return jsonify({'message': f'Error al procesar JSON: {str(e)}'}), 400
-    
-    with open(file_path_data, 'w', encoding='utf-8') as file:
+    if not isinstance(data, str):
+        return jsonify({'message': 'Datos inválidos'}), 400
+
+    with open(votos.RUTA_VOTOS, 'w', encoding='utf-8') as file:
         file.write(data)
 
-    return jsonify({'message': 'Datos guardados correctamente'}), 200
+    return jsonify({'message': 'Cambios guardados.'}), 200
+
+
+def _voto_para_mostrar(voto):
+    return {'lista': voto['lista'], 'fecha': voto['fecha']} if voto else None
+
+def _saludo(usuario):
+    return (usuario.get('first_name') or '').strip() or nombre_para_guardar(usuario)
+
+MENSAJE_SIN_IDENTIDAD = 'No pudimos confirmar quién sos. Cerrá la votación y volvé a abrirla desde Telegram.'
+
+@main.route('/sesion-telegram', methods=['POST'])
+def sesion_telegram():
+    """Al abrir la Mini App: quién es, si ya votó, si la votación sigue abierta y si organiza."""
+    usuario = usuario_de_request()
+    if not usuario:
+        return jsonify({'message': MENSAJE_SIN_IDENTIDAD}), 401
+    admin = es_admin_telegram(usuario)
+    if admin:
+        # Misma sesión que el login con contraseña: habilita /winner, /votes y /books-manager
+        session['admin'] = True
+        session.permanent = True
+    return jsonify({
+        'nombre': _saludo(usuario),
+        'voto': _voto_para_mostrar(votos.voto_de(usuario['id'])),
+        'abierta': votos.votacion_abierta(),
+        'esAdmin': admin,
+    })
 
 @main.route('/submit', methods=['POST'])
 def submit():
-    try:
-        data = request.get_json()
-        print('JSON recibido:', data)  # Imprime el JSON recibido
-    except Exception as e:
-        return jsonify({'message': f'Error al procesar JSON: {str(e)}'}), 400
+    usuario = usuario_de_request()
+    if not usuario:
+        return jsonify({'message': MENSAJE_SIN_IDENTIDAD}), 401
 
-    if not data or 'name' not in data or 'orderedList' not in data:
+    data = request.get_json(silent=True)
+    ordered_list = data.get('orderedList') if isinstance(data, dict) else None
+    if not isinstance(ordered_list, list) or not all(isinstance(t, str) for t in ordered_list):
         return jsonify({'message': 'Datos inválidos'}), 400
 
-    name = data['name']
-    ordered_list = data['orderedList']
+    if not votos.votacion_abierta():
+        return jsonify({'message': 'La votación ya cerró.', 'cerrada': True}), 409
+
+    titulos = [book.title for book in Book.BooksDAO(votos.RUTA_LIBROS).load_books()]
+    if sorted(ordered_list) != sorted(titulos):
+        return jsonify({'message': 'La lista de libros cambió mientras votabas. '
+                                   'Cerrá la votación y volvé a abrirla para ver la lista nueva.'}), 400
+
+    previo = votos.voto_de(usuario['id'])
+    if previo:
+        return jsonify({'message': f"Ya votaste el {fecha_legible(previo['fecha'])}.",
+                        'yaVoto': True, 'voto': _voto_para_mostrar(previo)}), 409
+
     fechahora = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    try:
+        votos.agregar_voto(nombre_para_guardar(usuario), usuario['id'], ordered_list, fechahora)
+    except Exception as e:
+        return jsonify({'message': f'Error al guardar el voto: {str(e)}'}), 500
 
-    if name != 'kek':
-        try:
-            with open(file_path_data, 'a+', encoding='utf-8') as file:
-                file.seek(0)  # Move the cursor to the beginning of the file
-                file_contents = file.read()
-                
-                search_string = name
-                if search_string in file_contents:
-                    fecha_previa = buscar_fecha_de_voto(file_contents, name)
-                    if fecha_previa:
-                        mensaje = f"{name.strip()} ya votó el {fecha_legible(fecha_previa)}. Si sos otra persona, probá con otro nombre (por ejemplo, sumando tu apellido)."
-                    else:
-                        mensaje = f'El nombre "{name.strip()}" ya figura en los votos. Probá con otro nombre (por ejemplo, sumando tu apellido).'
-                    return jsonify({'message': mensaje, 'yaVoto': True, 'fecha': fecha_previa}), 409
-                else:
-                    print(f"'{search_string}' not found in file.")
+    # La tarjeta del grupo muestra quién votó. Si Telegram no responde, el voto igual quedó guardado.
+    telegram_bot.actualizar_tarjeta(votos.nombres_de_votantes())
+    voto = {'lista': ordered_list, 'fecha': fechahora}
+    return jsonify({'message': 'Voto guardado', 'fecha': fechahora, 'voto': voto}), 200
 
-                file.write(f"Nombre: {name}; Lista: {ordered_list}; fecha: {fechahora}\n")
-        except Exception as e:
-            return (jsonify({'message': f'Error al guardar los datos: {str(e)}'}), 500)
-
-    return jsonify({'message': 'Datos guardados correctamente', 'fecha': fechahora}), 200
-
-def buscar_fecha_de_voto(contenido, nombre):
-    """Devuelve la fecha del voto cuyo nombre coincide exactamente (sin importar mayúsculas ni espacios), o None."""
-    buscado = nombre.strip().lower()
-    for linea in contenido.splitlines():
-        if not linea.startswith('Nombre: ') or 'fecha: ' not in linea:
-            continue
-        nombre_linea = linea.split('; ')[0][len('Nombre: '):]
-        if nombre_linea.strip().lower() == buscado:
-            return linea.rsplit('fecha: ', 1)[1].strip()
-    return None
+@main.route('/telegram/webhook', methods=['POST'])
+def telegram_webhook():
+    secreto = current_app.config.get('WEBHOOK_SECRET') or ''
+    recibido = request.headers.get('X-Telegram-Bot-Api-Secret-Token', '')
+    if not secreto or not hmac.compare_digest(recibido.encode('utf-8'), secreto.encode('utf-8')):
+        return jsonify({'ok': False}), 403
+    try:
+        telegram_bot.procesar_update(request.get_json(silent=True) or {})
+    except Exception as e:
+        # Si respondemos error, Telegram reintenta el mismo update una y otra vez
+        print(f"Error procesando update de Telegram: {e}")
+    return jsonify({'ok': True})
 
 def fecha_legible(fecha):
     """'2026-06-28 22:35:19' -> '28/06 a las 22:35'"""
@@ -170,23 +188,28 @@ def fecha_legible(fecha):
 
 @main.route('/submit-book', methods=['POST'])
 def submit_books():
-    try:
-        data = request.get_json()
-        print('JSON recibido:', data)  # Imprime el JSON recibido
-    except Exception as e:
-        return jsonify({'message': f'Error al procesar JSON: {str(e)}'}), 400
-    
+    if not es_admin():
+        return jsonify({'message': 'Solo el admin puede cambiar los libros.'}), 403
+    data = request.get_json(silent=True)
+    if not isinstance(data, list):
+        return jsonify({'message': 'Datos inválidos'}), 400
+
     # Data es un array que contiene diccionarios con los datos del libro
     books2 = []
     for book in data:
-        if 'title' not in book or 'author' not in book or 'description' not in book:
+        if not isinstance(book, dict) or 'title' not in book or 'author' not in book or 'description' not in book:
             return jsonify({'message': 'Datos inválidos'}), 400
-        title = book['title']
-        author = book['author']
-        description = book['description']
+        title = str(book['title']).strip()
+        author = str(book['author']).strip()
+        description = str(book['description']).strip()
+        if not title:
+            return jsonify({'message': 'Hay un libro sin título.'}), 400
         books2.append(Book.Book(title, author, description))
 
-    books_dao = Book.BooksDAO(file_path_books)
+    if len({b.title for b in books2}) != len(books2):
+        return jsonify({'message': 'Hay dos libros con el mismo título.'}), 400
+
+    books_dao = Book.BooksDAO(votos.RUTA_LIBROS)
     books_dao.save_books(books=books2)
-    
-    return jsonify({'message': 'Datos guardados correctamente'}), 200
+
+    return jsonify({'message': 'Libros guardados.'}), 200

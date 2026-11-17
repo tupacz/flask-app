@@ -2,35 +2,48 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Votación en curso</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body>
-    {% if admin %}
-    <p class="barra-admin">Modo admin · <a href="{{ url_for('main.votes') }}">Editar votos</a> · <a href="{{ url_for('main.logout') }}">Salir del modo admin</a></p>
-    {% endif %}
+<body data-volver="{{ url_for('main.index') }}">
+    <script src="{{ url_for('static', filename='telegram.js') }}"></script>
 
-    <h1>Votación en curso 🗳️</h1>
+    <main class="pagina">
+        <header class="encabezado">
+            <h1>Votación en curso</h1>
+            {% if nombres %}
+            <p class="sub">Ya {{ 'votó' if nombres|length == 1 else 'votaron' }} {{ nombres|length }} {{ 'persona' if nombres|length == 1 else 'personas' }}.</p>
+            {% else %}
+            <p class="sub">Todavía no votó nadie.</p>
+            {% endif %}
+        </header>
 
-    {% if nombres %}
-    <p>Ya {{ 'votó' if nombres|length == 1 else 'votaron' }} <b>{{ nombres|length }}</b> {{ 'persona' if nombres|length == 1 else 'personas' }}:</p>
-    <ul class="votantes">
-        {% for nombre in nombres %}
-        <li>{{ nombre }}</li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <p>Todavía no votó nadie.</p>
-    {% endif %}
+        {% if nombres %}
+        <h2 class="titulo-seccion">Quiénes votaron</h2>
+        <ul class="seccion">
+            {% for nombre in nombres %}
+            <li class="celda">{{ nombre }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
 
-    {% if not admin %}
-    <p>El resultado lo ve solo quien organiza la votación.</p>
-    {% endif %}
-    <p><a href="{{ url_for('main.index') }}">Ir a votar</a></p>
-
-    {% if not admin %}
-    <p class="nota"><a href="{{ url_for('main.login', next='/winner') }}">¿Organizás la votación? Ingresá como admin</a></p>
-    {% endif %}
+        {% if admin %}
+        <p class="pie-seccion">Cuando alguien vote, acá vas a ver el resultado completo.</p>
+        <h2 class="titulo-seccion">Organización</h2>
+        <div class="seccion enlaces">
+            <a href="{{ url_for('main.books_manager') }}">Cambiar los libros</a>
+            <a href="{{ url_for('main.votes') }}">Editar los votos</a>
+            <a href="{{ url_for('main.logout') }}">Salir del modo admin</a>
+        </div>
+        {% else %}
+        <p class="pie-seccion">El resultado lo ve solo quien organiza la votación.</p>
+        <div class="seccion enlaces solo-navegador" style="margin-top: 24px">
+            <a href="{{ url_for('main.index') }}">Ir a votar</a>
+            <a href="{{ url_for('main.login', next='/winner') }}">Organizo la votación, quiero entrar</a>
+        </div>
+        {% endif %}
+    </main>
 </body>
 </html>

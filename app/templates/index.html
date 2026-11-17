@@ -2,58 +2,104 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ordenar y Enviar Lista</title>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Votación del club</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <div id="votacion">
-        <h1>Ordená la lista y completá tu nombre</h1>
+    <script src="{{ url_for('static', filename='telegram.js') }}"></script>
 
-        <div id="form-container">
-            <label for="user-name">Nombre:</label>
-            <input type="text" id="user-name" name="user-name" placeholder="Escribí tu nombre" required>
+    <main class="pagina">
+        <div id="cargando" class="cargando">Cargando…</div>
+
+        <section id="fuera" class="vacio" hidden>
+            <div class="icono" aria-hidden="true">📱</div>
+            <h1>Esta votación se abre desde Telegram</h1>
+            <p>Entrá desde el grupo del club tocando Votar en la tarjeta del bot.</p>
+            {% if bot_username %}
+            <a class="boton" href="https://t.me/{{ bot_username }}?startapp">Abrir en Telegram</a>
+            {% endif %}
+        </section>
+
+        <section id="sin-identidad" class="vacio" hidden>
+            <div class="icono" aria-hidden="true">🤔</div>
+            <h1>No pudimos reconocerte</h1>
+            <p id="sin-identidad-texto">Cerrá la votación y volvé a abrirla desde Telegram.</p>
+        </section>
+
+        <div id="votacion" hidden>
+            <header class="encabezado">
+                <h1 id="saludo">¡Hola!</h1>
+                <p class="sub">Ordená los libros, del que más querés leer al que menos.</p>
+            </header>
+
+            <h2 class="titulo-seccion">Tu orden</h2>
+            <ul id="sortable-list" class="seccion">
+                {% for book in books %}
+                <li class="libro" data-value="{{ book.title }}">
+                    <span class="posicion" aria-hidden="true">{{ loop.index }}</span>
+                    <div class="libro-texto">
+                        <span class="libro-titulo">{{ book.title }}</span>
+                        {% if book.author %}<span class="libro-autor">{{ book.author }}</span>{% endif %}
+                        {% if book.description %}<span class="libro-desc">{{ book.description }}</span>{% endif %}
+                    </div>
+                    <div class="mover">
+                        <button type="button" class="flecha subir" aria-label="Subir {{ book.title }}">▲</button>
+                        <button type="button" class="flecha bajar" aria-label="Bajar {{ book.title }}">▼</button>
+                    </div>
+                    <span class="agarre" aria-hidden="true">☰</span>
+                </li>
+                {% endfor %}
+            </ul>
+            <p class="pie-seccion">Movelos con las flechas, o mantené apretado ☰ y arrastrá.</p>
+
+            <div id="mensaje" class="mensaje" role="alert" hidden></div>
+            <button type="button" id="send-button" class="boton" hidden>Enviar boleta</button>
         </div>
 
-        <ul id="sortable-list">
-            {% for book in books %}
-            <li data-value="{{ book.title }}"><b>"{{ book.title }}"</b> – {{ book.author }}<br><br>
-                {{ book.description }}</li>
-            {% endfor %}
-        </ul>
-        <br>
-        <button id="send-button">Enviar boleta 🗳️</button>
-        <div id="mensaje" class="mensaje" role="alert" hidden></div>
-    </div>
+        <section id="voto-registrado" hidden>
+            <div class="vacio">
+                <div class="icono" aria-hidden="true">✅</div>
+                <h1 id="vr-titulo">¡Listo! Tu voto quedó guardado</h1>
+                <p>Lo enviaste el <span id="vr-fecha"></span>.</p>
+            </div>
+            <h2 class="titulo-seccion">Tu orden</h2>
+            <ol id="vr-lista" class="seccion lista-orden"></ol>
+            <p class="pie-seccion">Cuando se cierre la votación, el bot anuncia el ganador en el grupo.</p>
+        </section>
 
-    <div id="voto-registrado" hidden>
-        <h2>✅ ¡Listo, <span id="vr-nombre"></span>! Tu voto quedó guardado</h2>
-        <p>Lo enviaste el <b id="vr-fecha"></b>. Este fue tu orden:</p>
-        <ol id="vr-lista"></ol>
-        <p class="otro-nombre">¿Sos otra persona usando este mismo teléfono o compu? <button type="button" id="otro-nombre">Votar con otro nombre</button></p>
-    </div>
+        <section id="cerrada" class="vacio" hidden>
+            <div class="icono" aria-hidden="true">🔒</div>
+            <h1>La votación ya cerró</h1>
+            <p>El resultado se anunció en el grupo del club.</p>
+        </section>
+
+        <nav id="barra-admin" hidden>
+            <h2 class="titulo-seccion">Organización</h2>
+            <div class="seccion enlaces">
+                <a href="{{ url_for('main.winner') }}">Ver el resultado</a>
+                <a href="{{ url_for('main.books_manager') }}">Cambiar los libros</a>
+                <a href="{{ url_for('main.votes') }}">Editar los votos</a>
+            </div>
+        </nav>
+    </main>
 
     <script>
-        const sortable = new Sortable(document.getElementById('sortable-list'), {
-            animation: 150,
-        });
+    (function () {
+        const { tg, enTelegram, movimientoReducido, vibrar, confirmar, fetchTelegram, botonPrincipal } = window.App;
+        const lista = document.getElementById('sortable-list');
+        let nombre = '';
+        let boton = null;
+        let enviando = false;
+        let huboCambios = false;
 
-        // Cada votación se identifica por sus libros: si cambian los libros, es una votación nueva
-        // y el recordatorio de la anterior deja de aplicar.
-        const titulos = Array.from(document.querySelectorAll('#sortable-list li')).map(li => li.dataset.value).sort();
-        let hash = 5381;
-        for (const ch of titulos.join('|')) hash = ((hash * 33) ^ ch.codePointAt(0)) >>> 0;
-        const claveVoto = 'voto-' + hash.toString(36);
-
-        function leerVoto() {
-            try { return JSON.parse(localStorage.getItem(claveVoto)); } catch (e) { return null; }
-        }
-        function guardarVoto(voto) {
-            try { localStorage.setItem(claveVoto, JSON.stringify(voto)); } catch (e) { /* sin almacenamiento: igual se muestra la confirmación */ }
-        }
-        function borrarVoto() {
-            try { localStorage.removeItem(claveVoto); } catch (e) { }
+        function mostrar(id) {
+            for (const otro of ['cargando', 'fuera', 'sin-identidad', 'votacion', 'voto-registrado', 'cerrada']) {
+                document.getElementById(otro).hidden = (otro !== id);
+            }
+            window.scrollTo(0, 0);
         }
 
         // '2026-06-28 22:35:19' -> '28/06 a las 22:35'
@@ -69,87 +115,169 @@
             el.hidden = false;
         }
 
+        // ---------- Ordenar ----------
+
+        function libros() { return Array.from(lista.querySelectorAll('.libro')); }
+        function ordenActual() { return libros().map(li => li.dataset.value); }
+
+        function actualizarPosiciones() {
+            const items = libros();
+            items.forEach((li, i) => {
+                li.querySelector('.posicion').textContent = i + 1;
+                li.querySelector('.subir').disabled = (i === 0);
+                li.querySelector('.bajar').disabled = (i === items.length - 1);
+            });
+        }
+
+        function marcarCambio() {
+            if (huboCambios) return;
+            huboCambios = true;
+            if (window.App.soporta('6.2')) tg.enableClosingConfirmation();
+        }
+
+        // Sube o baja un libro un lugar, con una animación corta de los dos que se cruzan
+        function mover(li, direccion, botonTocado) {
+            const otro = direccion < 0 ? li.previousElementSibling : li.nextElementSibling;
+            if (!otro) return;
+            const antes = new Map([[li, li.getBoundingClientRect().top], [otro, otro.getBoundingClientRect().top]]);
+            if (direccion < 0) lista.insertBefore(li, otro);
+            else lista.insertBefore(otro, li);
+            if (!movimientoReducido && li.animate) {
+                for (const [el, top] of antes) {
+                    const delta = top - el.getBoundingClientRect().top;
+                    el.animate([{ transform: `translateY(${delta}px)` }, { transform: 'translateY(0)' }],
+                               { duration: 180, easing: 'ease-out' });
+                }
+            }
+            actualizarPosiciones();
+            marcarCambio();
+            vibrar('seleccion');
+            // Mantener el foco en la flecha tocada para poder seguir moviendo el mismo libro
+            const siguiente = botonTocado.disabled ? li.querySelector(direccion < 0 ? '.bajar' : '.subir') : botonTocado;
+            siguiente.focus({ preventScroll: true });
+            const r = li.getBoundingClientRect();
+            if (r.top < 0 || r.bottom > window.innerHeight) li.scrollIntoView({ block: 'nearest', behavior: movimientoReducido ? 'auto' : 'smooth' });
+        }
+
+        lista.addEventListener('click', (evento) => {
+            const flecha = evento.target.closest('.flecha');
+            if (!flecha || flecha.disabled) return;
+            mover(flecha.closest('.libro'), flecha.classList.contains('subir') ? -1 : 1, flecha);
+        });
+
+        new Sortable(lista, {
+            animation: movimientoReducido ? 0 : 150,
+            handle: '.agarre',
+            delay: 120,
+            delayOnTouchOnly: true,
+            touchStartThreshold: 5,
+            forceFallback: true,
+            fallbackTolerance: 3,
+            ghostClass: 'libro-hueco',
+            fallbackClass: 'libro-arrastrado',
+            onStart: () => vibrar('light'),
+            onEnd: (evento) => {
+                actualizarPosiciones();
+                if (evento.oldIndex !== evento.newIndex) { marcarCambio(); vibrar('seleccion'); }
+            },
+        });
+
+        actualizarPosiciones();
+
+        // ---------- Pantallas ----------
+
         function mostrarVotoRegistrado(voto) {
-            document.getElementById('vr-nombre').textContent = voto.nombre;
+            document.getElementById('vr-titulo').textContent = nombre ? `¡Listo, ${nombre}! Tu voto quedó guardado` : '¡Listo! Tu voto quedó guardado';
             document.getElementById('vr-fecha').textContent = fechaLegible(voto.fecha);
             const ol = document.getElementById('vr-lista');
             ol.innerHTML = '';
             voto.lista.forEach(titulo => {
                 const li = document.createElement('li');
+                li.className = 'celda';
                 li.textContent = titulo;
                 ol.appendChild(li);
             });
-            document.getElementById('votacion').hidden = true;
-            document.getElementById('voto-registrado').hidden = false;
-            window.scrollTo(0, 0);
+            mostrar('voto-registrado');
         }
 
-        document.getElementById('otro-nombre').addEventListener('click', () => {
-            borrarVoto();
-            document.getElementById('user-name').value = '';
-            document.getElementById('mensaje').hidden = true;
-            document.getElementById('voto-registrado').hidden = true;
-            document.getElementById('votacion').hidden = false;
-        });
-
-        const votoPrevio = leerVoto();
-        if (votoPrevio && votoPrevio.nombre && Array.isArray(votoPrevio.lista)) {
-            mostrarVotoRegistrado(votoPrevio);
+        function terminarVotacion() {
+            if (boton) boton.ocultar();
+            if (window.App.soporta('6.2')) tg.disableClosingConfirmation();
         }
 
-        const sendButton = document.getElementById('send-button');
-        sendButton.addEventListener('click', async () => {
-            const userName = document.getElementById('user-name').value;
+        async function enviar() {
+            if (enviando) return;
+            const ok = await confirmar('¿Enviás tu boleta? Después no se puede cambiar.');
+            if (!ok) return;
 
-            if (!userName.trim()) {
-                alert('Por favor, ingresá tu nombre.');
-                return;
-            }
-
-            const listItems = document.querySelectorAll('#sortable-list li');
-            const orderedList = Array.from(listItems).map(item => item.dataset.value);
-            const orderedListToDisplay = Array.from(listItems).map((item, index) => `${index + 1} - ${item.dataset.value}`);
-
-            const confirmationMessage = `Resumen de tu selección:\n\n${orderedListToDisplay.join('\n')}\n\n¿Aceptas?`;
-            const userConfirmed = confirm(confirmationMessage);
-
-            if (!userConfirmed) {
-                return;
-            }
-
-            const dataToSend = {
-                name: userName,
-                orderedList: orderedList
-            };
-
-            sendButton.disabled = true;
+            enviando = true;
+            boton.cargando(true);
             document.getElementById('mensaje').hidden = true;
             try {
-                const response = await fetch('/submit', {
+                const respuesta = await fetchTelegram('/submit', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(dataToSend)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ orderedList: ordenActual() }),
                 });
-
-                const result = await response.json();
-                if (response.ok) {
-                    const voto = { nombre: userName.trim(), lista: orderedList, fecha: result.fecha };
-                    guardarVoto(voto);
-                    mostrarVotoRegistrado(voto);
-                } else if (response.status === 409) {
-                    mostrarMensaje(result.message, false);
+                const resultado = await respuesta.json();
+                if (respuesta.ok || (respuesta.status === 409 && resultado.yaVoto && resultado.voto)) {
+                    terminarVotacion();
+                    vibrar('success');
+                    mostrarVotoRegistrado(resultado.voto);
+                } else if (resultado.cerrada) {
+                    terminarVotacion();
+                    mostrar('cerrada');
                 } else {
-                    mostrarMensaje(result.message || 'Hubo un error al enviar los datos.', true);
+                    vibrar('error');
+                    mostrarMensaje(resultado.message || 'Hubo un error al enviar el voto.', true);
                 }
             } catch (error) {
                 console.error('Error al enviar:', error);
+                vibrar('error');
                 mostrarMensaje('No se pudo enviar el voto. Revisá tu conexión y probá de nuevo.', true);
             } finally {
-                sendButton.disabled = false;
+                enviando = false;
+                boton.cargando(false);
             }
-        });
+        }
+
+        async function iniciar() {
+            if (!enTelegram) {
+                mostrar('fuera');
+                return;
+            }
+            let sesion;
+            try {
+                const respuesta = await fetchTelegram('/sesion-telegram', { method: 'POST' });
+                sesion = await respuesta.json();
+                if (!respuesta.ok) {
+                    document.getElementById('sin-identidad-texto').textContent = sesion.message || 'Cerrá la votación y volvé a abrirla desde Telegram.';
+                    mostrar('sin-identidad');
+                    return;
+                }
+            } catch (error) {
+                console.error('Error al iniciar:', error);
+                document.getElementById('sin-identidad-texto').textContent = 'No se pudo conectar. Revisá tu conexión y volvé a abrir la votación.';
+                mostrar('sin-identidad');
+                return;
+            }
+
+            nombre = sesion.nombre || '';
+            document.getElementById('barra-admin').hidden = !sesion.esAdmin;
+
+            if (sesion.voto) {
+                mostrarVotoRegistrado(sesion.voto);
+            } else if (!sesion.abierta) {
+                mostrar('cerrada');
+            } else {
+                document.getElementById('saludo').textContent = nombre ? `¡Hola, ${nombre}!` : '¡Hola!';
+                mostrar('votacion');
+                boton = botonPrincipal('Enviar boleta', enviar, document.getElementById('send-button'));
+            }
+        }
+
+        iniciar();
+    })();
     </script>
 </body>
 </html>

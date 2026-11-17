@@ -2,101 +2,80 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ganador de Condorcet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Resultado de la votación</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <style>
-        table {
-          border-collapse: collapse;
-          font-family: Arial, sans-serif;
-          font-size: 14px;
-        }
-        
-        th, td {
-          border: 1px solid #ccc;
-          padding: 8px;
-          text-align: center;
-          min-width: 40px;
-        }
-        
-        th {
-          background-color: #f0f0f0;
-          font-weight: bold;
-        }
-        
-        .title-cell {
-          text-align: left;
-          background-color: #f0f0f0;
-          font-weight: bold;
-        }
-        
-        .highlight-yellow {
-          background-color: #ffffcc;
-        }
-        
-        .highlight-pink {
-          background-color: #ffd9d9;
-        }
-        
-        .duelos {
-          border-left: 3px solid #999;
-          font-weight: bold;
-          white-space: nowrap;
-        }
-
-        .diagonal {
-          background-color: #f0f0f0;
-        }
-        
-        .container {
-          max-width: 100%;
-          overflow-x: auto;
-          padding: 20px;
-        }
-      </style>
 </head>
-<body>
-<div class="container">
-  <p class="barra-admin">Modo admin · {{ cantidad_votos }} {{ 'voto' if cantidad_votos == 1 else 'votos' }} · <a href="{{ url_for('main.votes') }}">Editar votos</a> · <a href="{{ url_for('main.logout') }}">Salir del modo admin</a></p>
-  <table>
-    <tr>
-      <th></th>
-      {% for candidate in winner.candidatos %}
-        <th>{{ candidate }}</th>
-      {% endfor %}
-      <th class="duelos">Duelos ganados</th>
-    </tr>
-    
-    {% for row_candidate in winner.candidatos %}
-    <tr>
-      <td class="title-cell">{{ row_candidate }}</td>
-      {% for col_candidate in winner.candidatos %}
-        {% if row_candidate == col_candidate %}
-          <td class="diagonal">-</td>
-        {% else %}
-          {% set row_index = winner.candidatos.index(row_candidate) %}
-          {% set col_index = winner.candidatos.index(col_candidate) %}
-          {% set votes = winner.get_votes[row_index][col_index] %}
-          <td class="
-            {%- if votes < winner.half %}highlight-pink
-            {%- elif votes > winner.half %}highlight-yellow
-            {%- endif -%}">
-            {{ votes }}
-          </td>
-        {% endif %}
-      {% endfor %}
-      {% set ganados = winner.duelos_ganados[winner.candidatos.index(row_candidate)] %}
-      <td class="duelos
-        {%- if ganados == winner.candidatos|length - 1 %} highlight-yellow{% endif -%}">
-        {{ ganados }} de {{ winner.candidatos|length - 1 }}
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
+<body data-volver="{{ url_for('main.index') }}">
+    <script src="{{ url_for('static', filename='telegram.js') }}"></script>
 
-  <h2>Ganador de Condorcet: {{ winner.ganador_condorcet }}</h2>
-  <h3>Lógica:</h3>
-  <p>{{ winner.respuesta_escrita | replace('\n', '<br>') | safe }}</p>
-</div>
+    <main class="pagina">
+        <header class="encabezado">
+            <h1>Resultado</h1>
+            <p class="sub">Votaron {{ cantidad_votos }} {{ 'persona' if cantidad_votos == 1 else 'personas' }}.
+                {% if abierta %}La votación sigue abierta.{% else %}La votación está cerrada.{% endif %}</p>
+        </header>
+
+        <h2 class="titulo-seccion">Ganador</h2>
+        <div class="seccion ganador">
+            {% if ganador %}
+            <div class="icono" aria-hidden="true">🏆</div>
+            <div class="titulo">{{ ganador }}</div>
+            {% elif empatados %}
+            <div class="icono" aria-hidden="true">🤝</div>
+            <div class="titulo">Empate</div>
+            <p>{{ empatados | join(', ') }} quedaron iguales en duelos ganados y también en votos.</p>
+            {% else %}
+            <div class="icono" aria-hidden="true">🤝</div>
+            <div class="titulo">No hay un ganador claro</div>
+            <p>Mirá los duelos para decidir entre los que empataron.</p>
+            {% endif %}
+        </div>
+
+        <h2 class="titulo-seccion">Duelos mano a mano</h2>
+        <div class="seccion tabla-scroll">
+            <table class="duelos">
+                <tr>
+                    <th class="fila"></th>
+                    {% for candidate in winner.candidatos %}
+                    <th>{{ candidate }}</th>
+                    {% endfor %}
+                    <th class="col-duelos">Duelos ganados</th>
+                </tr>
+                {% for row_candidate in winner.candidatos %}
+                {% set row_index = loop.index0 %}
+                <tr>
+                    <td class="fila">{{ row_candidate }}</td>
+                    {% for col_candidate in winner.candidatos %}
+                    {% if loop.index0 == row_index %}
+                    <td class="diagonal">-</td>
+                    {% else %}
+                    {% set votes = winner.get_votes[row_index][loop.index0] %}
+                    <td class="
+                        {%- if votes < winner.half %}pierde
+                        {%- elif votes > winner.half %}gana
+                        {%- endif -%}">{{ votes }}</td>
+                    {% endif %}
+                    {% endfor %}
+                    {% set ganados = winner.duelos_ganados[row_index] %}
+                    <td class="col-duelos{% if ganados == winner.candidatos|length - 1 %} gana{% endif %}">{{ ganados }} de {{ winner.candidatos|length - 1 }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <p class="pie-seccion">Cada número dice cuántas personas pusieron el libro de la fila antes que el de la columna. En verde, los duelos que ganó; en rojo, los que perdió.</p>
+
+        <h2 class="titulo-seccion">Cómo se llegó al resultado</h2>
+        <div class="seccion logica">{{ winner.respuesta_escrita | trim }}</div>
+
+        <h2 class="titulo-seccion">Organización</h2>
+        <div class="seccion enlaces">
+            <a href="{{ url_for('main.books_manager') }}">Cambiar los libros</a>
+            <a href="{{ url_for('main.votes') }}">Editar los votos</a>
+            <a href="{{ url_for('main.logout') }}">Salir del modo admin</a>
+        </div>
+        <p class="pie-seccion">Para cerrar la votación y anunciar el ganador, mandá /cerrar en el grupo.</p>
+    </main>
 </body>
 </html>

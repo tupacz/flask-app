@@ -2,46 +2,76 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ganador de Condorcet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Editar los votos</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body>
-    <p class="barra-admin">Modo admin · <a href="{{ url_for('main.winner') }}">Ver resultado</a> · <a href="{{ url_for('main.logout') }}">Salir del modo admin</a></p>
-    <p>{{ data }}</p>
-    <p>
-        <textarea name="description" placeholder="Descripción" style="width: 80%;" required>{{ data }}</textarea>
-    </p>
-    <p>
-        <button id="submit-button">Cambiar</button>
-    </p>
-    <div id="mensaje" class="mensaje" role="alert" hidden></div>
+<body data-volver="{{ url_for('main.index') }}">
+    <script src="{{ url_for('static', filename='telegram.js') }}"></script>
 
+    <main class="pagina">
+        <header class="encabezado">
+            <h1>Editar los votos</h1>
+            <p class="sub">Cada línea es un voto. Para empezar una votación nueva, borrá todo y guardá.</p>
+        </header>
+
+        <h2 class="titulo-seccion">Archivo de votos</h2>
+        <div class="seccion">
+            <textarea id="datos" class="campo codigo" aria-label="Archivo de votos" spellcheck="false" autocapitalize="off">{{ data }}</textarea>
+        </div>
+        <p class="pie-seccion">No borres la marca [tg:…] del nombre: es lo que impide que alguien vote dos veces.</p>
+
+        <div id="mensaje" class="mensaje" role="alert" hidden></div>
+        <button type="button" id="guardar" class="boton" hidden>Guardar cambios</button>
+
+        <h2 class="titulo-seccion">Organización</h2>
+        <div class="seccion enlaces">
+            <a href="{{ url_for('main.winner') }}">Ver el resultado</a>
+            <a href="{{ url_for('main.books_manager') }}">Cambiar los libros</a>
+            <a href="{{ url_for('main.logout') }}">Salir del modo admin</a>
+        </div>
+    </main>
 
     <script>
-        document.getElementById('submit-button').addEventListener('click', () => {
-            const data = document.querySelector('textarea[name="description"]').value;
-            const mensaje = document.getElementById('mensaje');
+    (function () {
+        const { confirmar, vibrar, botonPrincipal } = window.App;
+        const mensaje = document.getElementById('mensaje');
+        let guardando = false;
 
-            fetch('/submit-data', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(async response => {
-                const result = await response.json();
-                mensaje.textContent = result.message;
-                mensaje.classList.toggle('error', !response.ok);
-                mensaje.hidden = false;
-            })
-            .catch((error) => {
+        function mostrarMensaje(texto, esError) {
+            mensaje.textContent = texto;
+            mensaje.classList.toggle('error', !!esError);
+            mensaje.hidden = false;
+        }
+
+        async function guardar() {
+            if (guardando) return;
+            const ok = await confirmar('¿Guardás los cambios? Se reemplaza todo el archivo de votos.');
+            if (!ok) return;
+            guardando = true;
+            boton.cargando(true);
+            try {
+                const respuesta = await fetch('/submit-data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(document.getElementById('datos').value),
+                });
+                const resultado = await respuesta.json();
+                mostrarMensaje(resultado.message, !respuesta.ok);
+                vibrar(respuesta.ok ? 'success' : 'error');
+            } catch (error) {
                 console.error('Error:', error);
-                mensaje.textContent = 'No se pudieron guardar los cambios. Probá de nuevo.';
-                mensaje.classList.add('error');
-                mensaje.hidden = false;
-            });
-        });
+                mostrarMensaje('No se pudieron guardar los cambios. Probá de nuevo.', true);
+                vibrar('error');
+            } finally {
+                guardando = false;
+                boton.cargando(false);
+            }
+        }
+
+        const boton = botonPrincipal('Guardar cambios', guardar, document.getElementById('guardar'));
+    })();
     </script>
 </body>
+</html>

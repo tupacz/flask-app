@@ -1,106 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agregar Libros</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Libros de la votación</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body>
-    <h1>Agregar Libros</h1>
-    <div id="book-container">
-        {% for book in books %}
-        <div class="book-block">
-            <input type="text" name="title" placeholder="Nombre del libro" value="{{ book.title }}" required>
-            <input type="text" name="author" placeholder="Autor" value="{{ book.author }}" required>
-            <textarea name="description" placeholder="Descripción" required>{{ book.description }}</textarea>
-            <button class="delete-button">Borrar</button>
+<body data-volver="{{ url_for('main.index') }}">
+    <script src="{{ url_for('static', filename='telegram.js') }}"></script>
+
+    <main class="pagina">
+        <header class="encabezado">
+            <h1>Libros de la votación</h1>
+            <p class="sub">Cambialos antes de publicar la votación con /votacion. Si los cambiás cuando ya hay votos, esos votos dejan de coincidir con la lista.</p>
+        </header>
+
+        <div id="book-container">
+            {% for book in books %}
+            <div class="seccion libro-editable">
+                <input type="text" class="campo" name="title" placeholder="Título" aria-label="Título" value="{{ book.title }}" required>
+                <input type="text" class="campo" name="author" placeholder="Autor" aria-label="Autor" value="{{ book.author }}">
+                <textarea class="campo" name="description" placeholder="Descripción" aria-label="Descripción">{{ book.description }}</textarea>
+                <button type="button" class="boton-texto peligro delete-button">Borrar libro</button>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-        {% if books|length == 0 %}
-        <div class="book-block">
-            <input type="text" name="title" placeholder="Nombre del libro" required>
-            <input type="text" name="author" placeholder="Autor" required>
-            <textarea name="description" placeholder="Descripción" required>{{ book.description }}</textarea>
-            <button class="delete-button">Borrar</button>
+
+        <button type="button" id="add-book-button" class="boton secundario">Agregar libro</button>
+
+        <div id="mensaje" class="mensaje" role="alert" hidden></div>
+        <button type="button" id="submit-button" class="boton" hidden>Guardar libros</button>
+
+        <h2 class="titulo-seccion">Organización</h2>
+        <div class="seccion enlaces">
+            <a href="{{ url_for('main.winner') }}">Ver el resultado</a>
+            <a href="{{ url_for('main.votes') }}">Editar los votos</a>
+            <a href="{{ url_for('main.logout') }}">Salir del modo admin</a>
         </div>
-        {% endif %}
-    </div>
-    <button id="add-book-button">Agregar nuevo libro</button>
-    <button id="submit-button">Submit</button>
-    <label id="guardando" style="visibility:hidden">Guardando...</label>
+    </main>
+
+    <template id="libro-nuevo">
+        <div class="seccion libro-editable">
+            <input type="text" class="campo" name="title" placeholder="Título" aria-label="Título" required>
+            <input type="text" class="campo" name="author" placeholder="Autor" aria-label="Autor">
+            <textarea class="campo" name="description" placeholder="Descripción" aria-label="Descripción"></textarea>
+            <button type="button" class="boton-texto peligro delete-button">Borrar libro</button>
+        </div>
+    </template>
 
     <script>
-        document.getElementById('add-book-button').addEventListener('click', () => {
-            const bookContainer = document.getElementById('book-container');
-            const newBookBlock = document.createElement('div');
-            newBookBlock.className = 'book-block';
-            newBookBlock.innerHTML = `
-                <input type="text" name="title" placeholder="Nombre del libro" required>
-                <input type="text" name="author" placeholder="Autor" required>
-                <textarea name="description" placeholder="Descripción" required></textarea>
-                <button class="delete-button">Borrar</button>
-            `;
-            bookContainer.appendChild(newBookBlock);
+    (function () {
+        const { confirmar, vibrar, botonPrincipal } = window.App;
+        const contenedor = document.getElementById('book-container');
+        const mensaje = document.getElementById('mensaje');
+        let guardando = false;
+
+        function mostrarMensaje(texto, esError) {
+            mensaje.textContent = texto;
+            mensaje.classList.toggle('error', !!esError);
+            mensaje.hidden = false;
+        }
+
+        function agregarLibro() {
+            const bloque = document.getElementById('libro-nuevo').content.firstElementChild.cloneNode(true);
+            contenedor.appendChild(bloque);
+            bloque.querySelector('input[name="title"]').focus();
+        }
+
+        document.getElementById('add-book-button').addEventListener('click', agregarLibro);
+        if (!contenedor.children.length) agregarLibro();
+
+        contenedor.addEventListener('click', async (evento) => {
+            const borrar = evento.target.closest('.delete-button');
+            if (!borrar) return;
+            const bloque = borrar.closest('.libro-editable');
+            const titulo = bloque.querySelector('input[name="title"]').value.trim();
+            if (titulo && !(await confirmar(`¿Borrás ${titulo} de la lista?`))) return;
+            bloque.remove();
+            vibrar('light');
         });
 
-        document.getElementById('book-container').addEventListener('click', (event) => {
-            if (event.target.classList.contains('delete-button')) {
-                event.target.parentElement.remove();
+        async function guardar() {
+            if (guardando) return;
+            const libros = Array.from(contenedor.querySelectorAll('.libro-editable')).map(bloque => ({
+                title: bloque.querySelector('input[name="title"]').value.trim(),
+                author: bloque.querySelector('input[name="author"]').value.trim(),
+                description: bloque.querySelector('textarea[name="description"]').value.trim(),
+            }));
+            if (libros.some(libro => !libro.title)) {
+                mostrarMensaje('Hay un libro sin título. Completalo o borralo antes de guardar.', true);
+                vibrar('error');
+                return;
             }
-        });
-
-        document.getElementById('submit-button').addEventListener('click', () => {
-            esperandoAlGuardar();
-            const bookBlocks = document.querySelectorAll('.book-block');
-            const books = Array.from(bookBlocks).map(block => {
-                return {
-                    title: block.querySelector('input[name="title"]').value,
-                    author: block.querySelector('input[name="author"]').value,
-                    description: block.querySelector('textarea[name="description"]').value
-                };
-            });
-
-            fetch('/submit-book', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(books)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-                exitoAlGuardar();
-            })
-            .catch((error) => {
+            guardando = true;
+            boton.cargando(true);
+            try {
+                const respuesta = await fetch('/submit-book', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(libros),
+                });
+                const resultado = await respuesta.json();
+                mostrarMensaje(resultado.message, !respuesta.ok);
+                vibrar(respuesta.ok ? 'success' : 'error');
+            } catch (error) {
                 console.error('Error:', error);
-                errorAlGuardar();
-            });
-
-            console.log('Books:', books);
-        });
-
-        function esperandoAlGuardar() {
-            const labelGuardando = document.getElementById('guardando');
-            labelGuardando.style.visibility = 'visible';
-            labelGuardando.style.color = 'blue';
-            labelGuardando.innerText = 'Guardando...';
+                mostrarMensaje('No se pudieron guardar los libros. Probá de nuevo.', true);
+                vibrar('error');
+            } finally {
+                guardando = false;
+                boton.cargando(false);
+            }
         }
 
-        function exitoAlGuardar() {
-            const labelGuardando = document.getElementById('guardando');
-            labelGuardando.style.visibility = 'visible';
-            labelGuardando.style.color = 'green';
-            labelGuardando.innerText = 'Guardado!';
-        }
-
-        function errorAlGuardar() {
-            const labelGuardando = document.getElementById('guardando');
-            labelGuardando.style.visibility = 'visible';
-            labelGuardando.style.color = 'red';
-            labelGuardando.innerText = 'Error!';
-        }
+        const boton = botonPrincipal('Guardar libros', guardar, document.getElementById('submit-button'));
+    })();
     </script>
 </body>
 </html>
