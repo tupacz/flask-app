@@ -1,0 +1,1306 @@
+<title>Trece formas de contar</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: una sola columna de lectura; la matriz de puestos es el centro, luego fichas, mapas y gráficos por método */
+:root {
+  --bg: #f5f6f8; --surface: #ffffff; --ink: #12151c; --ink-2: #474e5c; --ink-3: #636b79;
+  --line: #dde1e8; --accent: #2a78d6; --accent-ink: #1c5cab; --accent-soft: #e4eefb;
+  --h1: #0d366b; --h2: #184f95; --h3: #256abf; --h4: #2a78d6; --h5: #5598e7; --h6: #6da7ec; --h7: #86b6ef; --h8: #b7d3f6; --h9: #cde2fb;
+  --t1: #ffffff; --t2: #ffffff; --t3: #ffffff; --t4: #ffffff; --t5: #0b1a33; --t6: #0b1a33; --t7: #0b1a33; --t8: #0b1a33; --t9: #0b1a33;
+  --p3: #184f95; --p2: #5598e7; --p1: #cde2fb; --z: #e9eaed; --n1: #f8d3d1; --n2: #e66767; --n3: #a82e2e;
+  --pt3: #ffffff; --pt2: #0b1a33; --pt1: #0b1a33; --zt: #474e5c; --nt1: #3a0d0d; --nt2: #2a0808; --nt3: #ffffff;
+  --c1: #2a78d6; --c2: #eb6834; --c3: #1baf7a; --c4: #eda100;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111318; --surface: #181b22; --ink: #eef0f4; --ink-2: #b8bfcc; --ink-3: #939bab;
+  --line: #2b303b; --accent: #3987e5; --accent-ink: #86b6ef; --accent-soft: #1a2a42;
+  --h1: #cde2fb; --h2: #9ec5f4; --h3: #6da7ec; --h4: #3987e5; --h5: #2a78d6; --h6: #256abf; --h7: #1c5cab; --h8: #184f95; --h9: #12406f;
+  --t1: #0b1a33; --t2: #0b1a33; --t3: #0b1a33; --t4: #0b1a33; --t5: #ffffff; --t6: #ffffff; --t7: #eef4fd; --t8: #dfe9f8; --t9: #cfdcef;
+  --p3: #9ec5f4; --p2: #2a78d6; --p1: #1c3554; --z: #2a2e36; --n1: #4d2324; --n2: #c44c4c; --n3: #f2a3a1;
+  --pt3: #0b1a33; --pt2: #ffffff; --pt1: #dfe9f8; --zt: #b8bfcc; --nt1: #f6dcdc; --nt2: #ffffff; --nt3: #2a0808;
+  --c1: #3987e5; --c2: #d95926; --c3: #199e70; --c4: #c98500;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #111318; --surface: #181b22; --ink: #eef0f4; --ink-2: #b8bfcc; --ink-3: #939bab;
+  --line: #2b303b; --accent: #3987e5; --accent-ink: #86b6ef; --accent-soft: #1a2a42;
+  --h1: #cde2fb; --h2: #9ec5f4; --h3: #6da7ec; --h4: #3987e5; --h5: #2a78d6; --h6: #256abf; --h7: #1c5cab; --h8: #184f95; --h9: #12406f;
+  --t1: #0b1a33; --t2: #0b1a33; --t3: #0b1a33; --t4: #0b1a33; --t5: #ffffff; --t6: #ffffff; --t7: #eef4fd; --t8: #dfe9f8; --t9: #cfdcef;
+  --p3: #9ec5f4; --p2: #2a78d6; --p1: #1c3554; --z: #2a2e36; --n1: #4d2324; --n2: #c44c4c; --n3: #f2a3a1;
+  --pt3: #0b1a33; --pt2: #ffffff; --pt1: #dfe9f8; --zt: #b8bfcc; --nt1: #f6dcdc; --nt2: #ffffff; --nt3: #2a0808;
+  --c1: #3987e5; --c2: #d95926; --c3: #199e70; --c4: #c98500;
+  color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.6 var(--f-body); }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 40px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 56px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2rem, 5vw, 3.1rem); line-height: 1.05; font-weight: 750; }
+h2 { font-size: 1.6rem; line-height: 1.15; font-weight: 700; }
+h3 { font-size: 1.1rem; font-weight: 650; }
+p { margin: 0; max-width: 66ch; }
+.eyebrow { font: 500 0.75rem/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.lead { color: var(--ink-2); font-size: 1.05rem; }
+.mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+section { display: grid; gap: 18px; min-width: 0; }
+a { color: var(--accent-ink); }
+.figure { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); padding: 16px; display: grid; gap: 14px; min-width: 0; }
+.cap { color: var(--ink-3); font-size: 0.84rem; max-width: 80ch; }
+svg text { font-family: var(--f-body); }
+
+/* Hero */
+header { display: grid; gap: 16px; }
+.winners { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.chip { display: inline-flex; align-items: baseline; gap: 8px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: 0.9rem; }
+.chip b { font-weight: 600; }
+.chip span { color: var(--ink-3); font: 0.8rem var(--f-mono); }
+.facts { display: flex; flex-wrap: wrap; gap: 6px 22px; color: var(--ink-3); font: 0.85rem var(--f-mono); }
+
+/* Matriz */
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.figure .scroll { border: 0; border-radius: 0; }
+table.mx { border-collapse: separate; border-spacing: 2px; width: 100%; min-width: 860px; padding: 8px; font-variant-numeric: tabular-nums; }
+.mx th { font-weight: 500; color: var(--ink-2); font-size: 0.78rem; padding: 4px 2px; text-align: center; vertical-align: bottom; line-height: 1.2; }
+.mx th.fam { font: 500 0.68rem var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+th.book { text-align: left; font-size: 0.88rem; color: var(--ink); font-weight: 500; white-space: nowrap; padding-right: 12px; }
+.mx td { text-align: center; font: 500 0.88rem var(--f-mono); height: 34px; min-width: 44px; border-radius: 4px; cursor: default; }
+.mx td.avg { color: var(--ink-2); background: transparent; font-weight: 400; }
+.mx tr:hover th.book { color: var(--accent-ink); }
+.mx tbody tr:hover td:not(.avg):not(.gap) { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
+.mx td.gap, .mx th.gap { width: 8px; min-width: 8px; padding: 0; background: transparent; }
+.legend { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; color: var(--ink-3); font-size: 0.82rem; }
+.legend .ramp { display: flex; gap: 2px; }
+.legend .ramp i { width: 22px; height: 14px; border-radius: 3px; display: block; }
+.legend .sw { display: inline-flex; align-items: center; gap: 6px; }
+.legend .sw i { width: 14px; height: 14px; border-radius: 3px; display: block; }
+
+/* Fichas */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+.card { display: grid; gap: 8px; align-content: start; padding: 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); text-align: left; font: inherit; color: inherit; cursor: pointer; }
+.card:hover { border-color: var(--accent); }
+.card:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.card .vec { font: 0.78rem var(--f-mono); color: var(--ink-3); }
+.card p { font-size: 0.88rem; color: var(--ink-2); }
+.card .uso { font-size: 0.8rem; color: var(--ink-3); }
+.card .gana { font-size: 0.85rem; border-top: 1px solid var(--line); padding-top: 8px; }
+.card .gana b { font-weight: 600; }
+.spark { display: flex; align-items: flex-end; gap: 3px; height: 38px; }
+.spark i { flex: 1; background: var(--accent); border-radius: 2px 2px 0 0; min-height: 2px; display: block; }
+.spark i.zero { background: var(--line); }
+.otros { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px 28px; }
+.otros div { display: grid; gap: 4px; align-content: start; }
+.otros h3 { font-size: 1rem; }
+.otros p { font-size: 0.88rem; color: var(--ink-2); }
+.tag { font: 0.72rem var(--f-mono); color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* Botones tipo pestaña / chips */
+.pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.pills button { font: 500 0.82rem var(--f-body); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--ink-2); cursor: pointer; }
+.pills button:hover { border-color: var(--accent); }
+.pills button[aria-pressed="true"], .pills button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* Tennessee */
+.tn-svg { width: 100%; height: auto; display: block; }
+.tn-state { fill: var(--bg); stroke: var(--line); stroke-width: 1.5; }
+.lbl { fill: var(--ink); font-size: 13px; font-weight: 600; }
+.lbl-sub { fill: var(--ink-3); font-size: 11.5px; }
+.center-mk { stroke: var(--ink); stroke-width: 2; fill: none; }
+.median { display: grid; gap: 6px; }
+.median .barra { position: relative; display: flex; gap: 2px; height: 26px; }
+.median .barra span { display: flex; align-items: center; justify-content: center; border-radius: 3px; font: 500 0.75rem var(--f-mono); color: #fff; min-width: 0; overflow: hidden; }
+.median .mk { position: absolute; top: -6px; bottom: -6px; width: 2px; background: var(--ink); left: 50%; }
+.median .ejes { display: flex; justify-content: space-between; color: var(--ink-3); font-size: 0.78rem; }
+.tn-cities { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 720px) { .tn-cities { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.tn-cities div { display: grid; gap: 4px; align-content: start; font-size: 0.85rem; }
+.tn-cities h3 { font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+.tn-cities h3 i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+.tn-cities .pct { color: var(--ink-3); font-family: var(--f-mono); font-size: 0.8rem; }
+.tn-cities ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 4px; }
+.tn-cities li { font-size: 0.76rem; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--ink); }
+.tn-cities .nada { color: var(--ink-3); font-size: 0.8rem; }
+
+/* Mapa de libros */
+.map-svg { width: 100%; height: auto; display: block; }
+.voter { fill: var(--ink-3); fill-opacity: 0.55; }
+.bookdot { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.5; }
+.bookdot.win { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+.maplbl { fill: var(--ink-2); font-size: 12.5px; }
+.maplbl.win { fill: var(--ink); font-weight: 600; }
+.leader { stroke: var(--ink-3); stroke-width: 1; }
+.winline { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.map-msg { font-size: 0.92rem; }
+.map-msg b { font-weight: 600; }
+
+/* Rondas */
+table.rondas { border-collapse: separate; border-spacing: 2px; width: 100%; min-width: 760px; font-variant-numeric: tabular-nums; }
+.rondas th { font-weight: 500; color: var(--ink-3); font-size: 0.76rem; padding: 4px; text-align: center; }
+.rondas td { height: 36px; padding: 0 6px; border-radius: 4px; background: var(--bg); min-width: 62px; }
+.rondas td .num { display: block; font: 500 0.8rem var(--f-mono); color: var(--ink); line-height: 1.3; }
+.rondas td .mini { display: block; height: 5px; border-radius: 0 3px 3px 0; background: var(--line); overflow: hidden; }
+.rondas td .mini i { display: block; height: 100%; background: var(--accent); border-radius: 0 3px 3px 0; }
+.rondas td.sale { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink-3); }
+.rondas td.sale .num { color: var(--ink-2); }
+.rondas td.off { background: transparent; }
+.rondas td.final { background: transparent; font: 600 0.8rem var(--f-mono); color: var(--ink-2); text-align: center; }
+.rondas tr.ganador th.book, .rondas tr.ganador td.final { color: var(--accent-ink); }
+
+/* Duelos */
+table.pw { border-collapse: separate; border-spacing: 2px; width: 100%; min-width: 620px; font-variant-numeric: tabular-nums; }
+.pw th { font-weight: 500; color: var(--ink-2); font-size: 0.78rem; padding: 4px; text-align: center; }
+.pw thead th.emo { font-size: 1.15rem; }
+.pw td { text-align: center; height: 34px; min-width: 40px; border-radius: 4px; font: 500 0.85rem var(--f-mono); }
+.pw td.diag { background: transparent; color: var(--ink-3); }
+.pw td.tot { background: transparent; color: var(--ink-2); }
+.pw td.p3 { background: var(--p3); color: var(--pt3); } .pw td.p2 { background: var(--p2); color: var(--pt2); } .pw td.p1 { background: var(--p1); color: var(--pt1); }
+.pw td.z { background: var(--z); color: var(--zt); }
+.pw td.n1 { background: var(--n1); color: var(--nt1); } .pw td.n2 { background: var(--n2); color: var(--nt2); } .pw td.n3 { background: var(--n3); color: var(--nt3); }
+.legend .sw i.p3 { background: var(--p3); } .legend .sw i.p2 { background: var(--p2); } .legend .sw i.p1 { background: var(--p1); } .legend .sw i.z { background: var(--z); }
+.legend .sw i.n1 { background: var(--n1); } .legend .sw i.n2 { background: var(--n2); } .legend .sw i.n3 { background: var(--n3); }
+
+/* Bucklin */
+.bk-svg { width: 100%; height: auto; display: block; }
+.grid { stroke: var(--line); stroke-width: 1; }
+.axis { fill: var(--ink-3); font-size: 11.5px; }
+.half { stroke: var(--ink-2); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.half-l { fill: var(--ink-2); font-size: 11.5px; }
+.bkl { fill: none; stroke: var(--ink-3); stroke-opacity: 0.35; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.bkl.on { stroke: var(--accent); stroke-opacity: 1; stroke-width: 3; }
+.bk-mk { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+.bk-lbl { fill: var(--ink); font-size: 12.5px; font-weight: 600; }
+.hit { fill: transparent; }
+.hit:hover { fill: var(--ink); fill-opacity: 0.04; }
+
+/* Simulador */
+.lab { display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); gap: 28px; padding: 20px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+@media (max-width: 720px) { .lab { grid-template-columns: minmax(0, 1fr); } }
+.lab .pills { grid-column: 1 / -1; }
+.sliders { display: grid; gap: 8px; align-content: start; }
+.sl { display: grid; grid-template-columns: 2.2em minmax(0, 1fr) 3.6em; align-items: center; gap: 10px; font-size: 0.85rem; }
+.sl label { color: var(--ink-2); font-family: var(--f-mono); }
+.sl output { text-align: right; font-family: var(--f-mono); color: var(--ink); }
+.sl input { width: 100%; accent-color: var(--accent); }
+.res { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.res .head { display: grid; gap: 4px; }
+.res .head strong { font: 650 1.25rem var(--f-display); }
+.res .head span { color: var(--ink-3); font-size: 0.85rem; }
+.bars { display: grid; gap: 6px; }
+.bar { display: grid; grid-template-columns: minmax(0, 15em) minmax(0, 1fr) 4.2em; align-items: center; gap: 10px; font-size: 0.86rem; }
+@media (max-width: 520px) { .bar { grid-template-columns: minmax(0, 1fr) 3.8em; } .bar .track { grid-column: 1 / -1; grid-row: 2; } }
+.bar .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar .name b { font: 500 0.78rem var(--f-mono); color: var(--ink-3); margin-right: 6px; }
+.bar.first .name { font-weight: 600; }
+.bar .track { height: 14px; position: relative; }
+.bar .fill { display: block; height: 100%; background: var(--accent); border-radius: 0 4px 4px 0; transition: width 0.25s ease; min-width: 2px; }
+.bar .val { text-align: right; font: 0.82rem var(--f-mono); color: var(--ink-2); }
+@media (prefers-reduced-motion: reduce) { .bar .fill { transition: none; } }
+
+/* Animaciones */
+.player { display: grid; gap: 10px; }
+.ctrls { display: flex; flex-wrap: wrap; gap: 6px; }
+.ctrls button { font: 500 0.82rem var(--f-body); padding: 7px 14px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
+.ctrls button:hover { border-color: var(--accent); }
+.ctrls button.play { background: var(--accent); border-color: var(--accent); color: #fff; }
+.ctrls button:disabled { opacity: 0.5; cursor: default; }
+.status { font-size: 0.9rem; min-height: 1.6em; color: var(--ink); }
+.status b { font-weight: 600; }
+.stage { position: relative; height: 240px; background: var(--bg); border-radius: 8px; overflow: hidden; }
+.chip-v { position: absolute; left: 0; top: 0; width: 16px; height: 16px; border-radius: 3px; background: var(--ink-3); opacity: 0.75; transition: transform 0.8s cubic-bezier(.5,0,.25,1), background-color 0.3s; }
+.chip-v.moved { background: var(--accent); opacity: 1; }
+.chip-v.out { background: var(--n2); opacity: 1; }
+.pile-l { position: absolute; bottom: 6px; display: grid; justify-items: center; gap: 1px; text-align: center; font-size: 0.72rem; color: var(--ink-2); transition: opacity 0.4s; }
+.pile-l .e { font-size: 1.05rem; line-height: 1.1; }
+.pile-l .n { font: 600 0.82rem var(--f-mono); color: var(--ink); }
+.pile-l .t { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pile-l.gone { opacity: 0.35; }
+.pile-l.gone .n { text-decoration: line-through; }
+.pile-l.out .n { color: var(--n3); }
+.race-row { position: absolute; left: 10px; right: 10px; height: 22px; display: grid; grid-template-columns: minmax(0, 13em) minmax(0, 1fr) 3.5em; gap: 10px; align-items: center; font-size: 0.82rem; transition: top 0.7s cubic-bezier(.5,0,.25,1), opacity 0.5s; }
+.race-row .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.race-row .tr { height: 12px; }
+.race-row .fl { display: block; height: 100%; background: var(--accent); border-radius: 0 4px 4px 0; transition: width 0.7s ease, background-color 0.3s; }
+.race-row .vl { text-align: right; font: 0.8rem var(--f-mono); color: var(--ink-2); }
+.race-row.out .fl { background: var(--n2); }
+.race-row.gone { opacity: 0; }
+@media (max-width: 520px) { .race-row { grid-template-columns: minmax(0, 7em) minmax(0, 1fr) 3em; } }
+.pw td { transition: background-color 0.3s, color 0.3s; }
+.pw td.pend { background: var(--bg) !important; color: transparent !important; }
+.pw td.flash { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--ink); }
+.bk-svg.anim .bkl { transition: stroke-dashoffset 0.8s ease; }
+.cursor { stroke: var(--ink-2); stroke-width: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .chip-v, .race-row, .race-row .fl, .pw td, .bk-svg.anim .bkl, .pile-l { transition: none !important; }
+}
+
+.notes { display: grid; gap: 8px; color: var(--ink-3); font-size: 0.84rem; border-top: 1px solid var(--line); padding-top: 18px; }
+.notes p { max-width: 90ch; }
+
+/* Barra de datos */
+.fuente { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); font-size: 0.86rem; color: var(--ink-2); }
+.fuente .que { display: inline-flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; min-width: 0; }
+.fuente .que b { font-weight: 600; color: var(--ink); overflow-wrap: anywhere; }
+.fuente .que span { font: 0.8rem var(--f-mono); color: var(--ink-3); }
+.fuente .acciones { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+.fuente .acciones button, .fuente .acciones label { font: 500 0.82rem var(--f-body); padding: 7px 14px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
+.fuente .acciones label { background: var(--accent); border-color: var(--accent); color: #fff; }
+.fuente .acciones button:hover, .fuente .acciones label:hover { border-color: var(--accent-ink); }
+.fuente .acciones label:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fuente .acciones input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.fuente .ayuda { flex-basis: 100%; font-size: 0.78rem; color: var(--ink-3); }
+.aviso { padding: 10px 14px; border-radius: 8px; font-size: 0.88rem; border: 1px solid var(--accent); background: var(--accent-soft); color: var(--ink); max-width: none; }
+.aviso.error { border-color: var(--n2); background: var(--n1); color: var(--nt1); }
+.aviso[hidden] { display: none; }
+body.soltando .wrap { outline: 2px dashed var(--accent); outline-offset: -8px; border-radius: 14px; }
+#contenido { display: grid; gap: 56px; min-width: 0; }
+
+#tip { position: fixed; z-index: 20; pointer-events: none; max-width: 300px; padding: 8px 10px; border-radius: 8px; background: var(--ink); color: var(--bg); font-size: 0.8rem; line-height: 1.45; box-shadow: 0 6px 20px rgb(0 0 0 / 0.18); }
+#tip b { font-weight: 600; }
+</style>
+
+<div class="wrap">
+  <div class="fuente" id="fuente">
+    <div class="que">Datos: <b id="fuente-nombre"></b><span id="fuente-detalle"></span></div>
+    <div class="acciones">
+      <label>Cargar votos (.txt)<input type="file" id="archivo" accept=".txt,text/plain"></label>
+      <button type="button" id="volver" hidden>Volver a los votos de ejemplo</button>
+    </div>
+    <p class="ayuda">Usá el mismo formato que <span class="mono">data.txt</span> de la app, una línea por voto. También podés arrastrar el archivo a la página. Se lee en tu navegador y no se sube a ningún lado.</p>
+  </div>
+  <p class="aviso" id="aviso" role="status" hidden></p>
+
+  <main id="contenido">
+  <header>
+    <div class="eyebrow" id="eyebrow">Club de lectura</div>
+    <h1>Los mismos votos, distintos ganadores</h1>
+    <p class="lead" id="bajada"></p>
+    <div class="winners" id="ganadores"></div>
+    <div class="facts" id="facts"></div>
+  </header>
+
+  <section aria-labelledby="t-matriz">
+    <div class="eyebrow">Comparación</div>
+    <h2 id="t-matriz">En qué puesto queda cada libro según el sistema</h2>
+    <p class="lead">Cada fila es un libro y cada columna un sistema de conteo. El número es el puesto (1 es el ganador) y cuanto más intenso el color, mejor puesto. Un <span class="mono">=</span> indica empate. Pasá el mouse por una celda para ver de dónde sale.</p>
+    <div class="scroll"><table class="mx" id="matriz"></table></div>
+    <div class="legend"><span>Mejor puesto</span><span class="ramp" id="ramp"></span><span>Peor puesto</span></div>
+  </section>
+
+  <section aria-labelledby="t-cuantos">
+    <div class="eyebrow">Investigación</div>
+    <h2 id="t-cuantos">¿Cuántos sistemas de voto ponderado existen?</h2>
+    <p>Un sistema ponderado, también llamado posicional, le da un peso a cada puesto de tu lista y después suma los puntos de todas las listas. Cualquier lista de pesos que no crezca de arriba hacia abajo define un sistema distinto, así que en teoría hay infinitos. En la práctica se usan unos siete con nombre propio. La diferencia entre ellos está en la forma de la curva de pesos: cuánto vale el primer puesto frente a los demás y cuánto pesa quedar último.</p>
+    <p>Tocá una ficha para cargar esos pesos en el simulador de más abajo.</p>
+    <div class="cards" id="fichas"></div>
+  </section>
+
+  <section aria-labelledby="t-otros">
+    <div class="eyebrow">Fuera de la familia ponderada</div>
+    <h2 id="t-otros">Otros sistemas que usan la misma lista ordenada</h2>
+    <p>Estos no suman pesos fijos por puesto. Unos eliminan libros de a uno, otros los enfrentan de a pares y Bucklin busca la mediana. Abajo hay un gráfico para cada familia, hecho con tus <span id="n-listas"></span> listas.</p>
+    <div class="otros" id="otros"></div>
+  </section>
+
+  <section aria-labelledby="t-tn">
+    <div class="eyebrow">El ejemplo clásico de Wikipedia</div>
+    <h2 id="t-tn">Tennessee y la ciudad del medio</h2>
+    <p>Los artículos de Wikipedia sobre sistemas de votación usan casi siempre el mismo ejemplo: Tennessee elige capital entre sus cuatro ciudades y cada votante prefiere las ciudades más cercanas a la suya. Memphis tiene más votantes, pero queda en una punta. Nashville queda en el medio.</p>
+    <div class="figure">
+      <svg class="tn-svg" id="tn-map" viewBox="0 0 650 205" role="img" aria-label="Mapa esquemático de Tennessee con Memphis, Nashville, Chattanooga y Knoxville"></svg>
+      <div class="median" id="tn-median"></div>
+      <div class="tn-cities" id="tn-cities"></div>
+      <p class="cap">Silueta aproximada del estado. Votantes: 42% cerca de Memphis, 26% cerca de Nashville, 15% cerca de Chattanooga y 17% cerca de Knoxville, como en el ejemplo de Wikipedia. Los resultados están calculados en esta página con los mismos 13 sistemas.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-mapa">
+    <div class="eyebrow">El mismo mapa, con tus libros</div>
+    <h2 id="t-mapa">Dónde queda cada libro y cada votante</h2>
+    <p>Acá los libros hacen de ciudades. Cada punto chico es una lista y está ubicado más cerca de los libros que esa persona puso arriba. El tamaño de cada libro indica cuántas veces lo eligieron primero. La cruz marca el punto intermedio, la mediana de todos los votantes. Elegí un sistema para ver a quién elige.</p>
+    <div class="figure">
+      <div class="pills" id="map-pills" role="group" aria-label="Sistema a mostrar en el mapa"></div>
+      <p class="map-msg" id="map-msg"></p>
+      <svg class="map-svg" id="map" viewBox="0 0 640 430" role="img" aria-label="Mapa de libros y votantes"></svg>
+      <p class="cap" id="map-cap"></p>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-rondas">
+    <div class="eyebrow">Familia de eliminación</div>
+    <h2 id="t-rondas">Ronda por ronda: quién sale y cuándo</h2>
+    <div class="figure">
+      <div class="pills" id="rondas-tabs" role="tablist" aria-label="Método de eliminación"></div>
+      <p id="rondas-desc"></p>
+      <div class="player">
+        <div class="ctrls"><button type="button" class="play" id="r-play">▶ Reproducir</button><button type="button" id="r-step">Paso siguiente</button><button type="button" id="r-reset">Reiniciar</button></div>
+        <p class="status" id="r-status" aria-live="polite"></p>
+        <div class="stage" id="r-stage" aria-hidden="true"></div>
+      </div>
+      <div class="scroll"><table class="rondas" id="rondas"></table></div>
+      <p class="cap">La barra y el número muestran lo que mira cada método en esa ronda. La celda con borde y ✕ es la ronda en la que ese libro sale. Los votos de los libros eliminados pasan al siguiente libro de cada lista.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-duelos">
+    <div class="eyebrow">Familia Condorcet</div>
+    <h2 id="t-duelos">Todos contra todos</h2>
+    <div class="figure">
+      <div class="pills" id="duelos-tabs" role="tablist" aria-label="Vista de duelos"></div>
+      <p id="duelos-desc"></p>
+      <div class="player">
+        <div class="ctrls"><button type="button" class="play" id="d-play">▶ Reproducir el torneo</button><button type="button" id="d-reset">Ver todo</button></div>
+        <p class="status" id="d-status" aria-live="polite"></p>
+      </div>
+      <div class="scroll"><table class="pw" id="duelos"></table></div>
+      <div class="legend" id="duelos-legend"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-bucklin">
+    <div class="eyebrow">Mediana</div>
+    <h2 id="t-bucklin">Bucklin: quién llega primero a la mitad</h2>
+    <p>Cada línea es un libro. Empieza en la cantidad de listas que lo pusieron primero y va sumando a medida que se cuentan más puestos. Gana el primero que cruza la línea punteada, que es la mitad de las listas. Pasá el mouse por un libro de la lista para resaltarlo.</p>
+    <div class="figure">
+      <div class="player">
+        <div class="ctrls"><button type="button" class="play" id="b-play">▶ Reproducir el conteo</button><button type="button" id="b-reset">Ver todo</button></div>
+        <p class="status" id="b-status" aria-live="polite"></p>
+      </div>
+      <svg class="bk-svg" id="bucklin" viewBox="0 0 680 300" role="img" aria-label="Gráfico de líneas acumuladas de Bucklin"></svg>
+      <div class="pills" id="bk-legend" role="group" aria-label="Resaltar un libro"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-lab">
+    <div class="eyebrow">Simulador</div>
+    <h2 id="t-lab">Armá tu propia ponderación</h2>
+    <p>Elegí un sistema o mové los pesos de cada puesto. El resultado se recalcula con los <span id="n-votos"></span> votos.</p>
+    <div class="lab">
+      <div class="pills" id="presets" role="group" aria-label="Sistemas predefinidos"></div>
+      <div class="sliders" id="sliders"></div>
+      <div class="res">
+        <div class="head"><strong id="lab-ganador"></strong><span id="lab-nota"></span></div>
+        <div class="bars" id="barras"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="notes">
+    <p id="nota-datos"></p>
+    <p id="nota-recortes"></p>
+    <p><b>Desempates.</b> En los métodos de eliminación (IRV, Coombs y Baldwin), si dos libros empatan para salir, sale el de menor puntaje Borda. En los ponderados los empates se muestran como tales.</p>
+    <p><b>Mapa de libros.</b> Se calcula con un desdoblamiento (unfolding), la técnica que propuso Clyde Coombs: ubica libros y votantes en el mismo plano para que cada lista quede más cerca de los libros que puso arriba. Tantos gustos distintos no entran perfecto en dos dimensiones, así que el mapa es aproximado. La cifra exacta está debajo del mapa.</p>
+    <p><b>Fuentes.</b> Ejemplo de Tennessee: <a href="https://es.wikipedia.org/wiki/M%C3%A9todo_de_Condorcet" target="_blank" rel="noopener">Método de Condorcet en Wikipedia</a>. Un gráfico parecido que pinta el plano según quién ganaría es el <a href="https://electowiki.org/wiki/Yee_diagram" target="_blank" rel="noopener">diagrama de Yee</a>. Otros métodos que no están acá: Nanson, Kemeny-Young, Ranked Pairs y Minimax.</p>
+  </footer>
+  </main>
+</div>
+<div id="tip" hidden></div>
+
+<script>
+const EJEMPLO = {"origen":"old_votes.txt","listas":[["Drácula 🦇","La divina comedia 🔥","Frankenstein ⚡","Mujercitas 🎀","El Corazón de las Tinieblas ⛴️","El conde de Montecristo 🗝️","El Aleph 🌌","Los hijos del Capitán Grant 🧭","La Isla del Tesoro 🏴‍☠️"],["El conde de Montecristo 🗝️","La divina comedia 🔥","Frankenstein ⚡","La Isla del Tesoro 🏴‍☠️","El Corazón de las Tinieblas ⛴️","Los hijos del Capitán Grant 🧭","El Aleph 🌌","Drácula 🦇","Mujercitas 🎀"],["Los hijos del Capitán Grant 🧭","La Isla del Tesoro 🏴‍☠️","El Corazón de las Tinieblas ⛴️","El Aleph 🌌","La divina comedia 🔥","Mujercitas 🎀","Frankenstein ⚡","Drácula 🦇","El conde de Montecristo 🗝️"],["El Corazón de las Tinieblas ⛴️","La divina comedia 🔥","El conde de Montecristo 🗝️","El Aleph 🌌","Drácula 🦇","Frankenstein ⚡","Los hijos del Capitán Grant 🧭","Mujercitas 🎀","La Isla del Tesoro 🏴‍☠️"],["La Isla del Tesoro 🏴‍☠️","La divina comedia 🔥","Drácula 🦇","Frankenstein ⚡","Mujercitas 🎀","El Aleph 🌌","El Corazón de las Tinieblas ⛴️","El conde de Montecristo 🗝️","Los hijos del Capitán Grant 🧭"],["La divina comedia 🔥","Frankenstein ⚡","Drácula 🦇","El conde de Montecristo 🗝️","El Aleph 🌌","La Isla del Tesoro 🏴‍☠️","Los hijos del Capitán Grant 🧭","El Corazón de las Tinieblas ⛴️","Mujercitas 🎀"],["El conde de Montecristo 🗝️","Mujercitas 🎀","Drácula 🦇","La Isla del Tesoro 🏴‍☠️","Frankenstein ⚡","El Corazón de las Tinieblas ⛴️","Los hijos del Capitán Grant 🧭","El Aleph 🌌","La divina comedia 🔥"],["El conde de Montecristo 🗝️","Mujercitas 🎀","Drácula 🦇","Frankenstein ⚡","La Isla del Tesoro 🏴‍☠️","La divina comedia 🔥","El Aleph 🌌","Los hijos del Capitán Grant 🧭","El Corazón de las Tinieblas ⛴️"],["Los hijos del Capitán Grant 🧭","El conde de Montecristo 🗝️","La Isla del Tesoro 🏴‍☠️","Frankenstein ⚡","Mujercitas 🎀","El Aleph 🌌","El Corazón de las Tinieblas ⛴️","Drácula 🦇","La divina comedia 🔥"],["Mujercitas 🎀","El conde de Montecristo 🗝️","El Aleph 🌌","Frankenstein ⚡","Drácula 🦇","El Corazón de las Tinieblas ⛴️","La divina comedia 🔥","Los hijos del Capitán Grant 🧭","La Isla del Tesoro 🏴‍☠️"],["La divina comedia 🔥","La Isla del Tesoro 🏴‍☠️","Drácula 🦇","Frankenstein ⚡","Los hijos del Capitán Grant 🧭","El Corazón de las Tinieblas ⛴️","El Aleph 🌌","Mujercitas 🎀","El conde de Montecristo 🗝️"],["La Isla del Tesoro 🏴‍☠️","El conde de Montecristo 🗝️","Frankenstein ⚡","Drácula 🦇","El Aleph 🌌","El Corazón de las Tinieblas ⛴️","La divina comedia 🔥","Los hijos del Capitán Grant 🧭","Mujercitas 🎀"],["El Corazón de las Tinieblas ⛴️","Frankenstein ⚡","Mujercitas 🎀","Los hijos del Capitán Grant 🧭","Drácula 🦇","El Aleph 🌌","La Isla del Tesoro 🏴‍☠️","El conde de Montecristo 🗝️","La divina comedia 🔥"],["El Aleph 🌌","El conde de Montecristo 🗝️","La divina comedia 🔥","La Isla del Tesoro 🏴‍☠️","Frankenstein ⚡","Drácula 🦇","Los hijos del Capitán Grant 🧭","El Corazón de las Tinieblas ⛴️","Mujercitas 🎀"],["La divina comedia 🔥","El Aleph 🌌","La Isla del Tesoro 🏴‍☠️","El conde de Montecristo 🗝️","El Corazón de las Tinieblas ⛴️","Los hijos del Capitán Grant 🧭","Drácula 🦇","Mujercitas 🎀","Frankenstein ⚡"],["Frankenstein ⚡","El conde de Montecristo 🗝️","Drácula 🦇","El Corazón de las Tinieblas ⛴️","Los hijos del Capitán Grant 🧭","La Isla del Tesoro 🏴‍☠️","La divina comedia 🔥","El Aleph 🌌","Mujercitas 🎀"],["Mujercitas 🎀","Frankenstein ⚡","Drácula 🦇","Los hijos del Capitán Grant 🧭","La divina comedia 🔥","El conde de Montecristo 🗝️","El Corazón de las Tinieblas ⛴️","La Isla del Tesoro 🏴‍☠️","El Aleph 🌌"]],"fechas":["2026-06-28","2026-06-28","2026-06-28","2026-06-28","2026-06-28","2026-06-28","2026-06-28","2026-06-28","2026-06-28","2026-06-28","2026-06-28","2026-06-28","2026-06-28","2026-06-28","2026-06-28","2026-06-29","2026-06-29"]};
+
+/*PARSER*/
+/* Lee una lista escrita como en Python: ['a', "b's", 'c‍'] */
+function leerListaPython(s) {
+  let i = 0; const out = [];
+  const blanco = () => { while (i < s.length && /\s/.test(s[i])) i++; };
+  blanco(); if (s[i] !== '[') return null; i++; blanco();
+  if (s[i] === ']') return out;
+  for (;;) {
+    blanco();
+    const q = s[i]; if (q !== "'" && q !== '"') return null; i++;
+    let t = '';
+    while (i < s.length && s[i] !== q) {
+      if (s[i] === '\\' && i + 1 < s.length) {
+        const e = s[i + 1]; i += 2;
+        const hex = len => { const h = s.slice(i, i + len); if (!new RegExp(`^[0-9a-fA-F]{${len}}$`).test(h)) return null; i += len; return String.fromCodePoint(parseInt(h, 16)); };
+        if (e === 'x' || e === 'u' || e === 'U') { const ch = hex(e === 'x' ? 2 : e === 'u' ? 4 : 8); if (ch === null) return null; t += ch; }
+        else t += { n: '\n', t: '\t', r: '\r', '\\': '\\', "'": "'", '"': '"' }[e] ?? ('\\' + e);
+      } else t += s[i++];
+    }
+    if (s[i] !== q) return null; i++;
+    out.push(t); blanco();
+    if (s[i] === ',') { i++; blanco(); if (s[i] === ']') { i++; break; } continue; }
+    if (s[i] === ']') { i++; break; }
+    return null;
+  }
+  blanco(); return i === s.length ? out : null;
+}
+/* Lee el formato de data.txt: "Nombre: X; Lista: [...]; fecha: AAAA-MM-DD HH:MM:SS". Los nombres se descartan. */
+function leerVotos(texto) {
+  const listas = [], lineas = [], fechas = [], malas = [];
+  String(texto).replace(/^﻿/, '').split(/\r?\n/).forEach((linea, k) => {
+    if (!linea.trim()) return;
+    const m = linea.match(/Lista:\s*(\[.*\])\s*;\s*fecha:\s*(.*)$/) || linea.match(/Lista:\s*(\[.*\])\s*;?\s*$/);
+    const lista = m && leerListaPython(m[1]);
+    if (!lista) { malas.push(k + 1); return; }
+    listas.push(lista.map(x => x.trim())); lineas.push(k + 1);
+    const f = m[2] && m[2].match(/\d{4}-\d{2}-\d{2}/); if (f) fechas.push(f[0]);
+  });
+  return { listas, lineas, fechas, malas };
+}
+/*FIN PARSER*/
+
+/* Devuelve un texto de error o null si las listas sirven */
+function validarListas(listas, lineas) {
+  if (!listas.length) return 'No encontré ningún voto con el formato de la app.';
+  const base = listas[0], set = new Set(base), donde = k => lineas ? `la línea ${lineas[k]}` : `la lista ${k + 1}`;
+  if (base.length < 3) return 'Hacen falta al menos 3 libros para comparar sistemas.';
+  for (let k = 0; k < listas.length; k++) {
+    const b = listas[k], vistos = new Set();
+    for (const c of b) { if (vistos.has(c)) return `En ${donde(k)}, “${c}” aparece dos veces.`; vistos.add(c); }
+    const falta = base.filter(c => !vistos.has(c)), sobra = b.filter(c => !set.has(c));
+    if (falta.length || sobra.length)
+      return `${donde(k)[0].toUpperCase() + donde(k).slice(1)} no ordena los mismos libros que la primera` +
+        (falta.length ? `. Le falta: ${falta.map(c => `“${c}”`).join(', ')}` : '') +
+        (sobra.length ? `. Tiene de más: ${sobra.map(c => `“${c}”`).join(', ')}` : '') + '. Todos los votos tienen que ordenar la misma lista completa.';
+  }
+  return null;
+}
+const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+const partes = f => { const [y, m, d] = f.split('-').map(Number); return { y, m: MESES[m - 1], d }; };
+function rangoFechas(fechas) {
+  const u = [...new Set(fechas)].sort(); if (!u.length) return '';
+  const a = partes(u[0]), b = partes(u[u.length - 1]);
+  if (u.length === 1) return `${a.d} de ${a.m} de ${a.y}`;
+  if (a.y === b.y && a.m === b.m) return u.length === 2 ? `${a.d} y ${b.d} de ${a.m} de ${a.y}` : `del ${a.d} al ${b.d} de ${a.m} de ${a.y}`;
+  if (a.y === b.y) return `del ${a.d} de ${a.m} al ${b.d} de ${b.m} de ${a.y}`;
+  return `del ${a.d} de ${a.m} de ${a.y} al ${b.d} de ${b.m} de ${b.y}`;
+}
+function mesesVotacion(fechas) {
+  const u = [...new Set(fechas)].sort(); if (!u.length) return '';
+  const a = partes(u[0]), b = partes(u[u.length - 1]);
+  if (a.y === b.y && a.m === b.m) return `${a.m} ${a.y}`;
+  return a.y === b.y ? `${a.m} a ${b.m} ${a.y}` : `${a.m} ${a.y} a ${b.m} ${b.y}`;
+}
+
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+const fmt = x => Number.isInteger(x) ? String(x) : x.toFixed(2).replace('.', ',');
+const ord = k => k + '°';
+const shortName = c => c.replace(/\s*\p{Extended_Pictographic}.*$/u, '');
+const emojiOf = c => c.slice(shortName(c).length).trim();
+const SVGNS = 'http://www.w3.org/2000/svg';
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* ---------- Definición de los sistemas ---------- */
+const arr = (n, f) => Array.from({ length: n }, (_, i) => f(i));
+const EURO = [12, 10, 8, 7, 6, 5, 4, 3, 2, 1], F1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+const POS_W = {
+  pluralidad: n => arr(n, i => i === 0 ? 1 : 0), top3: n => arr(n, i => i < 3 ? 1 : 0), borda: n => arr(n, i => n - 1 - i),
+  dowdall: n => arr(n, i => 1 / (i + 1)), euro: n => arr(n, i => EURO[i] || 0), f1: n => arr(n, i => F1[i] || 0), veto: n => arr(n, i => i < n - 1 ? 1 : 0),
+};
+/* Vector de pesos abreviado: los primeros `cab`, "…" y los últimos `cola` */
+const muestra = (w, cab, cola, f = x => String(x)) => {
+  const t = w.map(f);
+  return '(' + (t.length <= cab + cola + 1 ? t : [...t.slice(0, cab), '…', ...t.slice(t.length - cola)]).join(', ') + ')';
+};
+const POS = [
+  { id: 'pluralidad', nombre: 'Pluralidad', corto: 'Plurali&shy;dad', w: n => POS_W.pluralidad(n), vec: n => muestra(POS_W.pluralidad(n), 3, 1),
+    desc: 'Solo cuenta el primer puesto de cada lista. El resto del orden se ignora.', uso: 'El voto común de casi todas las elecciones.',
+    nota: s => `${s} ${s === 1 ? 'primer puesto' : 'primeros puestos'}` },
+  { id: 'top3', nombre: 'Top 3', corto: 'Top 3', w: n => POS_W.top3(n), vec: n => muestra(POS_W.top3(n), 4, 1),
+    desc: 'Cada libro de tu podio recibe un punto, sin importar si fue 1° o 3°.', uso: 'Encuestas de “elegí tus tres favoritos”.',
+    nota: s => `Está en el podio de ${s} listas` },
+  { id: 'borda', nombre: 'Borda', corto: 'Borda', w: n => POS_W.borda(n), vec: n => muestra(POS_W.borda(n), 3, 2),
+    desc: 'Los puntos bajan de a uno por puesto. Favorece al libro que a todos les parece aceptable.', uso: 'Bancas de minorías en Eslovenia.',
+    nota: s => `${fmt(s)} puntos` },
+  { id: 'dowdall', nombre: 'Dowdall', corto: 'Dowdall', w: n => POS_W.dowdall(n), vec: n => muestra(POS_W.dowdall(n), 3, 1, (x, i) => ['1', '½', '⅓'][i] || `1/${i + 1}`),
+    desc: 'El 1° vale el doble que el 2° y el triple que el 3°. Premia mucho ser favorito.', uso: 'Parlamento de Nauru.',
+    nota: s => `${fmt(s)} puntos` },
+  { id: 'euro', nombre: 'Eurovisión', corto: 'Euro&shy;visión', w: n => POS_W.euro(n), vec: n => muestra(POS_W.euro(n), 5, 1),
+    desc: 'Un salto grande para el 1° y el 2°, después baja de a uno.', uso: 'Festival de Eurovisión.',
+    nota: s => `${fmt(s)} puntos` },
+  { id: 'f1', nombre: 'Fórmula 1', corto: 'Fórmu&shy;la 1', w: n => POS_W.f1(n), vec: n => muestra(POS_W.f1(n), 5, 1),
+    desc: 'Parecido a Eurovisión, con más distancia entre el ganador y el resto.', uso: 'Campeonato de Fórmula 1.',
+    nota: s => `${fmt(s)} puntos` },
+  { id: 'veto', nombre: 'Antipluralidad', corto: 'Anti&shy;plural.', w: n => POS_W.veto(n), vec: n => muestra(POS_W.veto(n), 2, 2),
+    desc: 'Todos suman un punto menos el último. Equivale a votar en contra de un solo libro.', uso: 'También llamado voto de veto.',
+    nota: (s, V) => `Quedó último en ${fmt(V - s)} ${V - s === 1 ? 'lista' : 'listas'}` },
+];
+const OTROS = [
+  { id: 'irv', nombre: 'Segunda vuelta instantánea (IRV)', tab: 'IRV', corto: 'IRV', fam: 'Eliminación',
+    desc: 'Sale el libro con menos primeros puestos y esos votos pasan al siguiente libro de cada lista. Se repite hasta que queda uno.',
+    unidad: 'listas lo tienen primero entre los que siguen' },
+  { id: 'coombs', nombre: 'Coombs', tab: 'Coombs', corto: 'Coombs', fam: 'Eliminación',
+    desc: 'Al revés que IRV: sale el libro que más veces quedó último entre los que siguen en carrera.',
+    unidad: 'listas lo tienen último entre los que siguen' },
+  { id: 'baldwin', nombre: 'Baldwin', tab: 'Baldwin', corto: 'Baldwin', fam: 'Eliminación',
+    desc: 'Borda repetido: sale el de menor puntaje Borda y se vuelve a contar sin él.',
+    unidad: 'puntos Borda entre los que siguen' },
+  { id: 'copeland', nombre: 'Condorcet (Copeland)', corto: 'Copeland', fam: 'Duelos',
+    desc: 'Enfrenta a cada par de libros y gana el que gana más duelos. Es el criterio que usa la página /winner de la app.' },
+  { id: 'schulze', nombre: 'Schulze', corto: 'Schulze', fam: 'Duelos',
+    desc: 'También compara por pares, pero sigue cadenas de victorias para resolver los ciclos de piedra, papel o tijera.' },
+  { id: 'bucklin', nombre: 'Bucklin', corto: 'Bucklin', fam: 'Mediana',
+    desc: 'Cuenta primeros puestos, después suma los segundos, y así hasta que algún libro supera la mitad de las listas.' },
+];
+const ALL = [...POS, ...OTROS];
+const META = Object.fromEntries(ALL.map(s => [s.id, s]));
+
+/* ---------- Motor de conteo (sirve para libros y para Tennessee) ---------- */
+function rankFrom(C, score, higherBetter = true) {
+  const a = C.slice().sort((x, y) => higherBetter ? score[y] - score[x] : score[x] - score[y]);
+  const r = {};
+  a.forEach((c, i) => { r[c] = (i > 0 && Math.abs(score[c] - score[a[i - 1]]) < 1e-9) ? r[a[i - 1]] : i + 1; });
+  return r;
+}
+function analizar(C, ballots, pesos = ballots.map(() => 1)) {
+  const n = C.length, V = pesos.reduce((a, b) => a + b, 0);
+  const each = fn => ballots.forEach((b, k) => fn(b, pesos[k]));
+  const zero = list => Object.fromEntries(list.map(c => [c, 0]));
+  const positional = w => { const s = zero(C); each((b, p) => b.forEach((c, i) => { s[c] += p * (w[i] || 0); })); return s; };
+  const BORDA = positional(arr(n, i => n - 1 - i));
+  const res = {};
+  POS.forEach(p => { const s = positional(p.w(n)); res[p.id] = { rank: rankFrom(C, s), score: s, nota: Object.fromEntries(C.map(c => [c, p.nota(s[c], V)])) }; });
+
+  function elim(scoreFn, worst) {
+    let alive = C.slice(); const rondas = [], orden = [], salida = {};
+    while (alive.length > 1) {
+      const s = scoreFn(alive), vals = alive.map(c => s[c]);
+      const t = worst === 'min' ? Math.min(...vals) : Math.max(...vals);
+      const cand = alive.filter(c => Math.abs(s[c] - t) < 1e-9);
+      const out = cand.slice().sort((a, b) => BORDA[a] - BORDA[b])[0];
+      rondas.push({ vals: s, sale: out, empate: cand.length > 1 });
+      salida[out] = { ronda: rondas.length, empate: cand.length > 1 };
+      orden.unshift(out); alive = alive.filter(c => c !== out);
+    }
+    orden.unshift(alive[0]);
+    const rank = {}, nota = {};
+    orden.forEach((c, i) => { rank[c] = i + 1; });
+    C.forEach(c => { nota[c] = c === alive[0] ? 'Queda en pie al final' : `Sale en la ronda ${salida[c].ronda} de ${n - 1}` + (salida[c].empate ? ' (desempate por Borda)' : ''); });
+    return { rank, nota, rondas, orden };
+  }
+  const firstC = alive => { const s = zero(alive); each((b, p) => { s[b.find(c => alive.includes(c))] += p; }); return s; };
+  const lastC = alive => { const s = zero(alive); each((b, p) => { s[[...b].reverse().find(c => alive.includes(c))] += p; }); return s; };
+  const bordaA = alive => { const s = zero(alive); each((b, p) => { const f = b.filter(c => alive.includes(c)); f.forEach((c, i) => { s[c] += p * (f.length - 1 - i); }); }); return s; };
+  res.irv = elim(firstC, 'min');
+  res.coombs = elim(lastC, 'max');
+  res.baldwin = elim(bordaA, 'min');
+
+  const D = {};
+  C.forEach(a => { D[a] = zero(C); });
+  each((b, p) => { for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) D[b[i]][b[j]] += p; });
+  { const score = {}, nota = {}, gan = {};
+    C.forEach(a => {
+      let g = 0, e = 0, l = 0;
+      C.forEach(b => { if (a === b) return; if (D[a][b] > D[b][a]) g++; else if (D[a][b] === D[b][a]) e++; else l++; });
+      score[a] = g + e / 2; gan[a] = { g, e, l };
+      nota[a] = `${g} duelos ganados, ${e} empatados, ${l} perdidos` + (g === n - 1 ? ' (ganador de Condorcet)' : '');
+    });
+    res.copeland = { rank: rankFrom(C, score), nota, gan, score };
+  }
+  { const P = {};
+    C.forEach(a => { P[a] = {}; C.forEach(b => { P[a][b] = a !== b && D[a][b] > D[b][a] ? D[a][b] : 0; }); });
+    C.forEach(i => C.forEach(j => { if (i !== j) C.forEach(k => { if (i !== k && j !== k) P[j][k] = Math.max(P[j][k], Math.min(P[j][i], P[i][k])); }); }));
+    const score = {}, nota = {};
+    C.forEach(a => { score[a] = C.filter(b => b !== a && P[a][b] > P[b][a]).length; nota[a] = `Supera a ${score[a]} de ${n - 1} rivales por su camino de victorias más fuerte`; });
+    res.schulze = { rank: rankFrom(C, score), nota, P, score };
+  }
+  { const score = {}, nota = {}, cum = {}, cruce = {};
+    C.forEach(c => {
+      cum[c] = arr(n, k => { let t = 0; each((b, p) => { if (b.indexOf(c) <= k) t += p; }); return t; });
+      const k = cum[c].findIndex(v => v > V / 2);
+      cruce[c] = k + 1; score[c] = (k + 1) * 1e6 - cum[c][k];
+      nota[c] = `Pasa la mitad al contar hasta el ${ord(k + 1)} puesto (${fmt(cum[c][k])} de ${fmt(V)} listas)`;
+    });
+    res.bucklin = { rank: rankFrom(C, score, false), nota, cum, cruce };
+  }
+  return { C, n, V, D, res };
+}
+const winnersOf = rank => Object.keys(rank).filter(c => rank[c] === 1);
+const isTie = (rank, c) => Object.keys(rank).some(x => x !== c && rank[x] === rank[c]);
+
+/* ---------- Tooltip (uno solo para toda la página) ---------- */
+const tip = document.getElementById('tip');
+document.addEventListener('pointermove', e => {
+  const t = e.target.closest && e.target.closest('[data-tip]');
+  if (!t) { tip.hidden = true; return; }
+  tip.innerHTML = t.getAttribute('data-tip'); tip.hidden = false;
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + w > innerWidth - 8) x = e.clientX - w - 14;
+  if (y + h > innerHeight - 8) y = e.clientY - h - 14;
+  tip.style.left = Math.max(8, x) + 'px'; tip.style.top = Math.max(8, y) + 'px';
+});
+document.addEventListener('pointerleave', () => { tip.hidden = true; });
+
+/* ---------- Dibuja toda la página para un juego de votos ----------
+   `raiz` es una copia limpia de <main id="contenido">, así cada carga empieza sin listeners viejos. */
+function iniciar(raiz, datos) {
+const $ = id => raiz.querySelector('#' + id);
+const BALLOTS = datos.listas;
+const BOOKS = [...BALLOTS[0]].sort((a, b) => a.localeCompare(b, 'es'));
+const A = analizar(BOOKS, BALLOTS);
+const N = A.n, V = A.V;
+/* Escala de color de 9 pasos: se estira o comprime según la cantidad de libros */
+const nivel = r => N === 1 ? 1 : 1 + Math.round((r - 1) * 8 / (N - 1));
+
+/* ---------- Textos que dependen de los datos ---------- */
+{
+  const meses = mesesVotacion(datos.fechas), rango = rangoFechas(datos.fechas);
+  $('eyebrow').textContent = 'Club de lectura' + (meses ? ` · votación de ${meses}` : '');
+  $('n-listas').textContent = V; $('n-votos').textContent = V;
+  $('nota-datos').innerHTML = `<b>Datos.</b> ${V} ${V === 1 ? 'lista completa' : 'listas completas'} de <span class="mono">${esc(datos.origen)}</span>${rango ? ` (${rango})` : ''}, ${V === 1 ? 'que ordena' : 'cada una ordenando los mismos'} ${N} libros. Los nombres de quienes votaron no se usan en esta página.`;
+  let rec;
+  if (N < 10) {
+    const e = EURO[N - 1], f = F1[N - 1];
+    rec = `Con ${N} libros se usan los primeros ${N} valores de cada escala, así que el último puesto vale ${e === f ? `${e} y no 1` : `${e} en Eurovisión y ${f} en Fórmula 1, y no 1`}.`;
+  } else if (N === 10) rec = 'Con 10 libros se usan las dos escalas completas.';
+  else rec = `Con ${N} libros, del 11° puesto en adelante no se suman puntos en esos dos sistemas.`;
+  $('nota-recortes').innerHTML = `<b>Recortes.</b> Eurovisión y Fórmula 1 reparten puntos a 10 puestos. ${rec}`;
+}
+
+/* ---------- Hero ---------- */
+const winCount = {};
+ALL.forEach(s => winnersOf(A.res[s.id].rank).forEach(c => { winCount[c] = (winCount[c] || 0) + 1; }));
+const winList = Object.keys(winCount).sort((a, b) => winCount[b] - winCount[a]);
+$('bajada').textContent = (winList.length === 1
+  ? `Con ${V === 1 ? 'una sola lista ordenada' : `estas ${V} listas ordenadas`}, ${winList[0]} gana con todos los sistemas, sin importar cómo se cuenten los votos.`
+  : `Con ${V === 1 ? 'una sola lista ordenada' : `las mismas ${V} listas ordenadas`}, ${winList.length} libros distintos llegan al primer puesto según cómo se cuenten los votos.`) +
+  ` Comparamos ${POS.length} sistemas ponderados y ${OTROS.length} métodos de otras familias.`;
+$('ganadores').innerHTML = winList.map(c => `<span class="chip"><b>${esc(c)}</b><span>gana en ${winCount[c]} de ${ALL.length}</span></span>`).join('');
+$('facts').innerHTML = `<span>${V} votos</span><span>${N} libros</span><span>${ALL.length} sistemas</span><span>Empates compartidos cuentan para ambos</span>`;
+
+/* ---------- Matriz de puestos ---------- */
+{
+  const avg = Object.fromEntries(BOOKS.map(c => [c, ALL.reduce((t, s) => t + A.res[s.id].rank[c], 0) / ALL.length]));
+  const rows = BOOKS.slice().sort((a, b) => avg[a] - avg[b]);
+  const groups = [['Ponderados', POS], ['Eliminación', OTROS.filter(o => o.fam === 'Eliminación')], ['Duelos por pares', OTROS.filter(o => o.fam === 'Duelos')], ['Mediana', OTROS.filter(o => o.fam === 'Mediana')]];
+  let h = '<thead><tr><th></th>';
+  groups.forEach(([g, list]) => { h += `<th class="gap"></th><th class="fam" colspan="${list.length}">${g}</th>`; });
+  h += '<th class="gap"></th><th class="fam">Media</th></tr><tr><th></th>';
+  groups.forEach(([, list]) => { h += '<th class="gap"></th>' + list.map(s => `<th scope="col">${s.corto}</th>`).join(''); });
+  h += '<th class="gap"></th><th scope="col">puesto</th></tr></thead><tbody>';
+  rows.forEach(c => {
+    h += `<tr><th scope="row" class="book">${esc(c)}</th>`;
+    groups.forEach(([, list]) => {
+      h += '<td class="gap"></td>';
+      list.forEach(s => {
+        const R = A.res[s.id], r = R.rank[c], tie = isTie(R.rank, c);
+        const t = `<b>${esc(c)}</b><br>${esc(s.nombre)}: ${ord(r)} puesto${tie ? ' (empatado)' : ''}<br>${esc(R.nota[c])}`;
+        h += `<td style="background:var(--h${nivel(r)});color:var(--t${nivel(r)})" data-tip="${esc(t)}" aria-label="${esc(s.nombre)}: puesto ${r}${tie ? ', empatado' : ''}">${r}${tie ? '=' : ''}</td>`;
+      });
+    });
+    h += `<td class="gap"></td><td class="avg">${avg[c].toFixed(1).replace('.', ',')}</td></tr>`;
+  });
+  $('matriz').innerHTML = h + '</tbody>';
+  $('ramp').innerHTML = N <= 9
+    ? BOOKS.map((_, i) => `<i style="background:var(--h${nivel(i + 1)})" title="Puesto ${i + 1}"></i>`).join('')
+    : arr(9, i => `<i style="background:var(--h${i + 1})"></i>`).join('');
+}
+
+/* ---------- Fichas ---------- */
+{
+  const spark = w => { const m = Math.max(...w); return `<div class="spark" aria-hidden="true">${w.map(x => `<i class="${x === 0 ? 'zero' : ''}" style="height:${x === 0 ? 4 : Math.max(6, x / m * 100)}%"></i>`).join('')}</div>`; };
+  $('fichas').innerHTML = POS.map(p => `
+    <button class="card" type="button" data-preset="${p.id}" aria-label="Cargar ${esc(p.nombre)} en el simulador">
+      ${spark(p.w(N))}
+      <h3>${esc(p.nombre)}</h3>
+      <div class="vec">${p.vec(N)}</div>
+      <p>${esc(p.desc)}</p>
+      <div class="uso">${esc(p.uso)}</div>
+      <div class="gana">Gana: <b>${winnersOf(A.res[p.id].rank).map(esc).join(' y ')}</b></div>
+    </button>`).join('');
+  $('otros').innerHTML = OTROS.map(o => `
+    <div><span class="tag">${o.fam}</span><h3>${esc(o.nombre)}</h3><p>${esc(o.desc)}</p>
+    <p>Gana: <b>${winnersOf(A.res[o.id].rank).map(esc).join(' y ')}</b></p></div>`).join('');
+}
+
+/* ---------- Tennessee ---------- */
+{
+  const CITIES = [
+    { id: 'Memphis', lon: -90.05, lat: 35.15, pct: 42, col: 'var(--c1)', lado: 'r' },
+    { id: 'Nashville', lon: -86.78, lat: 36.16, pct: 26, col: 'var(--c2)', lado: 'r' },
+    { id: 'Chattanooga', lon: -85.31, lat: 35.05, pct: 15, col: 'var(--c3)', lado: 'r' },
+    { id: 'Knoxville', lon: -83.92, lat: 35.96, pct: 17, col: 'var(--c4)', lado: 'r' },
+  ];
+  const names = CITIES.map(c => c.id);
+  const TN = analizar(names, [
+    ['Memphis', 'Nashville', 'Chattanooga', 'Knoxville'],
+    ['Nashville', 'Chattanooga', 'Knoxville', 'Memphis'],
+    ['Chattanooga', 'Knoxville', 'Nashville', 'Memphis'],
+    ['Knoxville', 'Chattanooga', 'Nashville', 'Memphis'],
+  ], [42, 26, 15, 17]);
+  const px = lon => 20 + (lon + 90.4) * 69, py = lat => 14 + (36.75 - lat) * 85;
+  const outline = [[-89.5, 36.5], [-88.05, 36.5], [-88.05, 36.68], [-81.68, 36.59], [-84.32, 34.99], [-90.31, 34.99], [-90.1, 35.4], [-89.9, 35.8], [-89.7, 36.05]];
+  const cx = CITIES.reduce((t, c) => t + c.lon * c.pct, 0) / 100, cy = CITIES.reduce((t, c) => t + c.lat * c.pct, 0) / 100;
+  let s = `<polygon class="tn-state" points="${outline.map(([lo, la]) => `${px(lo).toFixed(1)},${py(la).toFixed(1)}`).join(' ')}"/>`;
+  CITIES.forEach(c => {
+    const x = px(c.lon), y = py(c.lat), r = Math.sqrt(c.pct) * 3;
+    const gana = ALL.filter(m => winnersOf(TN.res[m.id].rank).includes(c.id)).length;
+    s += `<circle cx="${x}" cy="${y}" r="${r}" fill="${c.col}" stroke="var(--surface)" stroke-width="2" data-tip="${esc(`<b>${c.id}</b><br>${c.pct}% de los votantes<br>Gana en ${gana} de ${ALL.length} sistemas`)}"/>`;
+    s += `<text class="lbl" x="${x + r + 6}" y="${y - 2}">${c.id}</text><text class="lbl-sub" x="${x + r + 6}" y="${y + 13}">${c.pct}% de los votantes</text>`;
+  });
+  const mx = px(cx), my = py(cy);
+  s += `<g data-tip="${esc('<b>Centro de la población</b><br>Promedio de la ubicación de todos los votantes')}"><circle class="center-mk" cx="${mx}" cy="${my}" r="7"/><line class="center-mk" x1="${mx - 11}" y1="${my}" x2="${mx + 11}" y2="${my}"/><line class="center-mk" x1="${mx}" y1="${my - 11}" x2="${mx}" y2="${my + 11}"/></g>`;
+  s += `<text class="lbl-sub" x="${mx}" y="${my + 24}" text-anchor="middle">centro de la población</text>`;
+  $('tn-map').innerHTML = s;
+
+  const westEast = CITIES.slice().sort((a, b) => a.lon - b.lon);
+  let acc = 0, med = '';
+  westEast.forEach(c => { if (!med && acc + c.pct > 50) med = c.id; acc += c.pct; });
+  $('tn-median').innerHTML = `
+    <div class="barra" aria-hidden="true">${westEast.map(c => `<span style="flex:${c.pct};background:${c.col}">${c.pct}%</span>`).join('')}<i class="mk"></i></div>
+    <div class="ejes"><span>Oeste</span><span>Votante del medio: ${med}</span><span>Este</span></div>
+    <p>Si se ordena a todos los votantes de oeste a este, el que queda justo en el medio vive cerca de ${med}. Por eso ${med} gana todos sus duelos: siempre tiene de su lado a ese votante del medio y a todos los de un costado. Memphis tiene más votos propios, pero queda en la punta y pierde contra cualquiera de las otras tres ciudades.</p>`;
+  $('tn-cities').innerHTML = CITIES.map(c => {
+    const ms = ALL.filter(m => winnersOf(TN.res[m.id].rank).includes(c.id));
+    const items = ms.map(m => `<li>${esc(m.tab || m.nombre.replace(/ \(.*\)/, ''))}${winnersOf(TN.res[m.id].rank).length > 1 ? ' (empate)' : ''}</li>`).join('');
+    return `<div><h3><i style="background:${c.col}"></i>${c.id}</h3><span class="pct">${c.pct}% · gana en ${ms.length} de ${ALL.length}</span>${ms.length ? `<ul>${items}</ul>` : '<span class="nada">No gana con ningún sistema</span>'}</div>`;
+  }).join('');
+}
+
+/* ---------- Mapa de libros (unfolding) ---------- */
+function unfold(C, ballots) {
+  const n = C.length, Vn = ballots.length, R = ballots.map(b => C.map(c => b.indexOf(c)));
+  let seed = 7; const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+  let best = null;
+  /* Con muchos datos se hacen menos iteraciones y pasos más cortos; con 17 listas y 9 libros queda igual que antes */
+  const iters = Math.max(1500, Math.min(6000, Math.round(8e6 / (8 * Vn * n))));
+  const lrV = 0.02 * Math.min(1, 9 / n), lrB = 0.02 * Math.min(1, 17 / Vn);
+  for (let s = 0; s < 8; s++) {
+    const bk = C.map(() => [rnd() * 4 - 2, rnd() * 4 - 2]), vt = ballots.map(() => [rnd() * 2 - 1, rnd() * 2 - 1]);
+    for (let it = 0; it < iters; it++) {
+      const gb = bk.map(() => [0, 0]), gv = vt.map(() => [0, 0]);
+      for (let v = 0; v < Vn; v++) for (let i = 0; i < n; i++) {
+        const dx = vt[v][0] - bk[i][0], dy = vt[v][1] - bk[i][1], dd = Math.hypot(dx, dy) + 1e-9;
+        const e = dd - (0.5 + R[v][i] * 0.5);
+        gv[v][0] += e * dx / dd; gv[v][1] += e * dy / dd; gb[i][0] -= e * dx / dd; gb[i][1] -= e * dy / dd;
+      }
+      vt.forEach((p, v) => { p[0] -= lrV * gv[v][0]; p[1] -= lrV * gv[v][1]; });
+      bk.forEach((p, i) => { p[0] -= lrB * gb[i][0]; p[1] -= lrB * gb[i][1]; });
+    }
+    let ok = 0, tot = 0, first = 0;
+    for (let v = 0; v < Vn; v++) {
+      const d = C.map((_, i) => Math.hypot(vt[v][0] - bk[i][0], vt[v][1] - bk[i][1]));
+      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) { tot++; if (Math.sign(d[i] - d[j]) === Math.sign(R[v][i] - R[v][j])) ok++; }
+      if (R[v][d.indexOf(Math.min(...d))] === 0) first++;
+    }
+    if (!best || ok / tot > best.q) best = { bk, vt, q: ok / tot, first };
+  }
+  // mediana geométrica de los votantes (Weiszfeld)
+  let m = [best.vt.reduce((t, p) => t + p[0], 0) / Vn, best.vt.reduce((t, p) => t + p[1], 0) / Vn];
+  for (let it = 0; it < 200; it++) {
+    let sx = 0, sy = 0, sw = 0;
+    best.vt.forEach(p => { const d = Math.hypot(p[0] - m[0], p[1] - m[1]) || 1e-6; sx += p[0] / d; sy += p[1] / d; sw += 1 / d; });
+    m = [sx / sw, sy / sw];
+  }
+  best.center = m;
+  return best;
+}
+{
+  const U = unfold(BOOKS, BALLOTS);
+  const W = 640, H = 430, pad = 36;
+  const pts = [...U.bk, ...U.vt];
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const k = Math.min((W - 2 * pad - 120) / (x1 - x0), (H - 2 * pad) / (y1 - y0));
+  const ox = pad + 10 + ((W - 2 * pad - 120) - k * (x1 - x0)) / 2, oy = pad + ((H - 2 * pad) - k * (y1 - y0)) / 2;
+  const sx = x => ox + (x - x0) * k, sy = y => oy + (y - y0) * k;
+  const firsts = A.res.pluralidad.score;
+  /* tamaño de cada libro según sus primeros puestos, relativo a la cantidad de listas */
+  const radio = f => 6 + Math.sqrt(f * 17 / V) * 5;
+  const nearest = BOOKS.reduce((b, c, i) => { const d = Math.hypot(U.bk[i][0] - U.center[0], U.bk[i][1] - U.center[1]); return d < b.d ? { c, d } : b; }, { c: null, d: Infinity }).c;
+  const svg = $('map');
+  let s = '<g id="winlines"></g>';
+  U.vt.forEach((p, v) => {
+    const b = BALLOTS[v];
+    s += `<circle class="voter" cx="${sx(p[0]).toFixed(1)}" cy="${sy(p[1]).toFixed(1)}" r="4" data-tip="${esc(`<b>Una lista</b><br>` + b.slice(0, 3).map((c, i) => `${ord(i + 1)} ${esc(c)}`).join('<br>'))}"/>`;
+  });
+  BOOKS.forEach((c, i) => {
+    const r = radio(firsts[c]);
+    s += `<circle class="bookdot" id="bd${i}" cx="${sx(U.bk[i][0]).toFixed(1)}" cy="${sy(U.bk[i][1]).toFixed(1)}" r="${r.toFixed(1)}" data-tip="${esc(`<b>${esc(c)}</b><br>Primero en ${firsts[c]} ${firsts[c] === 1 ? 'lista' : 'listas'}<br>Condorcet: ${ord(A.res.copeland.rank[c])} puesto`)}"/>`;
+  });
+  const cX = sx(U.center[0]), cY = sy(U.center[1]);
+  s += `<g data-tip="${esc(`<b>Punto intermedio</b><br>Mediana de todos los votantes: el punto que minimiza la distancia total a las ${V} listas`)}"><circle class="center-mk" cx="${cX}" cy="${cY}" r="8"/><line class="center-mk" x1="${cX - 13}" y1="${cY}" x2="${cX + 13}" y2="${cY}"/><line class="center-mk" x1="${cX}" y1="${cY - 13}" x2="${cX}" y2="${cY + 13}"/></g>`;
+  s += '<g id="leaders"></g><g id="maplabels"></g>';
+  svg.innerHTML = s;
+
+  // etiquetas sin superposición
+  const lg = $('maplabels'), ld = $('leaders');
+  const labels = BOOKS.map((c, i) => {
+    const cxb = sx(U.bk[i][0]), cyb = sy(U.bk[i][1]), r = radio(firsts[c]);
+    const t = document.createElementNS(SVGNS, 'text');
+    t.setAttribute('class', 'maplbl'); t.setAttribute('id', 'bl' + i); t.textContent = shortName(c);
+    lg.appendChild(t);
+    const w = t.getComputedTextLength ? t.getComputedTextLength() : shortName(c).length * 7;
+    const right = cxb + r + 6 + w < W - 6;
+    return { t, i, ax: cxb, ay: cyb, r, w, right, x: right ? cxb + r + 6 : cxb - r - 6 - w, y: cyb + 4 };
+  });
+  const placed = [];
+  labels.sort((a, b) => a.y - b.y).forEach(L => {
+    let tries = 0;
+    while (tries < 60 && placed.some(P => L.x < P.x + P.w + 4 && P.x < L.x + L.w + 4 && Math.abs(L.y - P.y) < 15)) { L.y += 4; tries++; }
+    placed.push(L);
+    L.t.setAttribute('x', L.x.toFixed(1)); L.t.setAttribute('y', L.y.toFixed(1));
+    if (Math.abs(L.y - (L.ay + 4)) > 6) {
+      const ln = document.createElementNS(SVGNS, 'line');
+      ln.setAttribute('class', 'leader');
+      ln.setAttribute('x1', (L.right ? L.ax + L.r * 0.7 : L.ax - L.r * 0.7).toFixed(1)); ln.setAttribute('y1', (L.ay + L.r * 0.7).toFixed(1));
+      ln.setAttribute('x2', (L.right ? L.x - 2 : L.x + L.w + 2).toFixed(1)); ln.setAttribute('y2', (L.y - 4).toFixed(1));
+      ld.appendChild(ln);
+    }
+  });
+
+  const pills = $('map-pills');
+  pills.innerHTML = ALL.map(m => `<button type="button" data-map="${m.id}" aria-pressed="false">${esc(m.tab || m.nombre.replace(/ \(.*\)/, ''))}</button>`).join('');
+  function showMap(id) {
+    const ws = winnersOf(A.res[id].rank);
+    pills.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.map === id)));
+    let wl = '';
+    BOOKS.forEach((c, i) => {
+      const on = ws.includes(c);
+      $('bd' + i).classList.toggle('win', on); $('bl' + i).classList.toggle('win', on);
+      if (on) wl += `<line class="winline" x1="${cX}" y1="${cY}" x2="${sx(U.bk[i][0]).toFixed(1)}" y2="${sy(U.bk[i][1]).toFixed(1)}"/>`;
+    });
+    $('winlines').innerHTML = wl;
+    $('map-msg').innerHTML = `Con <b>${esc(META[id].nombre)}</b> ${ws.length > 1 ? 'empatan' : 'gana'} <b>${ws.map(esc).join(' y ')}</b>.`;
+  }
+  pills.addEventListener('click', e => { const b = e.target.closest('[data-map]'); if (b) showMap(b.dataset.map); });
+  showMap('copeland');
+  $('map-cap').textContent = `Mapa aproximado: respeta el ${Math.round(U.q * 100)}% de las comparaciones de a pares de las listas (al azar sería 50%) y en ${U.first} de ${V} ${V === 1 ? 'lista' : 'listas'} el libro más cercano es el que esa persona eligió primero. El libro más cercano al punto intermedio es ${shortName(nearest)}.`;
+}
+
+/* ---------- Rondas de eliminación ---------- */
+{
+  const ids = ['irv', 'coombs', 'baldwin'];
+  const tabs = $('rondas-tabs');
+  tabs.innerHTML = ids.map(id => `<button type="button" role="tab" id="tab-${id}" data-ronda="${id}" aria-selected="false" aria-controls="rondas">${META[id].tab}</button>`).join('');
+  function show(id) {
+    const R = A.res[id], m = META[id];
+    tabs.querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.ronda === id)));
+    const maxv = Math.max(...R.rondas.flatMap(x => Object.values(x.vals)), 1);
+    let h = `<thead><tr><th scope="col" class="book">Libro</th>${R.rondas.map((_, i) => `<th scope="col">Ronda ${i + 1}</th>`).join('')}<th scope="col">Puesto final</th></tr></thead><tbody>`;
+    R.orden.forEach(c => {
+      h += `<tr class="${R.rank[c] === 1 ? 'ganador' : ''}"><th scope="row" class="book">${esc(c)}</th>`;
+      let gone = false;
+      R.rondas.forEach((rd, i) => {
+        if (gone) { h += '<td class="off"></td>'; return; }
+        const v = rd.vals[c], sale = rd.sale === c;
+        const t = `<b>${esc(c)}</b> · ronda ${i + 1}<br>${fmt(v)} ${m.unidad}` + (sale ? `<br>Sale en esta ronda${rd.empate ? ' (desempate por Borda)' : ''}` : '');
+        h += `<td class="${sale ? 'sale' : ''}" data-tip="${esc(t)}"><span class="num">${sale ? '✕ ' : ''}${fmt(v)}</span><span class="mini"><i style="width:${v / maxv * 100}%"></i></span></td>`;
+        if (sale) gone = true;
+      });
+      h += `<td class="final">${R.rank[c] === 1 ? 'Gana' : ord(R.rank[c])}</td></tr>`;
+    });
+    $('rondas').innerHTML = h + '</tbody>';
+    $('rondas-desc').innerHTML = `<b>${esc(m.nombre)}.</b> ${esc(m.desc)} Con tus votos gana <b>${winnersOf(R.rank).map(esc).join(' y ')}</b>.`;
+    setupAnim(id);
+  }
+
+  /* Animación: pilas de boletas (IRV, Coombs) y carrera de barras (Baldwin) */
+  const stage = $('r-stage'), st = $('r-status'), bPlay = $('r-play'), bStep = $('r-step');
+  let anim = null, token = 0, playing = false;
+  const say = h => { st.innerHTML = h; };
+
+  function piles(id) {
+    const R = A.res[id], elim = R.rondas.map(r => r.sale), last = id === 'coombs';
+    const firsts = A.res.pluralidad.score;
+    const slots = BOOKS.slice().sort((a, b) => firsts[b] - firsts[a] || A.res.borda.score[b] - A.res.borda.score[a]);
+    const assign = alive => BALLOTS.map(b => (last ? [...b].reverse() : b).find(c => alive.includes(c)));
+    stage.style.height = '240px'; stage.innerHTML = '';
+    const chips = BALLOTS.map(() => { const d = document.createElement('div'); d.className = 'chip-v'; stage.appendChild(d); return d; });
+    const labels = slots.map(c => { const d = document.createElement('div'); d.className = 'pile-l'; d.innerHTML = `<span class="e">${esc(emojiOf(c))}</span><span class="n"></span><span class="t">${esc(shortName(c))}</span>`; stage.appendChild(d); return d; });
+    const build = (alive, prev) => {
+      const a = assign(alive), p = Object.fromEntries(BOOKS.map(c => [c, []]));
+      if (prev) BOOKS.forEach(c => prev[c].forEach(v => { if (a[v] === c) p[c].push(v); }));
+      a.forEach((c, v) => { if (!p[c].includes(v)) p[c].push(v); });
+      return p;
+    };
+    let S;
+    const layout = (moved = new Set(), out = null) => {
+      const W = stage.clientWidth || 640, colW = W / slots.length, base = (stage.clientHeight || 240) - 66;
+      /* El tamaño de cada boleta se achica si no entran todas en una pila (al final todas terminan en el ganador) */
+      let sz = 16, g = 3, cols = 2;
+      for (sz = 16; sz >= 4; sz--) {
+        g = sz >= 10 ? 3 : 2;
+        const colsMax = Math.max(1, Math.floor((colW - 6 + g) / (sz + g))), filas = Math.max(1, Math.floor(base / (sz + g)));
+        cols = Math.min(colsMax, Math.max(2, Math.ceil(V / filas)));
+        if (Math.ceil(V / cols) <= filas) break;
+      }
+      sz = Math.max(sz, 4);
+      const bloque = cols * (sz + g) - g;
+      slots.forEach((c, i) => {
+        const cx = colW * (i + 0.5), L = labels[i], vivo = S.alive.includes(c);
+        L.style.left = (cx - colW / 2 + 2) + 'px'; L.style.width = (colW - 4) + 'px';
+        L.querySelector('.n').textContent = vivo ? S.p[c].length : '—';
+        L.classList.toggle('gone', !vivo); L.classList.toggle('out', c === out);
+        S.p[c].forEach((v, j) => {
+          const x = cx - bloque / 2 + (j % cols) * (sz + g), y = base - (Math.floor(j / cols) + 1) * (sz + g);
+          chips[v].style.width = chips[v].style.height = sz + 'px';
+          chips[v].style.transform = `translate(${x}px, ${y}px)`;
+          chips[v].classList.toggle('moved', moved.has(v)); chips[v].classList.toggle('out', c === out);
+        });
+      });
+    };
+    const intro = last ? 'Cada cuadradito es una boleta, apilada sobre el libro que esa persona puso <b>último</b> entre los que siguen.'
+                       : 'Cada cuadradito es una boleta, apilada sobre el libro que esa persona tiene <b>primero</b> entre los que siguen.';
+    return {
+      reset() { S = { r: 0, alive: BOOKS.slice(), p: build(BOOKS.slice()) }; layout(); say(intro); },
+      layout: () => layout(),
+      done: () => S.r >= elim.length,
+      async step(tk) {
+        const out = elim[S.r], k = S.p[out].length, rd = R.rondas[S.r];
+        layout(new Set(), out);
+        say(`Ronda ${S.r + 1} de ${elim.length}: <b>${esc(shortName(out))}</b> ${last ? `es el que más veces quedó último (${k})` : `tiene menos primeros puestos (${k})`}${rd.empate ? ', desempate por Borda' : ''}. Sale y ${k === 1 ? 'su boleta pasa' : `sus ${k} boletas pasan`} al ${last ? 'siguiente último' : 'siguiente libro'} de cada lista.`);
+        await sleep(1100); if (tk !== token) return;
+        const alive = S.alive.filter(c => c !== out), moved = new Set(S.p[out]), before = S.p;
+        S = { r: S.r + 1, alive, p: build(alive, S.p) };
+        layout(moved);
+        if (alive.length === 1) { say(`Queda solo <b>${esc(alive[0])}</b>: gana ${esc(META[id].tab)}.`); return; }
+        if (!last) {
+          const lead = alive.slice().sort((a, b) => S.p[b].length - S.p[a].length)[0];
+          if (S.p[lead].length > V / 2 && before[lead].length <= V / 2) {
+            say(`<b>${esc(shortName(lead))}</b> ya tiene ${S.p[lead].length} de ${V} boletas, más de la mitad. En una elección real IRV termina acá. Seguimos para completar el ranking.`);
+            return 'mayoria';
+          }
+        }
+      },
+    };
+  }
+
+  function race() {
+    const R = A.res.baldwin, elim = R.rondas.map(r => r.sale), max = Math.max(...Object.values(R.rondas[0].vals));
+    stage.style.height = (N * 26 + 16) + 'px'; stage.innerHTML = '';
+    const rows = Object.fromEntries(BOOKS.map(c => { const d = document.createElement('div'); d.className = 'race-row'; d.innerHTML = `<span class="nm">${esc(c)}</span><span class="tr"><span class="fl"></span></span><span class="vl"></span>`; stage.appendChild(d); return [c, d]; }));
+    let S;
+    const layout = (out = null) => {
+      const vals = S.r < elim.length ? R.rondas[S.r].vals : null;
+      const order = S.alive.slice().sort((a, b) => vals ? vals[b] - vals[a] : 0);
+      BOOKS.forEach(c => {
+        const d = rows[c], i = order.indexOf(c), vivo = i >= 0;
+        d.classList.toggle('gone', !vivo); d.classList.toggle('out', c === out);
+        if (!vivo) return;
+        d.style.top = (8 + i * 26) + 'px';
+        d.querySelector('.fl').style.width = (vals ? vals[c] / max * 100 : 100) + '%';
+        d.querySelector('.vl').textContent = vals ? vals[c] : 'Gana';
+      });
+    };
+    return {
+      reset() { S = { r: 0, alive: BOOKS.slice() }; layout(); say('Puntaje Borda de cada libro contando solo los que siguen en carrera. El último de la tabla sale y se vuelve a contar.'); },
+      layout: () => layout(),
+      done: () => S.r >= elim.length,
+      async step(tk) {
+        const out = elim[S.r], rd = R.rondas[S.r];
+        layout(out);
+        say(`Ronda ${S.r + 1} de ${elim.length}: <b>${esc(shortName(out))}</b> tiene el menor puntaje (${rd.vals[out]})${rd.empate ? ', desempate por Borda' : ''} y sale. Se recalcula Borda sin ese libro.`);
+        await sleep(1100); if (tk !== token) return;
+        S = { r: S.r + 1, alive: S.alive.filter(c => c !== out) };
+        layout();
+        if (S.alive.length === 1) say(`Queda solo <b>${esc(S.alive[0])}</b>: gana Baldwin.`);
+      },
+    };
+  }
+
+  function setupAnim(id) {
+    token++; playing = false; bPlay.textContent = '▶ Reproducir';
+    anim = id === 'baldwin' ? race() : piles(id);
+    anim.reset(); bStep.disabled = false;
+  }
+  async function stepOnce() {
+    if (!anim || anim.done()) return null;
+    const tk = token; bStep.disabled = true;
+    const r = await anim.step(tk);
+    if (tk === token) bStep.disabled = anim.done();
+    return r;
+  }
+  bPlay.addEventListener('click', async () => {
+    if (playing) { token++; playing = false; bPlay.textContent = '▶ Reproducir'; bStep.disabled = anim.done(); return; }
+    if (anim.done()) anim.reset();
+    playing = true; bPlay.textContent = '❚❚ Pausa'; const tk = ++token;
+    while (playing && tk === token && !anim.done()) {
+      const r = await anim.step(tk);
+      if (tk !== token) return;
+      await sleep(r === 'mayoria' ? 2600 : 900);
+    }
+    if (tk === token) { playing = false; bPlay.textContent = '▶ Reproducir'; bStep.disabled = anim.done(); }
+  });
+  bStep.addEventListener('click', () => { if (!playing) stepOnce(); });
+  $('r-reset').addEventListener('click', () => { token++; playing = false; bPlay.textContent = '▶ Reproducir'; anim.reset(); bStep.disabled = false; });
+  if (window.ResizeObserver) new ResizeObserver(() => anim && anim.layout()).observe(stage);
+
+  tabs.addEventListener('click', e => { const b = e.target.closest('[data-ronda]'); if (b) show(b.dataset.ronda); });
+  show('irv');
+}
+
+/* ---------- Duelos por pares ---------- */
+{
+  const tabs = $('duelos-tabs');
+  tabs.innerHTML = `<button type="button" role="tab" data-duelo="copeland" aria-selected="true" aria-controls="duelos">Duelos directos (Copeland)</button><button type="button" role="tab" data-duelo="schulze" aria-selected="false" aria-controls="duelos">Caminos más fuertes (Schulze)</button>`;
+  const order = BOOKS.slice().sort((a, b) => A.res.copeland.score[b] - A.res.copeland.score[a] || A.res.borda.score[b] - A.res.borda.score[a]);
+  /* Umbrales de color según la diferencia del duelo, escalados a la cantidad de listas (con 17 listas: 1, 3 y 7) */
+  const umbral = (f1, f2) => { const b = Math.max(2, Math.round(V * f1)); return [1, b, Math.max(b + 1, Math.round(V * f2))]; };
+  const TH_C = umbral(3 / 17, 7 / 17), TH_S = umbral(2 / 17, 3 / 17);
+  const rango = (a, b) => b - a === 1 ? `por ${a}` : b - a === 2 ? `por ${a} o ${a + 1}` : `por ${a} a ${b - 1}`;
+  const etiquetas = th => [`por ${th[2]} o más`, rango(th[1], th[2]), rango(th[0], th[1]), 'empate', rango(th[0], th[1]), rango(th[1], th[2]), `por ${th[2]} o más`];
+  const lvl = (d, th) => d >= th[2] ? 'p3' : d >= th[1] ? 'p2' : d >= th[0] ? 'p1' : d <= -th[2] ? 'n3' : d <= -th[1] ? 'n2' : d <= -th[0] ? 'n1' : 'z';
+  function show(id) {
+    tabs.querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.duelo === id)));
+    const isS = id === 'schulze', M = isS ? A.res.schulze.P : A.D, th = isS ? TH_S : TH_C;
+    let h = `<thead><tr><th></th>${order.map(c => `<th scope="col" class="emo" title="${esc(shortName(c))}" aria-label="${esc(shortName(c))}">${esc(emojiOf(c)) || esc(shortName(c).slice(0, 3))}</th>`).join('')}<th scope="col">${isS ? 'Supera a' : 'Duelos ganados'}</th></tr></thead><tbody>`;
+    order.forEach((a, ia) => {
+      h += `<tr><th scope="row" class="book">${esc(a)}</th>`;
+      order.forEach((b, ib) => {
+        if (a === b) { h += '<td class="diag">—</td>'; return; }
+        const d = M[a][b] - M[b][a];
+        const t = isS
+          ? `<b>${esc(shortName(a))} → ${esc(shortName(b))}</b><br>Camino más fuerte: ${M[a][b]}<br>Al revés: ${M[b][a]}<br>${d > 0 ? 'Gana ' + esc(shortName(a)) : d < 0 ? 'Gana ' + esc(shortName(b)) : 'Empate'}`
+          : `<b>${esc(shortName(a))} contra ${esc(shortName(b))}</b><br>${M[a][b]} listas prefieren ${esc(shortName(a))}<br>${M[b][a]} listas prefieren ${esc(shortName(b))}`;
+        h += `<td class="${lvl(d, th)}" id="pw-${ia}-${ib}" data-tip="${esc(t)}">${M[a][b]}</td>`;
+      });
+      const tot = isS ? A.res.schulze.score[a] : A.res.copeland.gan[a].g + (A.res.copeland.gan[a].e ? ` (+${A.res.copeland.gan[a].e} emp.)` : '');
+      h += `<td class="tot" id="pwt-${ia}">${tot} de ${N - 1}</td></tr>`;
+    });
+    $('duelos').innerHTML = h + '</tbody>';
+    const cw = winnersOf(A.res[id].rank);
+    $('duelos-desc').innerHTML = isS
+      ? `Cada celda es la fuerza del camino de victorias más fuerte de la fila hacia la columna, aunque pase por otros libros. Si A le gana a B y B le gana a C, hay un camino de A a C. Sirve para desempatar cuando hay ciclos. Gana <b>${cw.map(esc).join(' y ')}</b>.`
+      : `Cada celda dice cuántas de las ${V} listas ponen al libro de la fila por encima del de la columna. Azul es duelo ganado y rojo es duelo perdido. El ganador de Condorcet es el que tiene toda su fila azul: <b>${cw.map(esc).join(' y ')}</b>.`;
+    const labs = etiquetas(th);
+    const cls = ['p3', 'p2', 'p1', 'z', 'n1', 'n2', 'n3'];
+    $('duelos-legend').innerHTML = `<span>Gana</span>` + cls.map((c, i) => `<span class="sw"><i class="${c}"></i>${i === 3 ? 'Empate' : labs[i]}</span>`).join('') + `<span>Pierde</span>`;
+  }
+  /* Animación: el torneo de todos contra todos, duelo por duelo */
+  let dTok = 0;
+  const dPlay = $('d-play'), dSt = $('d-status');
+  const stopDuelos = () => { dTok++; dPlay.textContent = '▶ Reproducir el torneo'; };
+  dPlay.addEventListener('click', async () => {
+    if (dPlay.dataset.on === '1') { dPlay.dataset.on = '0'; stopDuelos(); return; }
+    show('copeland');
+    const tk = ++dTok; dPlay.dataset.on = '1'; dPlay.textContent = '❚❚ Detener';
+    const wins = order.map(() => 0), PAUSA = Math.min(420, Math.max(120, 15200 / (N * (N - 1) / 2)));
+    order.forEach((a, i) => { order.forEach((b, j) => { if (i !== j) $(`pw-${i}-${j}`).classList.add('pend'); }); $(`pwt-${i}`).textContent = `0 de ${N - 1}`; });
+    let prev = [];
+    for (let i = 0; i < order.length && tk === dTok; i++) {
+      for (let j = i + 1; j < order.length && tk === dTok; j++) {
+        prev.forEach(el => el.classList.remove('flash'));
+        const a = order[i], b = order[j], x = A.D[a][b], y = A.D[b][a];
+        const c1 = $(`pw-${i}-${j}`), c2 = $(`pw-${j}-${i}`);
+        [c1, c2].forEach(el => el.classList.remove('pend', 'flash'));
+        [c1, c2].forEach(el => el.classList.add('flash')); prev = [c1, c2];
+        if (x > y) wins[i]++; else if (y > x) wins[j]++;
+        $(`pwt-${i}`).textContent = `${wins[i]} de ${N - 1}`; $(`pwt-${j}`).textContent = `${wins[j]} de ${N - 1}`;
+        dSt.innerHTML = `${esc(shortName(a))} <b>${x} a ${y}</b> ${esc(shortName(b))}: ${x === y ? 'empate' : `gana <b>${esc(shortName(x > y ? a : b))}</b>`}.`;
+        await sleep(matchMedia('(prefers-reduced-motion: reduce)').matches ? 500 : PAUSA);
+      }
+    }
+    prev.forEach(el => el.classList.remove('flash'));
+    if (tk !== dTok) return;
+    dPlay.dataset.on = '0'; stopDuelos();
+    const cw = winnersOf(A.res.copeland.rank), g = A.res.copeland.gan[cw[0]].g;
+    dSt.innerHTML = g === N - 1
+      ? `Fin del torneo: <b>${esc(shortName(cw[0]))}</b> ganó sus ${N - 1} duelos. Es el ganador de Condorcet.`
+      : `Fin del torneo: nadie ganó todos sus duelos. Gana <b>${cw.map(c => esc(shortName(c))).join(' y ')}</b> por tener más duelos ganados.`;
+  });
+  $('d-reset').addEventListener('click', () => { dPlay.dataset.on = '0'; stopDuelos(); dSt.textContent = ''; show('copeland'); });
+  tabs.addEventListener('click', e => { const b = e.target.closest('[data-duelo]'); if (b) { dPlay.dataset.on = '0'; stopDuelos(); dSt.textContent = ''; show(b.dataset.duelo); } });
+  show('copeland');
+}
+
+/* ---------- Bucklin ---------- */
+{
+  const R = A.res.bucklin, W = 680, H = 300, ml = 44, mr = 20, mt = 16, mb = 44;
+  const x = k => ml + (k - 1) / (N - 1) * (W - ml - mr), y = v => mt + (1 - v / V) * (H - mt - mb);
+  let s = '';
+  const paso = [1, 2, 4, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000].find(p => V / p <= 6) || Math.ceil(V / 6);
+  const ticks = []; for (let t = 0; t <= V; t += paso) ticks.push(t);
+  ticks.forEach(t => { s += `<line class="grid" x1="${ml}" x2="${W - mr}" y1="${y(t)}" y2="${y(t)}"/><text class="axis" x="${ml - 8}" y="${y(t) + 4}" text-anchor="end">${t}</text>`; });
+  for (let k = 1; k <= N; k++) s += `<text class="axis" x="${x(k)}" y="${H - mb + 18}" text-anchor="middle">${ord(k)}</text>`;
+  s += `<text class="axis" x="${(ml + W - mr) / 2}" y="${H - 6}" text-anchor="middle">Contando hasta el puesto…</text>`;
+  s += `<text class="axis" x="${ml - 8}" y="${mt - 4}" text-anchor="end">listas</text>`;
+  s += `<line class="half" x1="${ml}" x2="${W - mr}" y1="${y(V / 2)}" y2="${y(V / 2)}"/><text class="half-l" x="${W - mr}" y="${y(V / 2) + 16}" text-anchor="end">mitad: ${fmt(V / 2).replace('.', ',')} listas</text>`;
+  BOOKS.forEach((c, i) => { s += `<polyline class="bkl" id="bk${i}" points="${R.cum[c].map((v, k) => `${x(k + 1).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}"/>`; });
+  s += '<g id="bk-hl"></g>';
+  const step = (W - ml - mr) / (N - 1);
+  for (let k = 1; k <= N; k++) {
+    const list = BOOKS.slice().sort((a, b) => R.cum[b][k - 1] - R.cum[a][k - 1]);
+    const t = `<b>Contando hasta el ${ord(k)} puesto</b><br>` + list.map(c => `${esc(shortName(c))}: ${R.cum[c][k - 1]}`).join('<br>');
+    s += `<rect class="hit" x="${x(k) - step / 2}" y="${mt}" width="${step}" height="${H - mt - mb}" data-tip="${esc(t)}"/>`;
+  }
+  $('bucklin').innerHTML = s;
+  const winner = winnersOf(R.rank)[0];
+  let sel = winner;
+  function hl(c) {
+    BOOKS.forEach((b, i) => $('bk' + i).classList.toggle('on', b === c));
+    const i = BOOKS.indexOf(c), line = $('bk' + i); line.parentNode.insertBefore(line, $('bk-hl'));
+    const k = R.cruce[c], v = R.cum[c][k - 1], X = x(k), Y = y(v);
+    const right = X < W - 220;
+    $('bk-hl').innerHTML = `<circle class="bk-mk" cx="${X}" cy="${Y}" r="6"/><text class="bk-lbl" x="${right ? X + 10 : X - 10}" y="${Y - 10}" text-anchor="${right ? 'start' : 'end'}">${esc(shortName(c))}: pasa la mitad en el ${ord(k)} puesto</text>`;
+    $('bk-legend').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.bk === c)));
+  }
+  const order = BOOKS.slice().sort((a, b) => R.rank[a] - R.rank[b]);
+  $('bk-legend').innerHTML = order.map(c => `<button type="button" data-bk="${esc(c)}" aria-pressed="false">${ord(R.rank[c])} ${esc(shortName(c))}</button>`).join('');
+  const lg = $('bk-legend');
+  lg.addEventListener('mouseover', e => { const b = e.target.closest('[data-bk]'); if (b) hl(b.dataset.bk); });
+  lg.addEventListener('focusin', e => { const b = e.target.closest('[data-bk]'); if (b) hl(b.dataset.bk); });
+  lg.addEventListener('mouseleave', () => hl(sel));
+  lg.addEventListener('click', e => { const b = e.target.closest('[data-bk]'); if (b) { sel = b.dataset.bk; hl(sel); } });
+  hl(sel);
+
+  /* Animación: el conteo avanza puesto por puesto hasta que alguien pasa la mitad */
+  const svg = $('bucklin'), bSt = $('b-status'), bPlay = $('b-play');
+  const seg = BOOKS.map(c => { const p = R.cum[c].map((v, k) => [x(k + 1), y(v)]), L = [0]; for (let k = 1; k < p.length; k++) L.push(L[k - 1] + Math.hypot(p[k][0] - p[k - 1][0], p[k][1] - p[k - 1][1])); return L; });
+  const cur = document.createElementNS(SVGNS, 'line'); cur.setAttribute('class', 'cursor'); cur.setAttribute('y1', mt); cur.setAttribute('y2', H - mb); cur.style.display = 'none';
+  svg.insertBefore(cur, $('bk-hl'));
+  let bTok = 0;
+  const setK = k => {
+    BOOKS.forEach((c, i) => { const el = $('bk' + i), L = seg[i], tot = L[L.length - 1]; el.style.strokeDasharray = `${tot} ${tot}`; el.style.strokeDashoffset = String(tot - L[k - 1]); });
+    cur.setAttribute('x1', x(k)); cur.setAttribute('x2', x(k)); cur.style.display = '';
+  };
+  const resetB = () => {
+    bTok++; svg.classList.remove('anim'); cur.style.display = 'none';
+    BOOKS.forEach((_, i) => { const el = $('bk' + i); el.style.strokeDasharray = ''; el.style.strokeDashoffset = ''; });
+    bPlay.textContent = '▶ Reproducir el conteo'; hl(sel);
+  };
+  bPlay.addEventListener('click', async () => {
+    if (bPlay.dataset.on === '1') { bPlay.dataset.on = '0'; resetB(); bSt.textContent = ''; return; }
+    const tk = ++bTok; bPlay.dataset.on = '1'; bPlay.textContent = '❚❚ Detener';
+    svg.classList.remove('anim'); $('bk-hl').innerHTML = ''; BOOKS.forEach((_, i) => $('bk' + i).classList.remove('on'));
+    setK(1); svg.getBoundingClientRect(); svg.classList.add('anim');
+    for (let k = 1; k <= N; k++) {
+      if (tk !== bTok) return;
+      setK(k);
+      const lead = BOOKS.slice().sort((a, b) => R.cum[b][k - 1] - R.cum[a][k - 1]);
+      const cross = lead.filter(c => R.cum[c][k - 1] > V / 2);
+      if (cross.length) {
+        await sleep(850); if (tk !== bTok) return;
+        sel = cross[0]; hl(sel);
+        bSt.innerHTML = `Contando hasta el ${ord(k)} puesto, <b>${esc(shortName(cross[0]))}</b> aparece en ${R.cum[cross[0]][k - 1]} de ${V} listas y pasa la mitad: gana Bucklin.` +
+          (cross.length > 1 ? ` También la pasan ${cross.slice(1).map(c => esc(shortName(c))).join(', ')}, pero con menos listas.` : '');
+        break;
+      }
+      bSt.innerHTML = `Contando hasta el ${ord(k)} puesto: lidera <b>${esc(shortName(lead[0]))}</b> con ${R.cum[lead[0]][k - 1]} de ${V} listas. Nadie pasa la mitad todavía.`;
+      await sleep(1500);
+    }
+    if (tk === bTok) { bPlay.dataset.on = '0'; bPlay.textContent = '▶ Reproducir el conteo'; }
+  });
+  $('b-reset').addEventListener('click', () => { bPlay.dataset.on = '0'; resetB(); bSt.textContent = ''; });
+}
+
+/* ---------- Simulador ---------- */
+{
+  let Wt = [];
+  const condorcet = winnersOf(A.res.copeland.rank);
+  const presets = $('presets'), sliders = $('sliders');
+  presets.innerHTML = POS.map(p => `<button type="button" data-preset="${p.id}" aria-pressed="false">${esc(p.nombre)}</button>`).join('');
+  sliders.innerHTML = BOOKS.map((_, i) => `<div class="sl"><label for="w${i}">${ord(i + 1)}</label><input type="range" id="w${i}" min="0" max="100" step="1" data-i="${i}"><output id="o${i}" for="w${i}"></output></div>`).join('');
+  const positional = w => { const s = Object.fromEntries(BOOKS.map(c => [c, 0])); BALLOTS.forEach(b => b.forEach((c, i) => { s[c] += w[i] || 0; })); return s; };
+  function render() {
+    Wt.forEach((x, i) => { $('o' + i).textContent = fmt(Math.round(x * 10) / 10); });
+    const s = positional(Wt), r = rankFrom(BOOKS, s), order = BOOKS.slice().sort((a, b) => s[b] - s[a]);
+    const max = Math.max(...order.map(c => s[c]), 1e-9), win = winnersOf(r);
+    $('lab-ganador').textContent = win.length > 1 ? `Empate: ${win.map(shortName).join(' y ')}` : `Gana ${win[0]}`;
+    $('lab-nota').textContent = win.length === 1 && condorcet.includes(win[0])
+      ? `Coincide con el ganador de Condorcet (${shortName(condorcet[0])}).`
+      : `Distinto del ganador de Condorcet, que es ${shortName(condorcet[0])}.`;
+    $('barras').innerHTML = order.map(c => `
+      <div class="bar${r[c] === 1 ? ' first' : ''}" data-tip="${esc(`<b>${esc(c)}</b><br>${ord(r[c])} puesto · ${fmt(Math.round(s[c] * 10) / 10)} puntos`)}">
+        <span class="name"><b>${ord(r[c])}</b>${esc(c)}</span>
+        <span class="track"><span class="fill" style="width:${s[c] / max * 100}%"></span></span>
+        <span class="val">${fmt(Math.round(s[c] * 10) / 10)}</span>
+      </div>`).join('');
+  }
+  function load(id) {
+    const p = POS.find(x => x.id === id), w = p.w(N), m = Math.max(...w);
+    Wt = w.map(x => x / m * 100);
+    presets.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.preset === id)));
+    Wt.forEach((x, i) => { $('w' + i).value = Math.round(x); });
+    render();
+  }
+  sliders.addEventListener('input', e => {
+    const i = +e.target.dataset.i; if (Number.isNaN(i)) return;
+    Wt[i] = +e.target.value;
+    presets.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', 'false'));
+    render();
+  });
+  raiz.addEventListener('click', e => {
+    const b = e.target.closest('[data-preset]'); if (!b) return;
+    load(b.dataset.preset);
+    if (b.classList.contains('card')) $('t-lab').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  });
+  load('borda');
+}
+} /* fin de iniciar */
+
+/* ---------- Carga de votos ---------- */
+{
+  const CLAVE = 'sistemas-ponderados:votos';
+  const PLANTILLA = document.getElementById('contenido').cloneNode(true);
+  const byId = id => document.getElementById(id);
+  const aviso = byId('aviso'), volver = byId('volver'), archivo = byId('archivo');
+  const EJ = { origen: EJEMPLO.origen, listas: EJEMPLO.listas, fechas: EJEMPLO.fechas, propio: false };
+  const plural = (n, uno, varios) => `${n} ${n === 1 ? uno : varios}`;
+
+  const decir = (html, error = false) => { aviso.innerHTML = html; aviso.classList.toggle('error', error); aviso.hidden = !html; };
+  const guardar = d => { try { localStorage.setItem(CLAVE, JSON.stringify({ origen: d.origen, listas: d.listas, fechas: d.fechas })); } catch (e) { /* sin almacenamiento: solo dura esta visita */ } };
+  const borrar = () => { try { localStorage.removeItem(CLAVE); } catch (e) { /* nada */ } };
+  const recuperar = () => {
+    try {
+      const d = JSON.parse(localStorage.getItem(CLAVE) || 'null');
+      if (d && Array.isArray(d.listas) && d.listas.every(b => Array.isArray(b) && b.every(c => typeof c === 'string')) && !validarListas(d.listas)) {
+        return { origen: String(d.origen || 'archivo cargado'), listas: d.listas, fechas: Array.isArray(d.fechas) ? d.fechas.filter(f => /^\d{4}-\d{2}-\d{2}$/.test(f)) : [], propio: true };
+      }
+      if (d) borrar();
+    } catch (e) { /* almacenamiento bloqueado o dato roto: se usan los votos de ejemplo */ }
+    return null;
+  };
+
+  function mostrar(datos) {
+    const actual = byId('contenido'), raiz = PLANTILLA.cloneNode(true);
+    tip.hidden = true;
+    actual.replaceWith(raiz);
+    try { iniciar(raiz, datos); }
+    catch (err) { raiz.replaceWith(actual); throw err; }
+    const V = datos.listas.length, N = datos.listas[0].length;
+    byId('fuente-nombre').textContent = datos.origen;
+    byId('fuente-detalle').textContent = `${plural(V, 'voto', 'votos')} · ${N} libros` + (datos.propio ? ' · cargado por vos' : ' · ejemplo incluido');
+    volver.hidden = !datos.propio;
+  }
+
+  async function cargarArchivo(file) {
+    if (!file) return;
+    const nombre = `<b>${esc(file.name)}</b>`;
+    if (file.size > 5e6) { decir(`No cargué ${nombre}: pesa más de 5 MB y un archivo de votos suele pesar unos pocos KB.`, true); return; }
+    let texto;
+    try { texto = await file.text(); } catch (e) { decir(`No pude leer ${nombre}.`, true); return; }
+    const r = leerVotos(texto), err = validarListas(r.listas, r.lineas);
+    if (err) { decir(`No cargué ${nombre}. ${esc(err)} La página sigue con los votos anteriores.`, true); return; }
+    const datos = { origen: file.name, listas: r.listas, fechas: r.fechas, propio: true };
+    decir(`Calculando con ${plural(r.listas.length, 'voto', 'votos')}…`);
+    await new Promise(res => setTimeout(res, 30));
+    try { mostrar(datos); }
+    catch (e) { decir(`No pude dibujar la página con ${nombre} (${esc(e.message)}). Sigue con los votos anteriores.`, true); return; }
+    guardar(datos);
+    const malas = r.malas.length
+      ? ` Ignoré ${plural(r.malas.length, 'línea que no tiene', 'líneas que no tienen')} el formato de la app (${r.malas.length === 1 ? 'línea' : 'líneas'} ${r.malas.slice(0, 8).join(', ')}${r.malas.length > 8 ? '…' : ''}).`
+      : '';
+    decir(`Listo: la página ahora usa ${plural(r.listas.length, 'voto', 'votos')} de ${nombre}.${malas} Este navegador lo va a recordar la próxima vez que abras la página.`);
+  }
+
+  archivo.addEventListener('change', () => { const f = archivo.files[0]; archivo.value = ''; cargarArchivo(f); });
+  volver.addEventListener('click', () => { borrar(); mostrar(EJ); decir(`Volviste a los votos de ejemplo (${esc(EJ.origen)}).`); });
+
+  /* Arrastrar y soltar el archivo en cualquier parte de la página */
+  const hayArchivo = e => e.dataTransfer && Array.from(e.dataTransfer.types || []).includes('Files');
+  let capas = 0;
+  document.addEventListener('dragenter', e => { if (hayArchivo(e)) { capas++; document.body.classList.add('soltando'); } });
+  document.addEventListener('dragleave', e => { if (hayArchivo(e) && --capas <= 0) { capas = 0; document.body.classList.remove('soltando'); } });
+  document.addEventListener('dragover', e => { if (hayArchivo(e)) e.preventDefault(); });
+  document.addEventListener('drop', e => {
+    if (!hayArchivo(e)) return;
+    e.preventDefault(); capas = 0; document.body.classList.remove('soltando');
+    cargarArchivo(e.dataTransfer.files[0]);
+  });
+
+  const previo = recuperar();
+  if (previo) {
+    try { mostrar(previo); decir(`Estás viendo los votos que cargaste la última vez (<b>${esc(previo.origen)}</b>). Para usar otros, cargá un archivo nuevo.`); }
+    catch (e) { borrar(); mostrar(EJ); }
+  } else mostrar(EJ);
+}
+</script>
