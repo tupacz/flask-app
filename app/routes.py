@@ -49,12 +49,14 @@ def winner():
     admin = es_admin()
     # Mientras la votación está abierta, el resultado lo ve solo quien organiza; al cerrarla, todos.
     # La boleta de cada uno la completa resultado.js con /sesion-telegram.
+    # Para los textos de la sección de organización: si al cerrar el bot avisa en el grupo
+    organizacion = {'anuncia': telegram_bot.puede_anunciar(), 'silencio': votos.grupo_en_silencio()}
     if not nombres or (abierta and not admin):
-        return render_template('winner_publico.html', nombres=nombres, abierta=abierta, admin=admin)
+        return render_template('winner_publico.html', nombres=nombres, abierta=abierta, admin=admin, **organizacion)
     winner = get_condorcet_winner(votos.RUTA_VOTOS)
     ganador, empatados = telegram_bot.definir_ganador(winner)
     return render_template('winner.html', winner=winner, ganador=ganador, empatados=empatados,
-                           nombres=nombres, abierta=abierta, admin=admin)
+                           nombres=nombres, abierta=abierta, admin=admin, **organizacion)
 
 @main.route('/estado-votacion', methods=['POST'])
 def estado_votacion():
@@ -76,9 +78,13 @@ def estado_votacion():
         anunciado = telegram_bot.cerrar_y_anunciar()
     except telegram_bot.NoSePuedeCerrar as e:
         return jsonify({'message': str(e)}), 409
-    return jsonify({'message': 'Listo, cerraste la votación y el bot anunció el ganador en el grupo.' if anunciado
-                    else 'Listo, cerraste la votación. No pude avisar en el grupo: mandá /cerrar ahí para anunciarlo.',
-                    'abierta': False})
+    if anunciado:
+        mensaje = 'Listo, cerraste la votación y el bot anunció el ganador en el grupo.'
+    elif votos.grupo_en_silencio():
+        mensaje = 'Listo, cerraste la votación.'
+    else:
+        mensaje = 'Listo, cerraste la votación. El bot no avisó en el grupo: si querés anunciarlo, mandá /cerrar ahí.'
+    return jsonify({'message': mensaje, 'abierta': False})
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():

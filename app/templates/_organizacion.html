@@ -6,17 +6,24 @@
         {% if not abierta %}
         <button type="button" class="boton-texto" id="cambiar-estado" data-abrir="true"
                 data-confirmar="¿Reabrís la votación? El resultado se vuelve a ocultar hasta que la cierres de nuevo.">Reabrir la votación</button>
-        {% elif nombres %}
+        {% elif nombres and anuncia %}
         <button type="button" class="boton-texto" id="cambiar-estado" data-abrir="false"
                 data-confirmar="¿Cerrás la votación? El bot anuncia el ganador en el grupo y todos pueden ver este resultado.">Cerrar la votación y anunciar el ganador</button>
+        {% elif nombres %}
+        <button type="button" class="boton-texto" id="cambiar-estado" data-abrir="false"
+                data-confirmar="¿Cerrás la votación? Todos van a poder ver este resultado. El bot no avisa nada en el grupo.">Cerrar la votación</button>
         {% endif %}
         <a href="{{ url_for('main.books_manager') }}">Cambiar los libros</a>
         <a href="{{ url_for('main.votes') }}">Editar los votos</a>
         <a href="{{ url_for('main.logout') }}">Salir del modo admin</a>
     </div>
-    {% if not abierta %}
+    {% if silencio %}
+    <p class="pie-seccion">Los mensajes del bot al grupo están desactivados: no anuncia nada ni edita la tarjeta.</p>
+    {% elif not abierta %}
     <p class="pie-seccion">Para una votación nueva, borrá los votos y mandá /votacion en el grupo.</p>
-    {% elif nombres %}
+    {% elif nombres and anuncia %}
     <p class="pie-seccion">También podés cerrarla mandando /cerrar en el grupo.</p>
+    {% elif nombres %}
+    <p class="pie-seccion">Todavía no hay tarjeta en el grupo, así que al cerrar el bot no avisa. Para anunciarlo, mandá /cerrar en el grupo.</p>
     {% endif %}
 </nav>

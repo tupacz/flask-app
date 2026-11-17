@@ -37,14 +37,15 @@ LIBROS = ['Cien años de soledad', "El túnel", 'Rayuela']
 with open(votos.RUTA_LIBROS, 'w', encoding='utf-8') as f:
     json.dump([{'title': t, 'author': 'A', 'description': 'D'} for t in LIBROS], f, ensure_ascii=False)
 
-LLAMAR_REAL = telegram_bot.llamar
+PEDIR_REAL = telegram_bot._pedir
 llamadas = []
 def llamar_falso(metodo, params=None, token=None):
     llamadas.append((metodo, params or {}))
     if metodo == 'sendMessage':
         return {'message_id': 77, 'chat': {'id': params['chat_id']}}
     return True
-telegram_bot.llamar = llamar_falso
+# Se reemplaza solo el pedido HTTP: el filtro de llamar() (grupo en silencio) sigue andando
+telegram_bot._pedir = llamar_falso
 
 
 def init_data(user, token=TOKEN, auth_date=None):
@@ -243,7 +244,29 @@ chequear(b'Duelos mano a mano' not in cliente.get('/winner').data, 'reabierta: e
 votos.guardar_estado({'abierta': True})
 llamadas.clear()
 r = cambiar_estado(False, ADMIN)
-chequear(r.status_code == 200 and 'No pude avisar en el grupo' in r.json['message'] and not llamadas, 'sin tarjeta: cierra y avisa que no anunció')
+chequear(r.status_code == 200 and 'mandá /cerrar ahí' in r.json['message'] and not llamadas, 'sin tarjeta: cierra y avisa que no anunció')
+votos.guardar_estado({'abierta': True})
+chequear('Todavía no hay tarjeta en el grupo' in admin.get('/winner').data.decode(), 'sin tarjeta: la organización avisa que al cerrar no se anuncia')
+
+# ---------- Grupo en silencio: nada sale hacia grupos, los chats privados siguen andando ----------
+chequear(telegram_bot.es_grupo(-100) and telegram_bot.es_grupo('@canal') and not telegram_bot.es_grupo(222), 'es_grupo distingue grupos de chats privados')
+votos.guardar_estado({'abierta': True, 'chat_id': -100, 'message_id': 77, 'grupo_en_silencio': True})
+chequear(not telegram_bot.puede_anunciar(), 'en silencio no se anuncia aunque haya tarjeta')
+llamadas.clear()
+r = cliente.post('/submit', json={'orderedList': orden}, headers=tma({'id': 555, 'first_name': 'Caro'}))
+chequear(r.status_code == 200 and not llamadas, 'en silencio, votar no edita la tarjeta del grupo')
+pagina = admin.get('/winner').data.decode()
+chequear('>Cerrar la votación</button>' in pagina and 'anunciar el ganador' not in pagina and 'están desactivados' in pagina,
+         'en silencio, el botón no promete anunciar y la organización lo dice')
+r = cambiar_estado(False, ADMIN)
+chequear(r.status_code == 200 and r.json['message'] == 'Listo, cerraste la votación.' and not llamadas, 'en silencio, cerrar desde la app no manda nada')
+r = cambiar_estado(True, ADMIN)
+chequear(r.status_code == 200 and not llamadas, 'en silencio, reabrir no edita la tarjeta')
+cliente.post('/telegram/webhook', json=update('/cerrar', ADMIN, chat_id=-100), headers=SECRETO)
+chequear(not votos.votacion_abierta() and not llamadas, 'en silencio, /cerrar en el grupo cierra sin escribir ahí')
+cliente.post('/telegram/webhook', json=update('/miid', ANA, chat_id=222, tipo='private'), headers=SECRETO)
+chequear(len(llamadas) == 1 and llamadas[0][1]['chat_id'] == 222, 'en silencio, los chats privados siguen funcionando')
+chequear(votos.leer_estado().get('grupo_en_silencio') is True, 'cerrar y reabrir no borran el silencio')
 votos.guardar_estado({'abierta': True})
 
 # ---------- Anuncio sin ganador estricto (ciclo A>B>C>A) ----------
@@ -296,13 +319,13 @@ telegram_bot.time.sleep = lambda segundos: None
 try:
     with app.app_context():
         urllib.request.urlopen = falla_dos_veces
-        chequear(LLAMAR_REAL('getMe') == {'message_id': 1} and len(intentos) == 3, 'reintenta si el proxy falla y después anda')
+        chequear(PEDIR_REAL('getMe') == {'message_id': 1} and len(intentos) == 3, 'reintenta si el proxy falla y después anda')
         intentos.clear()
         urllib.request.urlopen = falla_siempre
-        chequear(LLAMAR_REAL('getMe') is None and len(intentos) == telegram_bot.INTENTOS, 'se rinde después de los reintentos sin lanzar')
+        chequear(PEDIR_REAL('getMe') is None and len(intentos) == telegram_bot.INTENTOS, 'se rinde después de los reintentos sin lanzar')
         intentos.clear()
         urllib.request.urlopen = telegram_dice_400
-        chequear(LLAMAR_REAL('sendMessage', {'chat_id': 1, 'text': 'x'}) is None and len(intentos) == 1, 'no reintenta los errores que responde Telegram')
+        chequear(PEDIR_REAL('sendMessage', {'chat_id': 1, 'text': 'x'}) is None and len(intentos) == 1, 'no reintenta los errores que responde Telegram')
 finally:
     urllib.request.urlopen, telegram_bot.time.sleep = urlopen_original, sleep_original
 

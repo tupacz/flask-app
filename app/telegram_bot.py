@@ -22,9 +22,25 @@ except ImportError:
 INTENTOS = 3
 
 
+def es_grupo(chat_id):
+    """Grupos, supergrupos y canales tienen id negativo (un canal también puede ser '@nombre'). Los chats privados, positivo."""
+    if isinstance(chat_id, str):
+        return chat_id.strip().startswith(('@', '-'))
+    return isinstance(chat_id, int) and chat_id < 0
+
+
 def llamar(metodo, params=None, token=None):
     """Llama a un método de la Bot API. Devuelve 'result' o None si algo falla. Nunca lanza.
-    Ante fallas de red reintenta: el proxy de PythonAnywhere a veces corta con un 503 momentáneo."""
+    Con el grupo en silencio, lo que va dirigido a un grupo no se manda."""
+    chat = (params or {}).get('chat_id')
+    if chat is not None and es_grupo(chat) and votos.grupo_en_silencio():
+        print(f"Telegram {metodo}: no se manda nada al grupo {chat} porque está en silencio")
+        return None
+    return _pedir(metodo, params, token)
+
+
+def _pedir(metodo, params=None, token=None):
+    """El pedido HTTP a la Bot API. Ante fallas de red reintenta: el proxy de PythonAnywhere a veces corta con un 503 momentáneo."""
     token = token or current_app.config.get('BOT_TOKEN')
     if not token:
         print(f"Telegram {metodo}: falta configurar el token del bot")
@@ -186,12 +202,16 @@ def cerrar_votacion():
     return texto_anuncio(resultado, len(nombres)), ganador
 
 
+def puede_anunciar():
+    """Si al cerrar el bot va a avisar en el grupo: hace falta la tarjeta publicada y que el grupo no esté en silencio."""
+    return bool(votos.leer_estado().get('chat_id')) and not votos.grupo_en_silencio()
+
+
 def cerrar_y_anunciar():
     """Cierre desde la página de resultados: anuncia en el grupo de la tarjeta y la edita.
     Devuelve True si el anuncio llegó al grupo."""
     anuncio, ganador = cerrar_votacion()
-    chat_tarjeta = votos.leer_estado().get('chat_id')
-    anunciado = bool(chat_tarjeta) and llamar('sendMessage', {'chat_id': chat_tarjeta, 'text': anuncio}) is not None
+    anunciado = puede_anunciar() and llamar('sendMessage', {'chat_id': votos.leer_estado()['chat_id'], 'text': anuncio}) is not None
     actualizar_tarjeta(votos.nombres_de_votantes(), abierta=False, ganador=ganador)
     return anunciado
 

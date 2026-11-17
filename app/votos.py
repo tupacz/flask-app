@@ -87,6 +87,11 @@ def guardar_estado(estado):
     os.replace(temporal, RUTA_ESTADO)
 
 
+def grupo_en_silencio():
+    """Con "grupo_en_silencio": true en telegram.json, el bot no manda ni edita nada en grupos (ver telegram_bot.llamar)."""
+    return leer_estado().get('grupo_en_silencio') is True
+
+
 def votacion_abierta():
     """Mientras nadie la cierre (con /cerrar o desde la página de resultados), la votación está abierta."""
     return leer_estado().get('abierta', True) is not False
