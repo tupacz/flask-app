@@ -37,6 +37,7 @@ LIBROS = ['Cien años de soledad', "El túnel", 'Rayuela']
 with open(votos.RUTA_LIBROS, 'w', encoding='utf-8') as f:
     json.dump([{'title': t, 'author': 'A', 'description': 'D'} for t in LIBROS], f, ensure_ascii=False)
 
+LLAMAR_REAL = telegram_bot.llamar
 llamadas = []
 def llamar_falso(metodo, params=None, token=None):
     llamadas.append((metodo, params or {}))
@@ -214,6 +215,43 @@ for script in ['voting_condorcet.py', 'voting_irv.py']:
                        capture_output=True, text=True, encoding='utf-8')
     salida = (p.stdout + p.stderr).strip().splitlines()
     chequear(p.returncode == 0, f'{script} corre con marcas [tg:id]: {salida[-1] if salida else ""}')
+
+# ---------- Reintentos ante fallas de red (el proxy de PythonAnywhere a veces responde 503) ----------
+import io  # noqa: E402
+import urllib.error  # noqa: E402
+import urllib.request  # noqa: E402
+
+urlopen_original, sleep_original = urllib.request.urlopen, telegram_bot.time.sleep
+intentos = []
+
+def falla_dos_veces(pedido, timeout=None):
+    intentos.append(1)
+    if len(intentos) < 3:
+        raise urllib.error.URLError('Tunnel connection failed: 503 Service Unavailable')
+    return io.BytesIO(b'{"ok": true, "result": {"message_id": 1}}')
+
+def falla_siempre(pedido, timeout=None):
+    intentos.append(1)
+    raise urllib.error.URLError('Tunnel connection failed: 503 Service Unavailable')
+
+def telegram_dice_400(pedido, timeout=None):
+    intentos.append(1)
+    raise urllib.error.HTTPError(pedido.full_url, 400, 'Bad Request', {},
+                                 io.BytesIO(b'{"ok": false, "description": "Bad Request: chat not found"}'))
+
+telegram_bot.time.sleep = lambda segundos: None
+try:
+    with app.app_context():
+        urllib.request.urlopen = falla_dos_veces
+        chequear(LLAMAR_REAL('getMe') == {'message_id': 1} and len(intentos) == 3, 'reintenta si el proxy falla y después anda')
+        intentos.clear()
+        urllib.request.urlopen = falla_siempre
+        chequear(LLAMAR_REAL('getMe') is None and len(intentos) == telegram_bot.INTENTOS, 'se rinde después de los reintentos sin lanzar')
+        intentos.clear()
+        urllib.request.urlopen = telegram_dice_400
+        chequear(LLAMAR_REAL('sendMessage', {'chat_id': 1, 'text': 'x'}) is None and len(intentos) == 1, 'no reintenta los errores que responde Telegram')
+finally:
+    urllib.request.urlopen, telegram_bot.time.sleep = urlopen_original, sleep_original
 
 shutil.rmtree(tmp, ignore_errors=True)
 print()

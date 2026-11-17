@@ -5,6 +5,7 @@ llamando a la Bot API con urllib, sin bibliotecas extra.
 Referencia: https://core.telegram.org/bots/api
 """
 import json
+import time
 import urllib.error
 import urllib.request
 
@@ -18,28 +19,40 @@ except ImportError:
     from voting_condorcet import get_condorcet_winner
 
 
+INTENTOS = 3
+
+
 def llamar(metodo, params=None, token=None):
-    """Llama a un método de la Bot API. Devuelve 'result' o None si algo falla. Nunca lanza."""
+    """Llama a un método de la Bot API. Devuelve 'result' o None si algo falla. Nunca lanza.
+    Ante fallas de red reintenta: el proxy de PythonAnywhere a veces corta con un 503 momentáneo."""
     token = token or current_app.config.get('BOT_TOKEN')
     if not token:
         print(f"Telegram {metodo}: falta configurar el token del bot")
         return None
-    pedido = urllib.request.Request(
-        f"https://api.telegram.org/bot{token}/{metodo}",
-        data=json.dumps(params or {}).encode('utf-8'),
-        headers={'Content-Type': 'application/json'},
-    )
-    try:
-        with urllib.request.urlopen(pedido, timeout=5) as respuesta:
-            datos = json.load(respuesta)
-    except urllib.error.HTTPError as e:
+    cuerpo = json.dumps(params or {}).encode('utf-8')
+    datos = None
+    for intento in range(1, INTENTOS + 1):
+        pedido = urllib.request.Request(
+            f"https://api.telegram.org/bot{token}/{metodo}",
+            data=cuerpo,
+            headers={'Content-Type': 'application/json'},
+        )
         try:
-            datos = json.load(e)
-        except Exception:
-            datos = {'ok': False, 'description': str(e)}
-    except Exception as e:
-        print(f"Telegram {metodo}: {e}")
-        return None
+            with urllib.request.urlopen(pedido, timeout=5) as respuesta:
+                datos = json.load(respuesta)
+            break
+        except urllib.error.HTTPError as e:
+            # Respuesta de Telegram (por ejemplo 400 o 403): no tiene sentido reintentar
+            try:
+                datos = json.load(e)
+            except Exception:
+                datos = {'ok': False, 'description': str(e)}
+            break
+        except Exception as e:
+            print(f"Telegram {metodo} (intento {intento} de {INTENTOS}): {e}")
+            if intento == INTENTOS:
+                return None
+            time.sleep(intento)
     if not datos.get('ok'):
         print(f"Telegram {metodo}: {datos.get('description')}")
         return None
