@@ -35,9 +35,33 @@ TEMAS = {
                'destructive_text_color': '#ff595a', 'section_separator_color': '#3d3d3d'},
 }
 
-SESION_VOTANDO = {'nombre': 'Pato', 'voto': None, 'abierta': True, 'esAdmin': True}
+# Parecidos a los reales: títulos largos con emoji y descripciones de varias líneas
+LIBROS_DE_EJEMPLO = [
+    {'title': 'Rayuela', 'author': 'Julio Cortázar - 1963',
+     'description': 'Horacio Oliveira deambula entre París y Buenos Aires buscando a la Maga. Se puede leer en más de un orden. (~600 páginas)'},
+    {'title': 'Ficciones', 'author': 'Jorge Luis Borges - 1944',
+     'description': 'Cuentos de laberintos, espejos y bibliotecas infinitas. (~200 páginas)'},
+    {'title': 'El túnel', 'author': 'Ernesto Sabato - 1948',
+     'description': 'Un pintor cuenta desde la cárcel por qué mató a la única persona que lo entendía. (~160 páginas)'},
+    {'title': 'Cien años de soledad', 'author': 'Gabriel García Márquez - 1967',
+     'description': 'Siete generaciones de los Buendía en Macondo, el pueblo que fundaron en medio de la selva. (~470 páginas)'},
+    {'title': '¿Sueñan los androides con ovejas eléctricas? 🐑', 'author': 'Philip K. Dick - 1968',
+     'description': 'En una Tierra devastada por la guerra nuclear, Rick Deckard caza androides fugados, casi idénticos a los humanos, que solo se delatan por su falta de empatía. (~235 páginas)'},
+    {'title': 'Soy Leyenda 🧄', 'author': 'Richard Matheson - 1954',
+     'description': 'Robert Neville es el último hombre en un mundo arrasado por una plaga que convirtió a todos en vampiros. (~168 páginas)'},
+    {'title': 'Breakfast at Tiffany’s 💎', 'author': 'Truman Capote - 1958',
+     'description': 'Holly Golightly vive de fiesta en fiesta en el Nueva York de los años cuarenta. (~160 páginas)'},
+    {'title': 'La metamorfosis 🪲', 'author': 'Franz Kafka - 1915',
+     'description': 'Gregor Samsa se despierta convertido en un insecto y su familia no sabe qué hacer con él. (~100 páginas)'},
+]
+TITULOS = [libro['title'] for libro in LIBROS_DE_EJEMPLO]
+
+SESION_VOTANDO ={'nombre': 'Pato', 'voto': None, 'abierta': True, 'esAdmin': True}
 SESION_YA_VOTO = {'nombre': 'Pato', 'abierta': True, 'esAdmin': False,
-                  'voto': {'lista': ['Rayuela', 'Ficciones', 'El túnel', 'Cien años de soledad'], 'fecha': '2026-11-20 21:03:11'}}
+                  'voto': {'lista': TITULOS, 'fecha': '2026-11-20 21:03:11'}}
+
+# Abre la descripción del quinto libro, para ver cómo queda desplegada
+ABRIR_DESCRIPCION = """<script>setTimeout(() => document.querySelectorAll('.libro-info')[4].click(), 800);</script>"""
 
 
 def armar_cliente():
@@ -46,16 +70,11 @@ def armar_cliente():
     votos.RUTA_LIBROS = os.path.join(CARPETA_TEMPORAL, 'books.json')
     votos.RUTA_ESTADO = os.path.join(CARPETA_TEMPORAL, 'telegram.json')
     with open(votos.RUTA_LIBROS, 'w', encoding='utf-8') as f:
-        json.dump([
-            {'title': 'Cien años de soledad', 'author': 'Gabriel García Márquez', 'description': 'La obra cumbre del realismo mágico.'},
-            {'title': 'Rayuela', 'author': 'Julio Cortázar', 'description': 'Una novela que se puede leer en más de un orden.'},
-            {'title': 'El túnel', 'author': 'Ernesto Sabato', 'description': 'Un pintor cuenta por qué mató a la única persona que lo entendía.'},
-            {'title': 'Ficciones', 'author': 'Jorge Luis Borges', 'description': 'Cuentos de laberintos, espejos y bibliotecas infinitas.'},
-        ], f, ensure_ascii=False)
+        json.dump(LIBROS_DE_EJEMPLO, f, ensure_ascii=False)
     with open(votos.RUTA_VOTOS, 'w', encoding='utf-8') as f:
-        f.write("Nombre: Ana [tg:1]; Lista: ['Rayuela', 'Ficciones', 'El túnel', 'Cien años de soledad']; fecha: 2026-11-20 21:03:11\n")
-        f.write("Nombre: Beto [tg:2]; Lista: ['Rayuela', 'Cien años de soledad', 'Ficciones', 'El túnel']; fecha: 2026-11-20 21:05:00\n")
-        f.write("Nombre: Caro [tg:3]; Lista: ['Ficciones', 'Rayuela', 'El túnel', 'Cien años de soledad']; fecha: 2026-11-20 21:07:00\n")
+        for i, nombre in enumerate(['Ana', 'Beto', 'Caro']):
+            orden = TITULOS[i:] + TITULOS[:i]
+            f.write(f"Nombre: {nombre} [tg:{i + 1}]; Lista: {orden}; fecha: 2026-11-20 21:0{i}:00\n")
     cliente = create_app().test_client()
     with cliente.session_transaction() as s:
         s['admin'] = True
@@ -113,15 +132,16 @@ def main():
     salida = os.path.join(AQUI, 'capturas')
     os.makedirs(salida, exist_ok=True)
     paginas = {
-        'votar': ('/', SESION_VOTANDO),
-        'votado': ('/', SESION_YA_VOTO),
-        'resultado': ('/winner', None),
-        'libros': ('/books-manager', None),
-        'votos': ('/votes', None),
+        'votar': ('/', SESION_VOTANDO, ''),
+        'votar-descripcion': ('/', SESION_VOTANDO, ABRIR_DESCRIPCION),
+        'votado': ('/', SESION_YA_VOTO, ''),
+        'resultado': ('/winner', None, ''),
+        'libros': ('/books-manager', None, ''),
+        'votos': ('/votes', None, ''),
     }
     for tema in TEMAS:
-        for nombre, (url, sesion) in paginas.items():
-            archivo = guardar_pagina(cliente, url, tema, sesion, f'{nombre}-{tema}')
+        for nombre, (url, sesion, extra) in paginas.items():
+            archivo = guardar_pagina(cliente, url, tema, sesion, f'{nombre}-{tema}', extra)
             png = os.path.join(salida, f'{nombre}-{tema}.png')
             edge('--hide-scrollbars', '--force-device-scale-factor=1', '--window-size=500,1100',
                  '--virtual-time-budget=4000', f'--screenshot={png}', url_local(archivo))

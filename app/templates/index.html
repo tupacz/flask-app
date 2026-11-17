@@ -39,21 +39,20 @@
             <ul id="sortable-list" class="seccion">
                 {% for book in books %}
                 <li class="libro" data-value="{{ book.title }}">
-                    <span class="posicion" aria-hidden="true">{{ loop.index }}</span>
-                    <div class="libro-texto">
+                    <span class="agarre" aria-hidden="true"><span class="posicion">{{ loop.index }}</span></span>
+                    <button type="button" class="libro-info"{% if book.description %} aria-expanded="false" aria-controls="desc-{{ loop.index }}"{% else %} disabled{% endif %}>
                         <span class="libro-titulo">{{ book.title }}</span>
-                        {% if book.author %}<span class="libro-autor">{{ book.author }}</span>{% endif %}
-                        {% if book.description %}<span class="libro-desc">{{ book.description }}</span>{% endif %}
-                    </div>
+                        <span class="libro-autor">{{ book.author }}{% if book.description %}<svg class="chevron" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5l5 5 5-5"/></svg>{% endif %}</span>
+                    </button>
                     <div class="mover">
                         <button type="button" class="flecha subir" aria-label="Subir {{ book.title }}">▲</button>
                         <button type="button" class="flecha bajar" aria-label="Bajar {{ book.title }}">▼</button>
                     </div>
-                    <span class="agarre" aria-hidden="true">☰</span>
+                    {% if book.description %}<p class="libro-desc" id="desc-{{ loop.index }}" hidden>{{ book.description }}</p>{% endif %}
                 </li>
                 {% endfor %}
             </ul>
-            <p class="pie-seccion">Movelos con las flechas, o mantené apretado ☰ y arrastrá.</p>
+            <p class="pie-seccion">Tocá un libro para ver de qué trata. Para moverlo usá las flechas, o mantené apretado el número y arrastralo.</p>
 
             <div id="mensaje" class="mensaje" role="alert" hidden></div>
             <button type="button" id="send-button" class="boton" hidden>Enviar boleta</button>
@@ -159,10 +158,30 @@
             if (r.top < 0 || r.bottom > window.innerHeight) li.scrollIntoView({ block: 'nearest', behavior: movimientoReducido ? 'auto' : 'smooth' });
         }
 
+        // Tocar un libro muestra u oculta su descripción ahí mismo, debajo del título
+        function alternarDescripcion(boton) {
+            const li = boton.closest('.libro');
+            const descripcion = li.querySelector('.libro-desc');
+            if (!descripcion) return;
+            const abrir = descripcion.hidden;
+            descripcion.hidden = !abrir;
+            li.classList.toggle('abierto', abrir);
+            boton.setAttribute('aria-expanded', String(abrir));
+            vibrar('light');
+            if (abrir) {
+                const r = li.getBoundingClientRect();
+                if (r.bottom > window.innerHeight) li.scrollIntoView({ block: 'nearest', behavior: movimientoReducido ? 'auto' : 'smooth' });
+            }
+        }
+
         lista.addEventListener('click', (evento) => {
             const flecha = evento.target.closest('.flecha');
-            if (!flecha || flecha.disabled) return;
-            mover(flecha.closest('.libro'), flecha.classList.contains('subir') ? -1 : 1, flecha);
+            if (flecha) {
+                if (!flecha.disabled) mover(flecha.closest('.libro'), flecha.classList.contains('subir') ? -1 : 1, flecha);
+                return;
+            }
+            const info = evento.target.closest('.libro-info');
+            if (info && !info.disabled) alternarDescripcion(info);
         });
 
         new Sortable(lista, {
